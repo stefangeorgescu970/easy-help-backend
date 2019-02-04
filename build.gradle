@@ -7,11 +7,6 @@ buildscript {
     }
 }
 
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
-}
-
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
