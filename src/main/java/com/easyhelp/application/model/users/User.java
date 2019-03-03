@@ -19,8 +19,10 @@ public class User extends BaseEntity {
     private String firstName;
     private String lastName;
     private String email;
+    private String password;
     private Date dateOfBirth;
     private String city;
     private String country;
     private String ssn;
+    private UserType userType;
 }
