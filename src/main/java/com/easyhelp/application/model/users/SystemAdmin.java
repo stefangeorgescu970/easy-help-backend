@@ -13,6 +13,6 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(name = "system_admins")
-public class SystemAdmin extends User {
+public class SystemAdmin extends ApplicationUser {
 
 }

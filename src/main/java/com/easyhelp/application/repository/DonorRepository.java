@@ -9,4 +9,5 @@ import javax.transaction.Transactional;
 @Transactional
 public interface DonorRepository extends CrudRepository<Donor, Long> {
 
+
 }

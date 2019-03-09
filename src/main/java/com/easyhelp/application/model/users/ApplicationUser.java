@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends BaseEntity {
+public class ApplicationUser extends BaseEntity {
 
     private String firstName;
     private String lastName;
@@ -25,4 +25,9 @@ public class User extends BaseEntity {
     private String country;
     private String ssn;
     private UserType userType;
+
+    public ApplicationUser(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

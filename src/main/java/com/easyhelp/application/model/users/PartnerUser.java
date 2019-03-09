@@ -13,7 +13,7 @@ import javax.persistence.MappedSuperclass;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartnerUser extends User {
+public class PartnerUser extends ApplicationUser {
     private Boolean isReviewed;
     private Boolean isValid;
 }
