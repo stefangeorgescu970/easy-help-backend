@@ -6,18 +6,21 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
-@EqualsAndHashCode(callSuper = true)
-@MappedSuperclass
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApplicationUser extends BaseEntity {
+@Entity
+public class ApplicationUser {
 
-    private String firstName;
-    private String lastName;
+    //    private String firstName;
+//    private String lastName;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
     private String email;
     private String password;
     private Date dateOfBirth;
@@ -25,9 +28,4 @@ public class ApplicationUser extends BaseEntity {
     private String country;
     private String ssn;
     private UserType userType;
-
-    public ApplicationUser(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
 }

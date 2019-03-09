@@ -15,12 +15,12 @@ public class DoctorController {
     @Autowired
     private DoctorServiceInterface doctorServiceInterface;
 
-    @RequestMapping("/get")
-    private ServerResponse<Doctor> getAllDoctors() {
-        ServerResponse<Doctor> serverResponse = new ServerResponse<>();
-        serverResponse.setId("Doctors");
-        serverResponse.setAct("getAll");
-        serverResponse.setModel(doctorServiceInterface.getAllDoctors());
-        return serverResponse;
-    }
+//    @RequestMapping("/get")
+//    private ServerResponse<Doctor> getAllDoctors() {
+//        ServerResponse<Doctor> serverResponse = new ServerResponse<>();
+//        serverResponse.setId("Doctors");
+//        serverResponse.setAct("getAll");
+//        serverResponse.setModel(doctorServiceInterface.getAllDoctors());
+//        return serverResponse;
+//    }
 }
