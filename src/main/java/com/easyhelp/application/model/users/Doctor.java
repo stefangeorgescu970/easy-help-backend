@@ -14,10 +14,9 @@ import java.util.Set;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@Table(name = "doctors")
-public class Doctor extends PartnerUser implements Serializable {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public class Doctor extends PartnerUser {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_hospital")

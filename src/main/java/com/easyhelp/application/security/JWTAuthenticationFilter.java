@@ -2,19 +2,18 @@ package com.easyhelp.application.security;
 
 import com.auth0.jwt.JWT;
 import com.easyhelp.application.model.users.ApplicationUser;
-import com.easyhelp.application.repository.UserRepository;
+import com.easyhelp.application.model.users.LoginResponse;
 import com.easyhelp.application.service.UserDetailsServiceImpl;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -31,12 +30,12 @@ import static com.easyhelp.application.security.SecurityConstants.*;
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private AuthenticationManager authenticationManager;
+    private UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private UserRepository userRepository;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, UserDetailsServiceImpl userDetailsService) {
         this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -63,18 +62,21 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
 
-
-        ApplicationUser user = userRepository.findByEmail(((User) auth.getPrincipal()).getUsername());
+        ApplicationUser applicationUser = userDetailsService.getUserDetails(((User) auth.getPrincipal()).getUsername());
+        ObjectWriter ow = new ObjectMapper().configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true).writer().withDefaultPrettyPrinter();
 
         String token = JWT.create()
                 .withSubject(((User) auth.getPrincipal()).getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(HMAC512(SECRET.getBytes()));
+
+        LoginResponse response = new LoginResponse(applicationUser, TOKEN_PREFIX + token);
+        String json = ow.writeValueAsString(response);
+
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
-        res.getWriter().write(
-                "{\"" + SecurityConstants.HEADER_STRING + user.getEmail() + "\":\"" + SecurityConstants.TOKEN_PREFIX + token + "\"}"
-        );
+        res.getWriter().write(json);
+
     }
 }

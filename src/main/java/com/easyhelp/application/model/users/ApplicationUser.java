@@ -1,9 +1,7 @@
 package com.easyhelp.application.model.users;
 
-import com.easyhelp.application.model.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -11,11 +9,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
+@MappedSuperclass
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class ApplicationUser {
-
+public class ApplicationUser implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +22,7 @@ public class ApplicationUser {
     private String lastName;
     private String email;
     private String password;
+
     private Date dateOfBirth;
     private String city;
     private String country;

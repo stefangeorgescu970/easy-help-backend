@@ -14,9 +14,8 @@ import java.util.Set;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@Table(name = "donors")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Donor extends ApplicationUser {
 
     @OneToOne(mappedBy = "donor")
