@@ -3,8 +3,10 @@ package com.easyhelp.application.service;
 import com.easyhelp.application.model.users.ApplicationUser;
 import com.easyhelp.application.model.users.Doctor;
 import com.easyhelp.application.model.users.Donor;
+import com.easyhelp.application.model.users.SystemAdmin;
 import com.easyhelp.application.repository.DoctorRepository;
 import com.easyhelp.application.repository.DonorRepository;
+import com.easyhelp.application.repository.SystemAdminRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +25,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private DonorRepository donorRepository;
     private DoctorRepository doctorRepository;
+    private SystemAdminRepository systemAdminRepository;
 
-    public UserDetailsServiceImpl(DonorRepository donorRepository, DoctorRepository doctorRepository) {
+    public UserDetailsServiceImpl(DonorRepository donorRepository, DoctorRepository doctorRepository, SystemAdminRepository systemAdminRepository) {
         this.donorRepository = donorRepository;
         this.doctorRepository = doctorRepository;
+        this.systemAdminRepository = systemAdminRepository;
     }
 
     @Override
@@ -36,7 +40,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (applicationUser == null) {
             applicationUser = donorRepository.findByEmail(email);
             if (applicationUser == null){
-                throw new UsernameNotFoundException(email);
+                applicationUser = systemAdminRepository.findByEmail(email);
+                if (applicationUser == null){
+                    throw new UsernameNotFoundException(email);
+                }
             }
         }
         return new User(applicationUser.getEmail(), applicationUser.getPassword(), emptyList());
@@ -52,6 +59,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Doctor doctor = doctorRepository.findByEmail(username);
         if (doctor != null)
             return doctor;
+
+        SystemAdmin systemAdmin = systemAdminRepository.findByEmail(username);
+        if (systemAdmin != null)
+            return systemAdmin;
 
         throw new UsernameNotFoundException(username);
     }

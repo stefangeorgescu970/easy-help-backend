@@ -9,4 +9,5 @@ import javax.transaction.Transactional;
 @Transactional
 public interface SystemAdminRepository extends CrudRepository<SystemAdmin, Long> {
 
+    SystemAdmin findByEmail(String username);
 }

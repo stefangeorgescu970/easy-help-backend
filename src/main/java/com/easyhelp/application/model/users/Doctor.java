@@ -15,6 +15,7 @@ import java.util.Set;
 @Entity
 @Data
 @NoArgsConstructor
+@Table(name = "doctors")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Doctor extends PartnerUser {
 
