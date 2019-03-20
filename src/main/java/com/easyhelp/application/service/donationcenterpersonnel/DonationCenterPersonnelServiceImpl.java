@@ -1,5 +1,6 @@
 package com.easyhelp.application.service.donationcenterpersonnel;
 
+import com.easyhelp.application.model.dto.accountrequest.DonationCenterPersonnelAccountRequestDTO;
 import com.easyhelp.application.model.users.DonationCenterPersonnel;
 import com.easyhelp.application.repository.DonationCenterPersonnelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,13 @@ public class DonationCenterPersonnelServiceImpl implements DonationCenterPersonn
     private DonationCenterPersonnelRepository donationCenterPersonnelRepository;
 
     @Override
-    public List<DonationCenterPersonnel> getAllPendingAccounts() {
-        return donationCenterPersonnelRepository.findAll().stream().filter(dcp -> !dcp.getIsReviewed()).collect(Collectors.toList());
+    public List<DonationCenterPersonnelAccountRequestDTO> getAllPendingAccounts() {
+        return donationCenterPersonnelRepository
+                .findAll()
+                .stream()
+                .filter(dcp -> !dcp.getIsReviewed())
+                .map(DonationCenterPersonnelAccountRequestDTO::new)
+                .collect(Collectors.toList());
     }
 
     @Override

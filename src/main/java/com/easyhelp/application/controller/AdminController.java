@@ -26,4 +26,8 @@ public class AdminController {
         return ResponseBuilder.encode(HttpStatus.OK, doctorService.getAllPendingAccounts(), 1, 1, 1);
     }
 
+    @RequestMapping("/dcpAccountRequests")
+    private ResponseEntity<Response> getDonationCenterPersonnelAccountRequests() {
+        return ResponseBuilder.encode(HttpStatus.OK, donationCenterPersonnelService.getAllPendingAccounts(), 1, 1, 1);
+    }
 }

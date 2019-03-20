@@ -1,5 +1,7 @@
 package com.easyhelp.application.service.doctor;
 
+import com.easyhelp.application.model.dto.accountrequest.AccountRequestDTO;
+import com.easyhelp.application.model.dto.accountrequest.DoctorAccountRequestDTO;
 import com.easyhelp.application.model.users.Doctor;
 import com.easyhelp.application.repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,13 @@ public class DoctorServiceImpl implements DoctorServiceInterface {
     private DoctorRepository doctorRepository;
 
     @Override
-    public List<Doctor> getAllPendingAccounts() {
-        return doctorRepository.findAll().stream().filter(doctor -> !doctor.getIsReviewed()).collect(Collectors.toList());
+    public List<DoctorAccountRequestDTO> getAllPendingAccounts() {
+        return doctorRepository
+                .findAll()
+                .stream()
+                .filter(doctor -> !doctor.getIsReviewed())
+                .map(DoctorAccountRequestDTO::new)
+                .collect(Collectors.toList());
     }
 
     @Override
