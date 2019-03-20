@@ -6,7 +6,10 @@ import java.util.List;
 
 public interface DoctorServiceInterface {
 
-    List<Doctor> getAllDoctors();
+    List<Doctor> getAllPendingAccounts();
 
+    List<Doctor> getAllActiveAccounts();
+
+    List<Doctor> getAllBannedAccounts();
 
 }
