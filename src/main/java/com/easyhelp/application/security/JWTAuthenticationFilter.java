@@ -4,11 +4,15 @@ import com.auth0.jwt.JWT;
 import com.easyhelp.application.model.users.ApplicationUser;
 import com.easyhelp.application.model.users.LoginResponse;
 import com.easyhelp.application.service.UserDetailsServiceImpl;
+import com.easyhelp.application.utils.response.Response;
+import com.easyhelp.application.utils.response.ResponseBuilder;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -70,13 +74,11 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(HMAC512(SECRET.getBytes()));
 
-        LoginResponse response = new LoginResponse(applicationUser, TOKEN_PREFIX + token);
-        String json = ow.writeValueAsString(response);
+        String json = ow.writeValueAsString(ResponseBuilder.encode(HttpStatus.OK, new LoginResponse(applicationUser, TOKEN_PREFIX + token)));
 
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
         res.getWriter().write(json);
-
     }
 }
