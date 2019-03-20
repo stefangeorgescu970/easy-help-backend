@@ -1,5 +1,6 @@
 package com.easyhelp.application.model.dto.accountrequest;
 
+import com.easyhelp.application.model.dto.BaseDTO;
 import com.easyhelp.application.model.users.PartnerUser;
 import com.easyhelp.application.model.users.UserType;
 import lombok.Data;
@@ -9,7 +10,7 @@ import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
-public class AccountRequestDTO implements Serializable {
+public class AccountRequestDTO extends BaseDTO {
     private long id;
     private String firstName;
     private String lastName;
