@@ -2,6 +2,7 @@ package com.easyhelp.application.controller;
 
 import com.easyhelp.application.model.users.ApplicationUser;
 import com.easyhelp.application.service.RegisterService;
+import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,13 @@ public class AuthenticationController {
     @PostMapping("/sign-up")
     public ResponseEntity<Response> signUp(@RequestBody ApplicationUser applicationUser) {
         applicationUser.setPassword(bCryptPasswordEncoder.encode(applicationUser.getPassword()));
-        String error = registerService.registerUser(applicationUser);
-        if (error.equals("")) {
+
+        try {
+            registerService.registerUser(applicationUser);
             return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (UserAlreadyRegisteredException exception) {
+            return ResponseBuilder.encode(HttpStatus.BAD_REQUEST, exception.getMessage());
         }
-        return ResponseBuilder.encode(HttpStatus.BAD_REQUEST, error);
     }
 
 }

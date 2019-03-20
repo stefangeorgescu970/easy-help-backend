@@ -9,4 +9,5 @@ import javax.transaction.Transactional;
 @Transactional
 public interface DonationCenterPersonnelRepository extends CrudRepository<DonationCenterPersonnel, Long> {
 
+    DonationCenterPersonnel findByEmail(String username);
 }
