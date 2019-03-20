@@ -6,8 +6,6 @@ import com.easyhelp.application.model.users.UserType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @NoArgsConstructor
 public class AccountRequestDTO extends BaseDTO {

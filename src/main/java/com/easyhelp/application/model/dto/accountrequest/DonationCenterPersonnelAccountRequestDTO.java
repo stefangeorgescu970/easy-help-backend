@@ -2,7 +2,9 @@ package com.easyhelp.application.model.dto.accountrequest;
 
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.users.DonationCenterPersonnel;
+import lombok.Data;
 
+@Data
 public class DonationCenterPersonnelAccountRequestDTO extends AccountRequestDTO {
     private DonationCenter donationCenter;
 
