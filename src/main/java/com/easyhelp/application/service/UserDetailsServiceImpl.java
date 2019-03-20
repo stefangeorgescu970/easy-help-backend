@@ -7,6 +7,7 @@ import com.easyhelp.application.model.users.SystemAdmin;
 import com.easyhelp.application.repository.DoctorRepository;
 import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.repository.SystemAdminRepository;
+import com.easyhelp.application.service.applicationuser.ApplicationUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,47 +24,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
-    private DonorRepository donorRepository;
-    private DoctorRepository doctorRepository;
-    private SystemAdminRepository systemAdminRepository;
+    @Autowired
+    private ApplicationUserService applicationUserService;
 
-    public UserDetailsServiceImpl(DonorRepository donorRepository, DoctorRepository doctorRepository, SystemAdminRepository systemAdminRepository) {
-        this.donorRepository = donorRepository;
-        this.doctorRepository = doctorRepository;
-        this.systemAdminRepository = systemAdminRepository;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        ApplicationUser applicationUser = doctorRepository.findByEmail(email);
+        ApplicationUser applicationUser = applicationUserService.findByEmailInAllUsers(email);
 
-        if (applicationUser == null) {
-            applicationUser = donorRepository.findByEmail(email);
-            if (applicationUser == null){
-                applicationUser = systemAdminRepository.findByEmail(email);
-                if (applicationUser == null){
-                    throw new UsernameNotFoundException(email);
-                }
-            }
-        }
         return new User(applicationUser.getEmail(), applicationUser.getPassword(), emptyList());
     }
 
     public ApplicationUser getUserDetails(String username) throws UsernameNotFoundException {
-
-        Donor donor = donorRepository.findByEmail(username);
-        if (donor != null) {
-            return donor;
-        }
-
-        Doctor doctor = doctorRepository.findByEmail(username);
-        if (doctor != null)
-            return doctor;
-
-        SystemAdmin systemAdmin = systemAdminRepository.findByEmail(username);
-        if (systemAdmin != null)
-            return systemAdmin;
-
-        throw new UsernameNotFoundException(username);
+        return applicationUserService.findByEmailInAllUsers(username);
     }
 }

@@ -9,6 +9,7 @@ import com.easyhelp.application.utils.exceptions.BadArgumentsException;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,8 @@ public class RegisterService {
     private DonationCenterPersonnelRepository donationCenterPersonnelRepository;
 
     public void registerUser(ApplicationUser user) throws UserAlreadyRegisteredException {
+        //TODO - this is really ugly code
+
         switch (user.getUserType()) {
             case DONOR:
                 if (donorRepository.findByEmail(user.getEmail()) != null)
@@ -46,11 +49,13 @@ public class RegisterService {
                 if (doctorRepository.findByEmail(user.getEmail()) != null)
                     throw new UserAlreadyRegisteredException("User already registered!", null);
                 else {
-                    Doctor donor = new Doctor();
-                    donor.setEmail(user.getEmail());
-                    donor.setPassword(user.getPassword());
-                    donor.setUserType(user.getUserType());
-                    doctorRepository.save(donor);
+                    Doctor doctor = new Doctor();
+                    doctor.setEmail(user.getEmail());
+                    doctor.setPassword(user.getPassword());
+                    doctor.setUserType(user.getUserType());
+                    doctor.setIsReviewed(false);
+                    doctor.setIsValid(false);
+                    doctorRepository.save(doctor);
                 }
                 break;
             case SYSADMIN:
@@ -72,6 +77,8 @@ public class RegisterService {
                     donationCenterPersonnel.setEmail(user.getEmail());
                     donationCenterPersonnel.setPassword(user.getPassword());
                     donationCenterPersonnel.setUserType(user.getUserType());
+                    donationCenterPersonnel.setIsValid(false);
+                    donationCenterPersonnel.setIsReviewed(false);
                     donationCenterPersonnelRepository.save(donationCenterPersonnel);
                 }
         }

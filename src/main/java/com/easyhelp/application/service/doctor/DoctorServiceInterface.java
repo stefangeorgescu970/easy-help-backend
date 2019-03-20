@@ -1,4 +1,4 @@
-package com.easyhelp.application.service;
+package com.easyhelp.application.service.doctor;
 
 import com.easyhelp.application.model.users.Doctor;
 
