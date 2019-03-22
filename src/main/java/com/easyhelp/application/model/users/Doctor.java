@@ -8,14 +8,15 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(name = "doctors")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Doctor extends PartnerUser {
 
     @ManyToOne(fetch = FetchType.EAGER)

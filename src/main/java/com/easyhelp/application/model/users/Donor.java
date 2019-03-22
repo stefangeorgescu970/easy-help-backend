@@ -14,10 +14,10 @@ import java.util.Set;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(name = "donors")
-public class Donor extends User {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public class Donor extends ApplicationUser {
 
     @OneToOne(mappedBy = "donor")
     private DonationForm donationForm;
