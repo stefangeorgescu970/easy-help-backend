@@ -35,4 +35,12 @@ public class DonationCenter extends RealLocation {
 
     @OneToMany(mappedBy = "donationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<StoredBlood> storedBloodSet = new HashSet<>();
+
+    public boolean canBeRemoved() {
+        return donationCenterPersonnelSet.isEmpty()
+                && donations.isEmpty()
+                && donationBookings.isEmpty()
+                && acceptedDonationRequests.isEmpty()
+                && storedBloodSet.isEmpty();
+    }
 }

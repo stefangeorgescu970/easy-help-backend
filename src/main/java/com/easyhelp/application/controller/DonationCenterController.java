@@ -1,8 +1,10 @@
 package com.easyhelp.application.controller;
 
+import com.easyhelp.application.model.dto.account.IdentifierDTO;
 import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
+import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,4 +38,13 @@ public class DonationCenterController {
         return ResponseBuilder.encode(HttpStatus.OK, donationCenterService.getAll(), 1, 1, 1);
     }
 
+    @PostMapping("/remove")
+    private ResponseEntity<Response> removeDonationCenter(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            donationCenterService.removeDonationCenter(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException exp) {
+            return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
+        }
+    }
 }
