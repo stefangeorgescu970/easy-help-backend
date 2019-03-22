@@ -1,4 +1,4 @@
-package com.easyhelp.application.model.dto.accountrequest;
+package com.easyhelp.application.model.dto.account;
 
 import com.easyhelp.application.model.dto.BaseDTO;
 import com.easyhelp.application.model.users.PartnerUser;

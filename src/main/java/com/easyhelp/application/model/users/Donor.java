@@ -15,6 +15,7 @@ import java.util.Set;
 @Entity
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = {"donations", "donationBooking", "bloodType", "storedBloodSet"})
 @Table(name = "donors")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Donor extends ApplicationUser {

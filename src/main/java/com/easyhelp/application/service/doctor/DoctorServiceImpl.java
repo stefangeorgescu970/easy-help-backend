@@ -1,11 +1,9 @@
 package com.easyhelp.application.service.doctor;
 
-import com.easyhelp.application.model.dto.accountrequest.AccountRequestDTO;
-import com.easyhelp.application.model.dto.accountrequest.DoctorAccountRequestDTO;
+import com.easyhelp.application.model.dto.account.DoctorAccountRequestDTO;
 import com.easyhelp.application.model.users.Doctor;
 import com.easyhelp.application.repository.DoctorRepository;
-import com.easyhelp.application.utils.exceptions.AccountNotFoundException;
-import com.easyhelp.application.utils.exceptions.AccountNotReviewedException;
+import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +38,7 @@ public class DoctorServiceImpl implements DoctorServiceInterface {
     }
 
     @Override
-    public void reviewAccount(Long doctorId, boolean shouldValidate) throws AccountNotFoundException {
+    public void reviewAccount(Long doctorId, boolean shouldValidate) throws EntityNotFoundException {
         Optional<Doctor> doctor = doctorRepository.findById(doctorId);
 
         if (doctor.isPresent()) {
@@ -48,7 +46,7 @@ public class DoctorServiceImpl implements DoctorServiceInterface {
             doctorUnwrapped.reviewAccount(shouldValidate);
             doctorRepository.save(doctorUnwrapped);
         } else {
-            throw new AccountNotFoundException("user not found");
+            throw new EntityNotFoundException("user not found");
         }
     }
 }

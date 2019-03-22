@@ -1,9 +1,9 @@
 package com.easyhelp.application.service.donationcenterpersonnel;
 
-import com.easyhelp.application.model.dto.accountrequest.DonationCenterPersonnelAccountRequestDTO;
+import com.easyhelp.application.model.dto.account.DonationCenterPersonnelAccountRequestDTO;
 import com.easyhelp.application.model.users.DonationCenterPersonnel;
 import com.easyhelp.application.repository.DonationCenterPersonnelRepository;
-import com.easyhelp.application.utils.exceptions.AccountNotFoundException;
+import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +38,7 @@ public class DonationCenterPersonnelServiceImpl implements DonationCenterPersonn
     }
 
     @Override
-    public void reviewAccount(Long dcpId, boolean shouldValidate) throws AccountNotFoundException {
+    public void reviewAccount(Long dcpId, boolean shouldValidate) throws EntityNotFoundException {
         Optional<DonationCenterPersonnel> doctor = donationCenterPersonnelRepository.findById(dcpId);
 
         if (doctor.isPresent()) {
@@ -46,7 +46,7 @@ public class DonationCenterPersonnelServiceImpl implements DonationCenterPersonn
             dcpUnwrapped.reviewAccount(shouldValidate);
             donationCenterPersonnelRepository.save(dcpUnwrapped);
         } else {
-            throw new AccountNotFoundException("user not found");
+            throw new EntityNotFoundException("user not found");
         }
     }
 }

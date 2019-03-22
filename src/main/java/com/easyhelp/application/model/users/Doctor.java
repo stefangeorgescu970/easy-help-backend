@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true, exclude = {"hospital", "donationRequests", "patients"})
 @Entity
 @Data
 @NoArgsConstructor

@@ -1,10 +1,10 @@
 package com.easyhelp.application.controller;
 
 
-import com.easyhelp.application.model.dto.accountrequest.IdentifierDTO;
+import com.easyhelp.application.model.dto.account.IdentifierDTO;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
 import com.easyhelp.application.service.donationcenterpersonnel.DonationCenterPersonnelServiceInterface;
-import com.easyhelp.application.utils.exceptions.AccountNotFoundException;
+import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class AdminController {
         try {
             this.doctorService.reviewAccount(identifierDTO.getId(), true);
             return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (AccountNotFoundException exp) {
+        } catch (EntityNotFoundException exp) {
             return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
         }
     }
@@ -50,7 +50,7 @@ public class AdminController {
         try {
             this.doctorService.reviewAccount(identifierDTO.getId(), false);
             return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (AccountNotFoundException exp) {
+        } catch (EntityNotFoundException exp) {
             return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
         }
     }
@@ -60,7 +60,7 @@ public class AdminController {
         try {
             this.donationCenterPersonnelService.reviewAccount(identifierDTO.getId(), true);
             return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (AccountNotFoundException exp) {
+        } catch (EntityNotFoundException exp) {
             return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
         }
     }
@@ -70,7 +70,7 @@ public class AdminController {
         try {
             this.donationCenterPersonnelService.reviewAccount(identifierDTO.getId(), false);
             return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (AccountNotFoundException exp) {
+        } catch (EntityNotFoundException exp) {
             return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
         }
     }

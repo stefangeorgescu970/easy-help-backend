@@ -1,8 +1,10 @@
 package com.easyhelp.application.controller;
 
+import com.easyhelp.application.model.dto.account.IdentifierDTO;
 import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.service.hospital.HospitalServiceInterface;
+import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,4 +39,13 @@ public class HospitalController {
         return ResponseBuilder.encode(HttpStatus.OK, hospitalService.getAll(), 1, 1, 1);
     }
 
+    @PostMapping("/remove")
+    private ResponseEntity<Response> removeHospital(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            hospitalService.removeHospital(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException exp) {
+            return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
+        }
+    }
 }

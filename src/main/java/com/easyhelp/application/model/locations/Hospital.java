@@ -18,4 +18,8 @@ public class Hospital extends RealLocation {
 
     @OneToMany(mappedBy = "hospital", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<Doctor> doctors = new HashSet<>();
+
+    public boolean canBeRemoved() {
+        return this.doctors.isEmpty();
+    }
 }
