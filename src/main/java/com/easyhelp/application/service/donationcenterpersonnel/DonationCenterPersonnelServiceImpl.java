@@ -3,10 +3,12 @@ package com.easyhelp.application.service.donationcenterpersonnel;
 import com.easyhelp.application.model.dto.accountrequest.DonationCenterPersonnelAccountRequestDTO;
 import com.easyhelp.application.model.users.DonationCenterPersonnel;
 import com.easyhelp.application.repository.DonationCenterPersonnelRepository;
+import com.easyhelp.application.utils.exceptions.AccountNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,5 +35,18 @@ public class DonationCenterPersonnelServiceImpl implements DonationCenterPersonn
     @Override
     public List<DonationCenterPersonnel> getAllBannedAccounts() {
         return donationCenterPersonnelRepository.findAll().stream().filter(dcp -> dcp.getIsReviewed() && !dcp.getIsValid()).collect(Collectors.toList());
+    }
+
+    @Override
+    public void reviewAccount(Long dcpId, boolean shouldValidate) throws AccountNotFoundException {
+        Optional<DonationCenterPersonnel> doctor = donationCenterPersonnelRepository.findById(dcpId);
+
+        if (doctor.isPresent()) {
+            DonationCenterPersonnel dcpUnwrapped = doctor.get();
+            dcpUnwrapped.reviewAccount(shouldValidate);
+            donationCenterPersonnelRepository.save(dcpUnwrapped);
+        } else {
+            throw new AccountNotFoundException("user not found");
+        }
     }
 }

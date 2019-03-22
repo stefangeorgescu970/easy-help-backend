@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
     @Autowired
-    DoctorServiceInterface doctorService;
+    private DoctorServiceInterface doctorService;
 
     @Autowired
-    DonationCenterPersonnelServiceInterface donationCenterPersonnelService;
+    private DonationCenterPersonnelServiceInterface donationCenterPersonnelService;
 
     @RequestMapping("/doctorAccountRequests")
     private ResponseEntity<Response> getDoctorAccountRequests() {
@@ -49,6 +49,26 @@ public class AdminController {
     private ResponseEntity<Response> rejectDoctorAccount(@RequestBody IdentifierDTO identifierDTO) {
         try {
             this.doctorService.reviewAccount(identifierDTO.getId(), false);
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (AccountNotFoundException exp) {
+            return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
+        }
+    }
+
+    @PostMapping("/approveDcpAccount")
+    private ResponseEntity<Response> approveDonationCenterPersonnelAccount(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            this.donationCenterPersonnelService.reviewAccount(identifierDTO.getId(), true);
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (AccountNotFoundException exp) {
+            return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
+        }
+    }
+
+    @PostMapping("/rejectDcpAccount")
+    private ResponseEntity<Response> rejectDonationCenterPersonnelAccount(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            this.donationCenterPersonnelService.reviewAccount(identifierDTO.getId(), false);
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (AccountNotFoundException exp) {
             return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
