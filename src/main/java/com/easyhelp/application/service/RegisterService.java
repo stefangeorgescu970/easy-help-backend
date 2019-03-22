@@ -5,14 +5,9 @@ import com.easyhelp.application.repository.DoctorRepository;
 import com.easyhelp.application.repository.DonationCenterPersonnelRepository;
 import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.repository.SystemAdminRepository;
-import com.easyhelp.application.utils.exceptions.BadArgumentsException;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 
 
 @Service

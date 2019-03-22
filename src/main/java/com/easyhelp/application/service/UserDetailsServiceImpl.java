@@ -1,12 +1,6 @@
 package com.easyhelp.application.service;
 
 import com.easyhelp.application.model.users.ApplicationUser;
-import com.easyhelp.application.model.users.Doctor;
-import com.easyhelp.application.model.users.Donor;
-import com.easyhelp.application.model.users.SystemAdmin;
-import com.easyhelp.application.repository.DoctorRepository;
-import com.easyhelp.application.repository.DonorRepository;
-import com.easyhelp.application.repository.SystemAdminRepository;
 import com.easyhelp.application.service.applicationuser.ApplicationUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

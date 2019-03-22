@@ -12,14 +12,15 @@ public class Response implements Serializable {
 
     /**
      * Variable of type {@link Boolean} representing the status of the
-     *      operation for which the response is given.
+     * operation for which the response is given.
      */
     protected boolean status;
 
     /**
      * Method for a response builder.
+     *
      * @return An object of type {@link Response.Builder}
-     *      which in turn is used to build a {@link Response} object.
+     * which in turn is used to build a {@link Response} object.
      */
     static Builder builder() {
         return new Builder();

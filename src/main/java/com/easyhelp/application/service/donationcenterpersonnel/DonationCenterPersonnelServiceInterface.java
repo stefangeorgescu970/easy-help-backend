@@ -1,18 +1,20 @@
 package com.easyhelp.application.service.donationcenterpersonnel;
 
-import com.easyhelp.application.model.dto.account.DonationCenterPersonnelAccountRequestDTO;
-import com.easyhelp.application.model.users.DonationCenterPersonnel;
+import com.easyhelp.application.model.dto.account.DonationCenterPersonnelAccountDTO;
+import com.easyhelp.application.utils.exceptions.AccountNotReviewedException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 
 import java.util.List;
 
 public interface DonationCenterPersonnelServiceInterface {
 
-    List<DonationCenterPersonnelAccountRequestDTO> getAllPendingAccounts();
+    List<DonationCenterPersonnelAccountDTO> getAllPendingAccounts();
 
-    List<DonationCenterPersonnel> getAllActiveAccounts();
+    List<DonationCenterPersonnelAccountDTO> getAllActiveAccounts();
 
-    List<DonationCenterPersonnel> getAllBannedAccounts();
+    List<DonationCenterPersonnelAccountDTO> getAllBannedAccounts();
 
     void reviewAccount(Long dcpId, boolean shouldValidate) throws EntityNotFoundException;
+
+    void deactivateAccount(Long dcpId) throws AccountNotReviewedException, EntityNotFoundException;
 }

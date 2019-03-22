@@ -1,7 +1,7 @@
 package com.easyhelp.application.controller;
 
-import com.easyhelp.application.model.dto.account.IdentifierDTO;
 import com.easyhelp.application.model.dto.location.LocationDTO;
+import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;

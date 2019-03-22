@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class AccountRequestDTO extends BaseDTO {
+public class AccountDTO extends BaseDTO {
     private long id;
     private String firstName;
     private String lastName;
@@ -17,7 +17,7 @@ public class AccountRequestDTO extends BaseDTO {
     private String country;
     private UserType userType;
 
-    public AccountRequestDTO(PartnerUser user) {
+    public AccountDTO(PartnerUser user) {
         id = user.getId();
         firstName = user.getFirstName();
         lastName = user.getLastName();
