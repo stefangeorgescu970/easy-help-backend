@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HospitalController {
 
     @Autowired
-    HospitalServiceInterface hospitalService;
+    private HospitalServiceInterface hospitalService;
 
 
     @PostMapping("/add")

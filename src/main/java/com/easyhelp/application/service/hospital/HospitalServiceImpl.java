@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class HospitalServiceImpl implements HospitalServiceInterface {
 
     @Autowired
-    HospitalRepository hospitalRepository;
+    private HospitalRepository hospitalRepository;
 
     @Override
     public List<LocationDTO> getAll() {

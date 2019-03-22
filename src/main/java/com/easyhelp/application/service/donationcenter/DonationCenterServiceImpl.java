@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class DonationCenterServiceImpl implements DonationCenterServiceInterface {
 
     @Autowired
-    DonationCenterRepository donationCenterRepository;
+    private DonationCenterRepository donationCenterRepository;
 
     @Override
     public List<LocationDTO> getAll() {
