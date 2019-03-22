@@ -9,9 +9,9 @@ import javax.persistence.*;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(name = "donation_center_personnels")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class DonationCenterPersonnel extends PartnerUser {
 
     @ManyToOne(optional = true, fetch = FetchType.EAGER)
