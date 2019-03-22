@@ -36,7 +36,7 @@ public class RegisterService {
         switch (user.getUserType()) {
             case DONOR:
                 if (donorRepository.findByEmail(user.getEmail()) != null)
-                    throw new UserAlreadyRegisteredException("User already registered!", null);
+                    throw new UserAlreadyRegisteredException("User already registered!");
                 else {
                     Donor donor = new Donor();
                     donor.setEmail(user.getEmail());
@@ -47,7 +47,7 @@ public class RegisterService {
                 break;
             case DOCTOR:
                 if (doctorRepository.findByEmail(user.getEmail()) != null)
-                    throw new UserAlreadyRegisteredException("User already registered!", null);
+                    throw new UserAlreadyRegisteredException("User already registered!");
                 else {
                     Doctor doctor = new Doctor();
                     doctor.setEmail(user.getEmail());
@@ -60,7 +60,7 @@ public class RegisterService {
                 break;
             case SYSADMIN:
                 if (systemAdminRepository.findByEmail(user.getEmail()) != null)
-                    throw new UserAlreadyRegisteredException("User already registered!", null);
+                    throw new UserAlreadyRegisteredException("User already registered!");
                 else {
                     SystemAdmin systemAdmin = new SystemAdmin();
                     systemAdmin.setEmail(user.getEmail());
@@ -71,7 +71,7 @@ public class RegisterService {
                 break;
             case DONATION_CENTER_PERSONNEL:
                 if (donationCenterPersonnelRepository.findByEmail(user.getEmail()) != null)
-                    throw new UserAlreadyRegisteredException("User already registered!", null);
+                    throw new UserAlreadyRegisteredException("User already registered!");
                 else {
                     DonationCenterPersonnel donationCenterPersonnel = new DonationCenterPersonnel();
                     donationCenterPersonnel.setEmail(user.getEmail());

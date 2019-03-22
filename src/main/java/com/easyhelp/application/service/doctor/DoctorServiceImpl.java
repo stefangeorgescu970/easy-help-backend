@@ -4,10 +4,13 @@ import com.easyhelp.application.model.dto.accountrequest.AccountRequestDTO;
 import com.easyhelp.application.model.dto.accountrequest.DoctorAccountRequestDTO;
 import com.easyhelp.application.model.users.Doctor;
 import com.easyhelp.application.repository.DoctorRepository;
+import com.easyhelp.application.utils.exceptions.AccountNotFoundException;
+import com.easyhelp.application.utils.exceptions.AccountNotReviewedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,5 +37,18 @@ public class DoctorServiceImpl implements DoctorServiceInterface {
     @Override
     public List<Doctor> getAllBannedAccounts() {
         return doctorRepository.findAll().stream().filter(doctor -> doctor.getIsReviewed() && !doctor.getIsValid()).collect(Collectors.toList());
+    }
+
+    @Override
+    public void reviewAccount(Long doctorId, boolean shouldValidate) throws AccountNotFoundException {
+        Optional<Doctor> doctor = doctorRepository.findById(doctorId);
+
+        if (doctor.isPresent()) {
+            Doctor doctorUnwrapped = doctor.get();
+            doctorUnwrapped.reviewAccount(shouldValidate);
+            doctorRepository.save(doctorUnwrapped);
+        } else {
+            throw new AccountNotFoundException("user not found");
+        }
     }
 }
