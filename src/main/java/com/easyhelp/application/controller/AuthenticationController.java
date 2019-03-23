@@ -44,7 +44,7 @@ public class AuthenticationController {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    @PostMapping("/sign-up")
+    @PostMapping("/register")
     public ResponseEntity<Response> signUp(@RequestBody ApplicationUser applicationUser) {
         applicationUser.setPassword(bCryptPasswordEncoder.encode(applicationUser.getPassword()));
 
@@ -52,7 +52,7 @@ public class AuthenticationController {
             registerService.registerUser(applicationUser);
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (UserAlreadyRegisteredException exception) {
-            return ResponseBuilder.encode(HttpStatus.BAD_REQUEST, exception.getMessage());
+            return ResponseBuilder.encode(HttpStatus.OK, exception.getMessage());
         }
     }
 
@@ -63,12 +63,12 @@ public class AuthenticationController {
 
             ApplicationUser user = this.applicationUserService.findByEmailInAllUsers(data.getEmail());
             AccountDTO accountDTO = new AccountDTO(user);
-            
+
             String token = jwtTokenProvider.createToken(data.getEmail(), user.getRoles());
             return ResponseBuilder.encode(HttpStatus.OK, new LoginResponse(accountDTO, token));
 
         } catch (AuthenticationException e) {
-            return ResponseBuilder.encode(HttpStatus.BAD_REQUEST, e.getMessage());
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }
 
