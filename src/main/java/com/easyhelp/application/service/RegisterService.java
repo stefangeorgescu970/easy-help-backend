@@ -1,6 +1,9 @@
 package com.easyhelp.application.service;
 
 import com.easyhelp.application.controller.AuthenticationController;
+import com.easyhelp.application.model.dto.account.RegisterDTO;
+import com.easyhelp.application.model.locations.DonationCenter;
+import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.model.users.*;
 import com.easyhelp.application.repository.DoctorRepository;
 import com.easyhelp.application.repository.DonationCenterPersonnelRepository;
@@ -8,6 +11,9 @@ import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.repository.SystemAdminRepository;
 import com.easyhelp.application.security.JwtTokenProvider;
 import com.easyhelp.application.service.applicationuser.ApplicationUserService;
+import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
+import com.easyhelp.application.service.hospital.HospitalServiceInterface;
+import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,58 +43,58 @@ public class RegisterService {
     @Autowired
     private ApplicationUserService applicationUserService;
 
-    public void registerUser(ApplicationUser user) throws UserAlreadyRegisteredException {
-        //TODO - this is really ugly code
+    @Autowired
+    private HospitalServiceInterface hospitalService;
 
+    @Autowired
+    private DonationCenterServiceInterface donationCenterService;
+
+    public void registerUser(RegisterDTO user) throws EasyHelpException {
+        //TODO - this is really ugly code
 
         Set<String> role = new HashSet<>();
         role.add(user.getUserType().getRole());
 
         try {
             applicationUserService.findByEmailInAllUsers(user.getEmail());
+            throw new UserAlreadyRegisteredException(user.getEmail());
         } catch (UsernameNotFoundException exception) {
-            throw new UserAlreadyRegisteredException(exception.getMessage());
-        }
+            switch (user.getUserType()) {
+                case DONOR: {
+                    Donor donor = new Donor(user);
+                    donor.setRoles(role);
+                    donorRepository.save(donor);
+                }
+                break;
+                case DOCTOR: {
+                    Hospital hospital = hospitalService.findById(user.getLocationId());
+                    Doctor doctor = new Doctor(user);
 
-        switch (user.getUserType()) {
-            case DONOR: {
-                Donor donor = new Donor();
-                donor.setRoles(role);
-                donor.setEmail(user.getEmail());
-                donor.setPassword(user.getPassword());
-                donor.setUserType(user.getUserType());
-                donorRepository.save(donor);
-            }
-            break;
-            case DOCTOR: {
-                Doctor doctor = new Doctor();
-                doctor.setRoles(role);
-                doctor.setEmail(user.getEmail());
-                doctor.setPassword(user.getPassword());
-                doctor.setUserType(user.getUserType());
-                doctor.setIsReviewed(false);
-                doctor.setIsValid(false);
-                doctorRepository.save(doctor);
-            }
-            break;
-            case SYSADMIN: {
-                SystemAdmin systemAdmin = new SystemAdmin();
-                systemAdmin.setRoles(role);
-                systemAdmin.setEmail(user.getEmail());
-                systemAdmin.setPassword(user.getPassword());
-                systemAdmin.setUserType(user.getUserType());
-                systemAdminRepository.save(systemAdmin);
-            }
-            break;
-            case DONATION_CENTER_PERSONNEL: {
-                DonationCenterPersonnel donationCenterPersonnel = new DonationCenterPersonnel();
-                donationCenterPersonnel.setRoles(role);
-                donationCenterPersonnel.setEmail(user.getEmail());
-                donationCenterPersonnel.setPassword(user.getPassword());
-                donationCenterPersonnel.setUserType(user.getUserType());
-                donationCenterPersonnel.setIsValid(false);
-                donationCenterPersonnel.setIsReviewed(false);
-                donationCenterPersonnelRepository.save(donationCenterPersonnel);
+                    doctor.setHospital(hospital);
+                    hospital.getDoctors().add(doctor);
+
+                    doctor.setRoles(role);
+                    doctorRepository.save(doctor);
+                    hospitalService.save(hospital);
+                }
+                break;
+                case SYSADMIN: {
+                    SystemAdmin systemAdmin = new SystemAdmin(user);
+                    systemAdmin.setRoles(role);
+                    systemAdminRepository.save(systemAdmin);
+                }
+                break;
+                case DONATION_CENTER_PERSONNEL: {
+                    DonationCenter dc = donationCenterService.findById(user.getLocationId());
+                    DonationCenterPersonnel donationCenterPersonnel = new DonationCenterPersonnel(user);
+
+                    donationCenterPersonnel.setDonationCenter(dc);
+                    dc.getDonationCenterPersonnelSet().add(donationCenterPersonnel);
+
+                    donationCenterPersonnel.setRoles(role);
+                    donationCenterPersonnelRepository.save(donationCenterPersonnel);
+                    donationCenterService.save(dc);
+                }
             }
         }
     }

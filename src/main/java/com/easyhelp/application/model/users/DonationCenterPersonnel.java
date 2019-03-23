@@ -1,5 +1,6 @@
 package com.easyhelp.application.model.users;
 
+import com.easyhelp.application.model.dto.account.RegisterDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -22,4 +23,17 @@ public class DonationCenterPersonnel extends PartnerUser {
     @ToString.Exclude
     @JsonIgnore
     private DonationCenter donationCenter;
+
+    public DonationCenterPersonnel(RegisterDTO applicationUser) {
+        setCity(applicationUser.getCity());
+        setDateOfBirth(applicationUser.getDob());
+        setEmail(applicationUser.getEmail());
+        setFirstName(applicationUser.getFirstName());
+        setLastName(applicationUser.getLastName());
+        setPassword(applicationUser.getPassword());
+        setSsn(applicationUser.getSsn());
+        setUserType(applicationUser.getUserType());
+        setIsReviewed(false);
+        setIsValid(false);
+    }
 }

@@ -44,4 +44,15 @@ public class DonationCenterServiceImpl implements DonationCenterServiceInterface
             throw new EntityNotFoundException("Donation center with that id does not exist");
         }
     }
+
+    @Override
+    public DonationCenter findById(Long donationCenterId) throws EntityNotFoundException {
+        Optional<DonationCenter> donationCenter = donationCenterRepository.findById(donationCenterId);
+
+        if (donationCenter.isPresent()) {
+            return donationCenter.get();
+        } else {
+            throw new EntityNotFoundException("Donation center with that id does not exist");
+        }
+    }
 }

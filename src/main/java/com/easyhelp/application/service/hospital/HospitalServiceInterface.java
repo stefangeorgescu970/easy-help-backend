@@ -14,4 +14,6 @@ public interface HospitalServiceInterface {
     void save(Hospital hospital);
 
     void removeHospital(Long hospitalId) throws EntityCannotBeRemovedException, EntityNotFoundException;
+
+    Hospital findById(Long hospitalId) throws EntityNotFoundException;
 }

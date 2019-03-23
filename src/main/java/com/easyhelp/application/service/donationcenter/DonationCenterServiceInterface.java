@@ -10,7 +10,9 @@ import java.util.List;
 public interface DonationCenterServiceInterface {
     List<LocationDTO> getAll();
 
-    void save(DonationCenter hospital);
+    void save(DonationCenter donationCenter);
 
     void removeDonationCenter(Long donationCenterId) throws EntityCannotBeRemovedException, EntityNotFoundException;
+
+    DonationCenter findById(Long donationCenterId) throws EntityNotFoundException;
 }

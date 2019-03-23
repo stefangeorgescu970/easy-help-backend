@@ -1,11 +1,13 @@
 package com.easyhelp.application.controller;
 
 import com.easyhelp.application.model.dto.account.AccountDTO;
+import com.easyhelp.application.model.dto.account.RegisterDTO;
 import com.easyhelp.application.model.users.ApplicationUser;
 import com.easyhelp.application.model.users.LoginResponse;
 import com.easyhelp.application.security.JwtTokenProvider;
 import com.easyhelp.application.service.RegisterService;
 import com.easyhelp.application.service.applicationuser.ApplicationUserService;
+import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
@@ -44,13 +46,13 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Response> signUp(@RequestBody ApplicationUser applicationUser) {
+    public ResponseEntity<Response> signUp(@RequestBody RegisterDTO applicationUser) {
         applicationUser.setPassword(bCryptPasswordEncoder.encode(applicationUser.getPassword()));
 
         try {
             registerService.registerUser(applicationUser);
             return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (UserAlreadyRegisteredException exception) {
+        } catch (EasyHelpException exception) {
             return ResponseBuilder.encode(HttpStatus.OK, exception.getMessage());
         }
     }

@@ -44,4 +44,15 @@ public class HospitalServiceImpl implements HospitalServiceInterface {
             throw new EntityNotFoundException("Hospital with that id does not exist");
         }
     }
+
+    @Override
+    public Hospital findById(Long hospitalId) throws EntityNotFoundException {
+        Optional<Hospital> hospital = hospitalRepository.findById(hospitalId);
+
+        if (hospital.isPresent()) {
+            return hospital.get();
+        } else {
+            throw new EntityNotFoundException("Hospital with that id does not exist");
+        }
+    }
 }

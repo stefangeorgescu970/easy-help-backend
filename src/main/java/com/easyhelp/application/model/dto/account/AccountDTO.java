@@ -1,11 +1,16 @@
 package com.easyhelp.application.model.dto.account;
 
 import com.easyhelp.application.model.dto.BaseDTO;
+import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.users.ApplicationUser;
 import com.easyhelp.application.model.users.PartnerUser;
 import com.easyhelp.application.model.users.UserType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +21,10 @@ public class AccountDTO extends BaseDTO {
     private String email;
     private String city;
     private UserType userType;
+    private String ssn;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date dob;
 
     public AccountDTO(ApplicationUser user) {
         id = user.getId();
@@ -24,5 +33,7 @@ public class AccountDTO extends BaseDTO {
         email = user.getEmail();
         city = user.getCity();
         userType = user.getUserType();
+        ssn = user.getSsn();
+        dob = user.getDateOfBirth();
     }
 }

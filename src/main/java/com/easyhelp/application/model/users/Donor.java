@@ -5,6 +5,7 @@ import com.easyhelp.application.model.blood.StoredBlood;
 import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.DonationForm;
+import com.easyhelp.application.model.dto.account.RegisterDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -48,4 +49,15 @@ public class Donor extends ApplicationUser {
     @ToString.Exclude
     @JsonIgnore
     private Set<StoredBlood> storedBloodSet;
+
+    public Donor(RegisterDTO applicationUser) {
+        setCity(applicationUser.getCity());
+        setDateOfBirth(applicationUser.getDob());
+        setEmail(applicationUser.getEmail());
+        setFirstName(applicationUser.getFirstName());
+        setLastName(applicationUser.getLastName());
+        setPassword(applicationUser.getPassword());
+        setSsn(applicationUser.getSsn());
+        setUserType(applicationUser.getUserType());
+    }
 }

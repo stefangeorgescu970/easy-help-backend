@@ -1,5 +1,6 @@
 package com.easyhelp.application.model.users;
 
+import com.easyhelp.application.model.dto.account.RegisterDTO;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.requests.Patient;
@@ -36,4 +37,17 @@ public class Doctor extends PartnerUser {
     @ToString.Exclude
     @JsonIgnore
     private Set<Patient> patients = new HashSet<>();
+
+    public Doctor(RegisterDTO applicationUser) {
+        setCity(applicationUser.getCity());
+        setDateOfBirth(applicationUser.getDob());
+        setEmail(applicationUser.getEmail());
+        setFirstName(applicationUser.getFirstName());
+        setLastName(applicationUser.getLastName());
+        setPassword(applicationUser.getPassword());
+        setSsn(applicationUser.getSsn());
+        setUserType(applicationUser.getUserType());
+        setIsReviewed(false);
+        setIsValid(false);
+    }
 }
