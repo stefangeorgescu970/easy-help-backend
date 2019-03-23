@@ -6,6 +6,7 @@ import com.easyhelp.application.repository.DoctorRepository;
 import com.easyhelp.application.repository.DonationCenterPersonnelRepository;
 import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.repository.SystemAdminRepository;
+import com.easyhelp.application.security.JwtTokenProvider;
 import com.easyhelp.application.service.applicationuser.ApplicationUserService;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import org.slf4j.Logger;
@@ -39,11 +40,15 @@ public class RegisterService {
     public void registerUser(ApplicationUser user) throws UserAlreadyRegisteredException {
         //TODO - this is really ugly code
 
+
         Set<String> role = new HashSet<>();
         role.add(user.getUserType().getRole());
 
-        if (applicationUserService.findByEmailInAllUsers(user.getEmail()) != null)
-            throw new UserAlreadyRegisteredException("User already registered!");
+        try {
+            applicationUserService.findByEmailInAllUsers(user.getEmail());
+        } catch (UsernameNotFoundException exception) {
+            throw new UserAlreadyRegisteredException(exception.getMessage());
+        }
 
         switch (user.getUserType()) {
             case DONOR: {
