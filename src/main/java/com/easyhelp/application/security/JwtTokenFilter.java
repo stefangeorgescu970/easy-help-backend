@@ -17,8 +17,6 @@ import java.io.IOException;
 
 public class JwtTokenFilter extends GenericFilterBean {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtTokenFilter.class);
-
     private JwtTokenProvider jwtTokenProvider;
 
     public JwtTokenFilter(JwtTokenProvider jwtTokenProvider) {
@@ -31,8 +29,6 @@ public class JwtTokenFilter extends GenericFilterBean {
 
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) req);
 
-        logger.info(token);
-
         if (token != null)
             try {
                 if (jwtTokenProvider.validateToken(token)) {
@@ -43,7 +39,6 @@ public class JwtTokenFilter extends GenericFilterBean {
 
                 throw new ServletException("Expired token");
             }
-
         filterChain.doFilter(req, res);
     }
 }

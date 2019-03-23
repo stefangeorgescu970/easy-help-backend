@@ -1,5 +1,6 @@
 package com.easyhelp.application.controller;
 
+import com.easyhelp.application.model.dto.account.AccountDTO;
 import com.easyhelp.application.model.users.ApplicationUser;
 import com.easyhelp.application.model.users.LoginResponse;
 import com.easyhelp.application.security.JwtTokenProvider;
@@ -20,9 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import static org.springframework.http.ResponseEntity.ok;
-
 
 @RestController
 @RequestMapping("/users")
@@ -61,12 +59,13 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity signin(@RequestBody ApplicationUser data) {
         try {
-            String username = data.getEmail();
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, data.getPassword()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword()));
 
             ApplicationUser user = this.applicationUserService.findByEmailInAllUsers(data.getEmail());
-            String token = jwtTokenProvider.createToken(username, user.getRoles());
-            return ResponseBuilder.encode(HttpStatus.OK, new LoginResponse(user, token));
+            AccountDTO accountDTO = new AccountDTO(user);
+            
+            String token = jwtTokenProvider.createToken(data.getEmail(), user.getRoles());
+            return ResponseBuilder.encode(HttpStatus.OK, new LoginResponse(accountDTO, token));
 
         } catch (AuthenticationException e) {
             return ResponseBuilder.encode(HttpStatus.BAD_REQUEST, e.getMessage());

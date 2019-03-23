@@ -1,5 +1,6 @@
 package com.easyhelp.application.model.users;
 
+import com.easyhelp.application.model.dto.account.AccountDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class LoginResponse implements Serializable {
 
-    private ApplicationUser user;
+    private AccountDTO user;
     private String token;
 }

@@ -1,6 +1,7 @@
 package com.easyhelp.application.model.dto.account;
 
 import com.easyhelp.application.model.dto.BaseDTO;
+import com.easyhelp.application.model.users.ApplicationUser;
 import com.easyhelp.application.model.users.PartnerUser;
 import com.easyhelp.application.model.users.UserType;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class AccountDTO extends BaseDTO {
     private String country;
     private UserType userType;
 
-    public AccountDTO(PartnerUser user) {
+    public AccountDTO(ApplicationUser user) {
         id = user.getId();
         firstName = user.getFirstName();
         lastName = user.getLastName();
