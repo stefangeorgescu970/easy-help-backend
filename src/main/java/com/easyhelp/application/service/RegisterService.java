@@ -6,6 +6,7 @@ import com.easyhelp.application.repository.DoctorRepository;
 import com.easyhelp.application.repository.DonationCenterPersonnelRepository;
 import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.repository.SystemAdminRepository;
+import com.easyhelp.application.service.applicationuser.ApplicationUserService;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,19 +33,17 @@ public class RegisterService {
     @Autowired
     private DonationCenterPersonnelRepository donationCenterPersonnelRepository;
 
+    @Autowired
+    private ApplicationUserService applicationUserService;
+
     public void registerUser(ApplicationUser user) throws UserAlreadyRegisteredException {
         //TODO - this is really ugly code
 
         Set<String> role = new HashSet<>();
         role.add(user.getUserType().getRole());
 
-        String email = user.getEmail();
-        if (donorRepository.findByEmail(email) != null ||
-                doctorRepository.findByEmail(email) != null ||
-                donationCenterPersonnelRepository.findByEmail(email) != null ||
-                systemAdminRepository.findByEmail(email) != null)
+        if (applicationUserService.findByEmailInAllUsers(user.getEmail()) != null)
             throw new UserAlreadyRegisteredException("User already registered!");
-
 
         switch (user.getUserType()) {
             case DONOR: {
