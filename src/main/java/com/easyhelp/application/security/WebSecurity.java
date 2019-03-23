@@ -31,11 +31,13 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/users/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/hospital/**").hasAnyRole("ADMIN")
-                .anyRequest().authenticated()
-                .and()
-                .apply(new JwtConfigurer(jwtTokenProvider));
+                .anyRequest().permitAll()
+//                .antMatchers(HttpMethod.POST, "/users/**").permitAll()
+//                .antMatchers("/admin").hasAnyRole("SYS_")
+//                .anyRequest().authenticated()
+//                .and()
+//                .apply(new JwtConfigurer(jwtTokenProvider))
+        ;
     }
 
 }
