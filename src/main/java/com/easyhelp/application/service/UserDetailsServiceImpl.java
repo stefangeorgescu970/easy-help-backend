@@ -9,14 +9,14 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import static java.util.Collections.emptyList;
 
-@Service
+@Component
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
     @Autowired
     private ApplicationUserService applicationUserService;
@@ -26,7 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         ApplicationUser applicationUser = applicationUserService.findByEmailInAllUsers(email);
 
-        return new User(applicationUser.getEmail(), applicationUser.getPassword(), emptyList());
+        return new User(applicationUser.getEmail(), applicationUser.getPassword(), applicationUser.getAuthorities());
     }
 
     public ApplicationUser getUserDetails(String username) throws UsernameNotFoundException {
