@@ -69,7 +69,7 @@ public class AuthenticationController {
             return ResponseBuilder.encode(HttpStatus.OK, new LoginResponse(user, token));
 
         } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username/password supplied");
+            return ResponseBuilder.encode(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
