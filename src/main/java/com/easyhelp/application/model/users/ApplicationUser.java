@@ -27,7 +27,6 @@ public class ApplicationUser implements UserDetails {
     private String lastName;
     private Date dateOfBirth;
     private String city;
-    private String country;
     private String ssn;
     private UserType userType;
 

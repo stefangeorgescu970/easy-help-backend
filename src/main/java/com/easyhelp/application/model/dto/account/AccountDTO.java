@@ -15,7 +15,6 @@ public class AccountDTO extends BaseDTO {
     private String lastName;
     private String email;
     private String city;
-    private String country;
     private UserType userType;
 
     public AccountDTO(ApplicationUser user) {
@@ -24,7 +23,6 @@ public class AccountDTO extends BaseDTO {
         lastName = user.getLastName();
         email = user.getEmail();
         city = user.getCity();
-        country = user.getCountry();
         userType = user.getUserType();
     }
 }

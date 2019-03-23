@@ -23,6 +23,10 @@ public class Hospital extends RealLocation {
     @JsonIgnore
     private Set<Doctor> doctors = new HashSet<>();
 
+    public Hospital(String name, double longitude, double latitude, String address, County county) {
+        super(name, longitude, latitude, address, county);
+    }
+
     public boolean canBeRemoved() {
         return this.doctors.isEmpty();
     }

@@ -48,6 +48,10 @@ public class DonationCenter extends RealLocation {
     @JsonIgnore
     private Set<StoredBlood> storedBloodSet = new HashSet<>();
 
+    public DonationCenter(String name, double longitude, double latitude, String address, County county) {
+        super(name, longitude, latitude, address, county);
+    }
+
     public boolean canBeRemoved() {
         return donationCenterPersonnelSet.isEmpty()
                 && donations.isEmpty()
