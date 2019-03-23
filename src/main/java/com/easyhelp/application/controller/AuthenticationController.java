@@ -1,8 +1,10 @@
 package com.easyhelp.application.controller;
 
 import com.easyhelp.application.model.users.ApplicationUser;
+import com.easyhelp.application.model.users.LoginResponse;
 import com.easyhelp.application.security.JwtTokenProvider;
 import com.easyhelp.application.service.RegisterService;
+import com.easyhelp.application.service.applicationuser.ApplicationUserService;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
@@ -19,10 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import static org.springframework.http.ResponseEntity.ok;
 
 
@@ -34,6 +32,9 @@ public class AuthenticationController {
 
     @Autowired
     private RegisterService registerService;
+
+    @Autowired
+    private ApplicationUserService applicationUserService;
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -59,22 +60,18 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity signin(@RequestBody ApplicationUser data) {
-
         try {
             String username = data.getEmail();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, data.getPassword()));
-            String token = jwtTokenProvider.createToken(username, this.registerService.findByEmail(data).getRoles());
 
-            Map<Object, Object> model = new HashMap<>();
-            model.put("email", username);
-            model.put("token", token);
-            model.put("roles", this.registerService.findByEmail(data).getRoles());
-            return ok(model);
+            ApplicationUser user = this.applicationUserService.findByEmailInAllUsers(data.getEmail());
+            String token = jwtTokenProvider.createToken(username, user.getRoles());
+            return ResponseBuilder.encode(HttpStatus.OK, new LoginResponse(user, token));
+
         } catch (AuthenticationException e) {
             throw new BadCredentialsException("Invalid username/password supplied");
         }
     }
-
 
 
 }

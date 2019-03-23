@@ -34,7 +34,6 @@ public class RegisterService {
     public void registerUser(ApplicationUser user) throws UserAlreadyRegisteredException {
         //TODO - this is really ugly code
 
-
         switch (user.getUserType()) {
             case DONOR:
                 if (donorRepository.findByEmail(user.getEmail()) != null)
@@ -89,35 +88,5 @@ public class RegisterService {
                     donationCenterPersonnelRepository.save(donationCenterPersonnel);
                 }
         }
-    }
-
-    public ApplicationUser findByEmail(ApplicationUser user) {
-        switch (user.getUserType()) {
-            case DONOR:
-                if (donorRepository.findByEmail(user.getEmail()) == null)
-                    throw new UsernameNotFoundException("User Not Found!");
-                else {
-                    return donorRepository.findByEmail(user.getEmail());
-                }
-            case DOCTOR:
-                if (doctorRepository.findByEmail(user.getEmail()) == null)
-                    throw new UsernameNotFoundException("User Not Found!");
-                else {
-                    return doctorRepository.findByEmail(user.getEmail());
-                }
-            case SYSADMIN:
-                if (systemAdminRepository.findByEmail(user.getEmail()) == null)
-                    throw new UsernameNotFoundException("User Not Found!");
-                else {
-                    return systemAdminRepository.findByEmail(user.getEmail());
-                }
-            case DONATION_CENTER_PERSONNEL:
-                if (donationCenterPersonnelRepository.findByEmail(user.getEmail()) == null)
-                    throw new UsernameNotFoundException("User Not Found!");
-                else {
-                    return donationCenterPersonnelRepository.findByEmail(user.getEmail());
-                }
-        }
-        throw new UsernameNotFoundException("User Not Found!");
     }
 }

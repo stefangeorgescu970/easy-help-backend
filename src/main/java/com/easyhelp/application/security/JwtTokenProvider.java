@@ -2,21 +2,18 @@ package com.easyhelp.application.security;
 
 import com.easyhelp.application.service.UserDetailsServiceImpl;
 import io.jsonwebtoken.*;
-import lombok.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Component
@@ -24,11 +21,9 @@ public class JwtTokenProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
-    //    @Value("${security.jwt.token.secret-key:secret}")
     private String secretKey = "secret";
 
-    //    @Value("${security.jwt.token.expire-length:3600000}")
-    private long validityInMilliseconds = 120000; // 1h
+    private long validityInMilliseconds = 3600000; // 1h
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
