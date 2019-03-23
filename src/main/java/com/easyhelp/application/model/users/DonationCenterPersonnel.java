@@ -1,9 +1,11 @@
 package com.easyhelp.application.model.users;
 
 import com.easyhelp.application.model.locations.DonationCenter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -17,5 +19,7 @@ public class DonationCenterPersonnel extends PartnerUser {
 
     @ManyToOne(optional = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_donation_center")
+    @ToString.Exclude
+    @JsonIgnore
     private DonationCenter donationCenter;
 }
