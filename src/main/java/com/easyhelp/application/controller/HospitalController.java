@@ -34,7 +34,7 @@ public class HospitalController {
         hospital.setLatitude(location.getLatitude());
         hospital.setLongitude(location.getLongitude());
         hospitalService.save(hospital);
-        return ResponseBuilder.encode(HttpStatus.OK);
+        return ResponseBuilder.encode(HttpStatus.OK, hospital);
     }
 
     @RequestMapping("/getAll")

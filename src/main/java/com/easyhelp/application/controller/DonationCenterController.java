@@ -29,8 +29,10 @@ public class DonationCenterController {
         donationCenter.setName(location.getName());
         donationCenter.setLatitude(location.getLatitude());
         donationCenter.setLongitude(location.getLongitude());
+        donationCenter.setAddress(location.getAddress());
+        donationCenter.setCounty(location.getCounty());
         donationCenterService.save(donationCenter);
-        return ResponseBuilder.encode(HttpStatus.OK);
+        return ResponseBuilder.encode( HttpStatus.OK, donationCenter);
     }
 
     @RequestMapping("/getAll")
