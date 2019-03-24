@@ -48,4 +48,9 @@ public class HospitalController {
             return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
         }
     }
+
+    @RequestMapping("/getAvailableCounties")
+    private ResponseEntity<Response> getCounties() {
+        return ResponseBuilder.encode(HttpStatus.OK, hospitalService.getAll(), 1, 1, 1);
+    }
 }
