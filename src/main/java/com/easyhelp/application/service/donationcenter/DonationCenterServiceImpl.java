@@ -1,6 +1,7 @@
 package com.easyhelp.application.service.donationcenter;
 
 import com.easyhelp.application.model.dto.location.LocationDTO;
+import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.repository.DonationCenterRepository;
 import com.easyhelp.application.utils.exceptions.EntityCannotBeRemovedException;
@@ -8,6 +9,7 @@ import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,8 +21,8 @@ public class DonationCenterServiceImpl implements DonationCenterServiceInterface
     private DonationCenterRepository donationCenterRepository;
 
     @Override
-    public List<LocationDTO> getAll() {
-        return donationCenterRepository.findAll().stream().map(LocationDTO::new).collect(Collectors.toList());
+    public List<DonationCenter> getAll() {
+        return new ArrayList<>(donationCenterRepository.findAll());
     }
 
     @Override
@@ -54,5 +56,14 @@ public class DonationCenterServiceImpl implements DonationCenterServiceInterface
         } else {
             throw new EntityNotFoundException("Donation center with that id does not exist");
         }
+    }
+
+    @Override
+    public List<DonationCenter> getDonationCentersInCounty(County county) {
+        return donationCenterRepository
+                .findAll()
+                .stream()
+                .filter(donationCenter -> donationCenter.getCounty() == county)
+                .collect(Collectors.toList());
     }
 }

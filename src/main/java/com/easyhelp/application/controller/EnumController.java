@@ -1,6 +1,6 @@
 package com.easyhelp.application.controller;
 
-import com.easyhelp.application.model.dto.location.EnumsDto;
+import com.easyhelp.application.model.dto.location.EnumsDTO;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
 import org.springframework.http.HttpStatus;
@@ -13,6 +13,6 @@ public class EnumController {
 
     @GetMapping(path = "/enums")
     public ResponseEntity<Response> countiesEnum() {
-        return ResponseBuilder.encode(HttpStatus.OK, new EnumsDto());
+        return ResponseBuilder.encode(HttpStatus.OK, new EnumsDTO());
     }
 }

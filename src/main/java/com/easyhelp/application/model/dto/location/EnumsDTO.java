@@ -1,5 +1,6 @@
 package com.easyhelp.application.model.dto.location;
 
+import com.easyhelp.application.model.dto.BaseDTO;
 import com.easyhelp.application.model.locations.County;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,11 +12,11 @@ import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
-public class EnumsDto implements Serializable {
+public class EnumsDTO extends BaseDTO {
 
     private List<String> counties;
 
-    public EnumsDto(){
+    public EnumsDTO(){
         counties = asList(County.values());
     }
 

@@ -1,6 +1,7 @@
 package com.easyhelp.application.service.hospital;
 
 import com.easyhelp.application.model.dto.location.LocationDTO;
+import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.repository.HospitalRepository;
 import com.easyhelp.application.utils.exceptions.EntityCannotBeRemovedException;
@@ -8,6 +9,7 @@ import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,8 +21,8 @@ public class HospitalServiceImpl implements HospitalServiceInterface {
     private HospitalRepository hospitalRepository;
 
     @Override
-    public List<LocationDTO> getAll() {
-        return hospitalRepository.findAll().stream().map(LocationDTO::new).collect(Collectors.toList());
+    public List<Hospital> getAll() {
+        return new ArrayList<>(hospitalRepository.findAll());
     }
 
     @Override
@@ -54,5 +56,14 @@ public class HospitalServiceImpl implements HospitalServiceInterface {
         } else {
             throw new EntityNotFoundException("Hospital with that id does not exist");
         }
+    }
+
+    @Override
+    public List<Hospital> getHospitalsInCounty(County county) {
+        return hospitalRepository
+                .findAll()
+                .stream()
+                .filter(hospital -> hospital.getCounty() == county)
+                .collect(Collectors.toList());
     }
 }

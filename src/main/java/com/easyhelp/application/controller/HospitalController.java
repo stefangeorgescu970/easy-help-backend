@@ -1,8 +1,8 @@
 package com.easyhelp.application.controller;
 
+import com.easyhelp.application.model.dto.location.CountyDTO;
 import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
-import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.service.hospital.HospitalServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/hospital")
@@ -27,6 +30,8 @@ public class HospitalController {
 
     @PostMapping("/add")
     private ResponseEntity<Response> addHospital(@RequestBody LocationDTO location) {
+        //TODO - create constructor to make this pretty
+
         Hospital hospital = new Hospital();
         hospital.setName(location.getName());
         hospital.setCounty(location.getCounty());
@@ -39,7 +44,9 @@ public class HospitalController {
 
     @RequestMapping("/getAll")
     private ResponseEntity<Response> getAllHospitals() {
-        return ResponseBuilder.encode(HttpStatus.OK, hospitalService.getAll(), 1, 1, 1);
+        List<Hospital> hospitals = hospitalService.getAll();
+        List<LocationDTO> response = hospitals.stream().map(LocationDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, response, 1, 1, 1);
     }
 
     @PostMapping("/remove")
@@ -52,8 +59,10 @@ public class HospitalController {
         }
     }
 
-    @RequestMapping("/getAvailableCounties")
-    private ResponseEntity<Response> getCounties() {
-        return ResponseBuilder.encode(HttpStatus.OK, hospitalService.getAll(), 1, 1, 1);
+    @PostMapping("getInCounty")
+    private ResponseEntity<Response> getHosptialsInCounty(@RequestBody CountyDTO countyDTO) {
+        List<Hospital> hospitals = hospitalService.getHospitalsInCounty(countyDTO.getCounty());
+        List<LocationDTO> response = hospitals.stream().map(LocationDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, response, 1, 1, 1);
     }
 }

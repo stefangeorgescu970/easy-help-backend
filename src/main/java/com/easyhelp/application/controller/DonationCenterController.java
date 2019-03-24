@@ -1,5 +1,6 @@
 package com.easyhelp.application.controller;
 
+import com.easyhelp.application.model.dto.location.CountyDTO;
 import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/donationCenter")
 public class DonationCenterController {
@@ -25,6 +29,8 @@ public class DonationCenterController {
 
     @PostMapping("/add")
     private ResponseEntity<Response> addDonationCenter(@RequestBody LocationDTO location) {
+        //TODO - create constructor to make this pretty
+
         DonationCenter donationCenter = new DonationCenter();
         donationCenter.setName(location.getName());
         donationCenter.setLatitude(location.getLatitude());
@@ -32,12 +38,14 @@ public class DonationCenterController {
         donationCenter.setAddress(location.getAddress());
         donationCenter.setCounty(location.getCounty());
         donationCenterService.save(donationCenter);
-        return ResponseBuilder.encode( HttpStatus.OK, donationCenter);
+        return ResponseBuilder.encode(HttpStatus.OK, donationCenter);
     }
 
     @RequestMapping("/getAll")
     private ResponseEntity<Response> getAllDonationCenters() {
-        return ResponseBuilder.encode(HttpStatus.OK, donationCenterService.getAll(), 1, 1, 1);
+        List<DonationCenter> donationCenters = donationCenterService.getAll();
+        List<LocationDTO> dtoList = donationCenters.stream().map(LocationDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
     @PostMapping("/remove")
@@ -48,5 +56,12 @@ public class DonationCenterController {
         } catch (EasyHelpException exp) {
             return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
         }
+    }
+
+    @PostMapping("/getInCounty")
+    private ResponseEntity<Response> getDonationCentersInCounty(@RequestBody CountyDTO countyDTO) {
+        List<DonationCenter> donationCenters = donationCenterService.getDonationCentersInCounty(countyDTO.getCounty());
+        List<LocationDTO> dtoList = donationCenters.stream().map(LocationDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 }
