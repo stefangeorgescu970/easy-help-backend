@@ -2,6 +2,7 @@ package com.easyhelp.application.controller;
 
 import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
+import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.service.hospital.HospitalServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
@@ -28,6 +29,8 @@ public class HospitalController {
     private ResponseEntity<Response> addHospital(@RequestBody LocationDTO location) {
         Hospital hospital = new Hospital();
         hospital.setName(location.getName());
+        hospital.setCounty(location.getCounty());
+        hospital.setAddress(location.getAddress());
         hospital.setLatitude(location.getLatitude());
         hospital.setLongitude(location.getLongitude());
         hospitalService.save(hospital);

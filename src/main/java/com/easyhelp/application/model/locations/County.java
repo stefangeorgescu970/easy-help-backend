@@ -42,5 +42,6 @@ public enum County {
     VALCEA,
     VASLUI,
     VRANCEA,
-    BUCURESTI
+    BUCURESTI;
+
 }
