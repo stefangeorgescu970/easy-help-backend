@@ -26,7 +26,7 @@ public class DonationCenterPersonnel extends PartnerUser {
 
     public DonationCenterPersonnel(RegisterDTO applicationUser) {
         setCity(applicationUser.getCity());
-        setDateOfBirth(applicationUser.getDob());
+        setDateOfBirth(applicationUser.getDateOfBirth());
         setEmail(applicationUser.getEmail());
         setFirstName(applicationUser.getFirstName());
         setLastName(applicationUser.getLastName());

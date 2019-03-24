@@ -52,7 +52,7 @@ public class Donor extends ApplicationUser {
 
     public Donor(RegisterDTO applicationUser) {
         setCity(applicationUser.getCity());
-        setDateOfBirth(applicationUser.getDob());
+        setDateOfBirth(applicationUser.getDateOfBirth());
         setEmail(applicationUser.getEmail());
         setFirstName(applicationUser.getFirstName());
         setLastName(applicationUser.getLastName());

@@ -23,8 +23,8 @@ public class AccountDTO extends BaseDTO {
     private UserType userType;
     private String ssn;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date dob;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date dateOfBirth;
 
     public AccountDTO(ApplicationUser user) {
         id = user.getId();
@@ -34,6 +34,6 @@ public class AccountDTO extends BaseDTO {
         city = user.getCity();
         userType = user.getUserType();
         ssn = user.getSsn();
-        dob = user.getDateOfBirth();
+        dateOfBirth = user.getDateOfBirth();
     }
 }
