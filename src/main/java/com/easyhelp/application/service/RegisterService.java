@@ -14,6 +14,7 @@ import com.easyhelp.application.service.applicationuser.ApplicationUserService;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.hospital.HospitalServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
+import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class RegisterService {
     @Autowired
     private DonationCenterServiceInterface donationCenterService;
 
-    public void registerUser(RegisterDTO user) throws EasyHelpException {
+    public void registerUser(RegisterDTO user) throws UserAlreadyRegisteredException, EntityNotFoundException {
         //TODO - this is really ugly code
 
         Set<String> role = new HashSet<>();
@@ -57,7 +58,7 @@ public class RegisterService {
 
         try {
             applicationUserService.findByEmailInAllUsers(user.getEmail());
-            throw new UserAlreadyRegisteredException(user.getEmail());
+            throw new UserAlreadyRegisteredException("A user with the email " + user.getEmail() + " already exists!");
         } catch (UsernameNotFoundException exception) {
             switch (user.getUserType()) {
                 case DONOR: {
