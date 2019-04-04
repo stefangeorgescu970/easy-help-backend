@@ -1,5 +1,6 @@
 package com.easyhelp.application.model.users;
 
+import com.easyhelp.application.model.locations.County;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class ApplicationUser implements UserDetails {
     private String firstName;
     private String lastName;
     private Date dateOfBirth;
-    private String city;
+    private County county;
     private String ssn;
     private UserType userType;
 

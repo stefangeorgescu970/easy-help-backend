@@ -39,7 +39,7 @@ public class Doctor extends PartnerUser {
     private Set<Patient> patients = new HashSet<>();
 
     public Doctor(RegisterDTO applicationUser) {
-        setCity(applicationUser.getCity());
+        setCounty(applicationUser.getCounty());
         setDateOfBirth(applicationUser.getDateOfBirth());
         setEmail(applicationUser.getEmail());
         setFirstName(applicationUser.getFirstName());

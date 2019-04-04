@@ -20,7 +20,7 @@ import javax.persistence.Table;
 public class SystemAdmin extends ApplicationUser {
 
     public SystemAdmin(RegisterDTO applicationUser) {
-        setCity(applicationUser.getCity());
+        setCounty(applicationUser.getCounty());
         setDateOfBirth(applicationUser.getDateOfBirth());
         setEmail(applicationUser.getEmail());
         setFirstName(applicationUser.getFirstName());

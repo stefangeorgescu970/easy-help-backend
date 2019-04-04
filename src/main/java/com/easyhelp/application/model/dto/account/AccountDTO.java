@@ -19,7 +19,7 @@ public class AccountDTO extends BaseDTO {
     private String firstName;
     private String lastName;
     private String email;
-    private String city;
+    private County county;
     private UserType userType;
     private String ssn;
 
@@ -31,7 +31,7 @@ public class AccountDTO extends BaseDTO {
         firstName = user.getFirstName();
         lastName = user.getLastName();
         email = user.getEmail();
-        city = user.getCity();
+        county = user.getCounty();
         userType = user.getUserType();
         ssn = user.getSsn();
         dateOfBirth = user.getDateOfBirth();

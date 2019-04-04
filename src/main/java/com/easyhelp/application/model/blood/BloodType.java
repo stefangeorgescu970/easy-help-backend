@@ -28,4 +28,9 @@ public class BloodType extends BaseEntity {
 
     private String groupLetter;
     private Boolean rh;
+
+    public BloodType(String groupLetter, Boolean rh) {
+        this.groupLetter = groupLetter;
+        this.rh = rh;
+    }
 }

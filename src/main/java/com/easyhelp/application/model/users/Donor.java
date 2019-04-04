@@ -51,7 +51,7 @@ public class Donor extends ApplicationUser {
     private Set<StoredBlood> storedBloodSet;
 
     public Donor(RegisterDTO applicationUser) {
-        setCity(applicationUser.getCity());
+        setCounty(applicationUser.getCounty());
         setDateOfBirth(applicationUser.getDateOfBirth());
         setEmail(applicationUser.getEmail());
         setFirstName(applicationUser.getFirstName());
