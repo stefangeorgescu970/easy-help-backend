@@ -1,9 +1,12 @@
 package com.easyhelp.application.controller;
 
+import com.easyhelp.application.model.donations.DonationBooking;
+import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
 import com.easyhelp.application.model.dto.location.CountyDTO;
 import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
+import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.response.Response;
@@ -26,6 +29,8 @@ public class DonationCenterController {
     @Autowired
     private DonationCenterServiceInterface donationCenterService;
 
+    @Autowired
+    private DonationBookingServiceInterface donationBookingService;
 
     @PostMapping("/add")
     private ResponseEntity<Response> addDonationCenter(@RequestBody LocationDTO location) {
@@ -62,6 +67,13 @@ public class DonationCenterController {
     private ResponseEntity<Response> getDonationCentersInCounty(@RequestBody CountyDTO countyDTO) {
         List<DonationCenter> donationCenters = donationCenterService.getDonationCentersInCounty(countyDTO.getCounty());
         List<LocationDTO> dtoList = donationCenters.stream().map(LocationDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+    }
+
+    @PostMapping("/getDCBookings")
+    private ResponseEntity<Response> getDCBookings(@RequestBody IdentifierDTO identifierDTO) {
+        List<DonationBooking> bookings = donationBookingService.getDCBookings(identifierDTO.getId());
+        List<DonationBookingDTO> dtoList = bookings.stream().map(DonationBookingDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 }

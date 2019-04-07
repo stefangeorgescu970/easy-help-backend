@@ -1,10 +1,18 @@
 package com.easyhelp.application.controller;
 
 
+import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.dto.account.BloodGroupRhDTO;
 import com.easyhelp.application.model.dto.account.CountySsnDTO;
+import com.easyhelp.application.model.dto.booking.AvailableDate;
+import com.easyhelp.application.model.dto.booking.BookingRequestDTO;
+import com.easyhelp.application.model.dto.booking.DateRequestDTO;
+import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
+import com.easyhelp.application.model.dto.misc.IdentifierDTO;
+import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
+import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +23,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/donor")
 public class DonorController {
 
     @Autowired
     DonorServiceInterface donorService;
+
+    @Autowired
+    DonationBookingServiceInterface donationBookingService;
 
     @PostMapping("/updateSsnCounty")
     public ResponseEntity<Response> setCountyAndSSN(@RequestBody CountySsnDTO countySsnDTO) {
@@ -37,10 +50,37 @@ public class DonorController {
     public ResponseEntity<Response> setBloodGroup(@RequestBody BloodGroupRhDTO bloodGroupRhDTO) {
         try {
             donorService.updateBloodGroupOnDonor(bloodGroupRhDTO.getDonorId(),
-                                                 bloodGroupRhDTO.getGroupLetter(),
-                                                 bloodGroupRhDTO.getRh());
+                    bloodGroupRhDTO.getGroupLetter(),
+                    bloodGroupRhDTO.getRh());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/getAvailableHours")
+    public ResponseEntity<Response> getAvailableHours(@RequestBody DateRequestDTO dateRequestDTO) {
+        List<AvailableDate> hours = donationBookingService.getAvailableDates(dateRequestDTO.getId(), dateRequestDTO.getSelectedDate(),
+                dateRequestDTO.getId());
+        return ResponseBuilder.encode(HttpStatus.OK, hours, 1, 1, 1);
+    }
+
+    @PostMapping("/bookHour")
+    public ResponseEntity<Response> bookHour(@RequestBody BookingRequestDTO bookingRequestDTO) {
+        try {
+            donorService.bookDonationHour(bookingRequestDTO.getId(), bookingRequestDTO.getSelectedDate(), bookingRequestDTO.getDonationCenterId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/getCurrentBooking")
+    public ResponseEntity<Response> getCurrentBooking(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            DonationBookingDTO booking = new DonationBookingDTO(donationBookingService.getDonorBooking(identifierDTO.getId()));
+            return ResponseBuilder.encode(HttpStatus.OK, booking);
+        } catch (EntityNotFoundException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }

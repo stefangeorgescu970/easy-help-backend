@@ -1,20 +1,23 @@
 package com.easyhelp.application.service.donor;
 
 import com.easyhelp.application.model.blood.BloodType;
+import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.locations.County;
+import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
+import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
+import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.text.DateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DonorServiceImpl implements DonorServiceInterface {
@@ -23,7 +26,13 @@ public class DonorServiceImpl implements DonorServiceInterface {
     private DonorRepository donorRepository;
 
     @Autowired
+    private DonationBookingServiceInterface donationBookingService;
+
+    @Autowired
     private BloodTypeServiceInterface bloodTypeService;
+
+    @Autowired
+    private DonationCenterServiceInterface donationCenterService;
 
     @Override
     public void updateCountyOnDonor(Long donorId, County newCounty) throws EntityNotFoundException {
@@ -76,5 +85,26 @@ public class DonorServiceImpl implements DonorServiceInterface {
         } else {
             throw new EntityNotFoundException("No donor was found with provided id.");
         }
+    }
+
+
+    @Override
+    public void bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId) throws EntityNotFoundException {
+        Optional<Donor> donorOptional = donorRepository.findById(donorId);
+
+        //check if donor has already made a booking
+
+        if (donorOptional.isPresent()) {
+            Donor donor = donorOptional.get();
+            DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
+            DonationBooking booking = new DonationBooking();
+            booking.setDateAndTime(selectedHour);
+            booking.setDonor(donor);
+            booking.setDonationCenter(donationCenter);
+            donor.setDonationBooking(booking);
+            donationBookingService.save(booking);
+            donorRepository.save(donor);
+        }
+
     }
 }
