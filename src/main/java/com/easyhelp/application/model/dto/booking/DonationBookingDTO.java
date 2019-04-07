@@ -3,7 +3,6 @@ package com.easyhelp.application.model.dto.booking;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.dto.BaseDTO;
 import com.easyhelp.application.model.dto.account.AccountDTO;
-import com.easyhelp.application.model.users.Donor;
 import lombok.Data;
 
 import java.util.Date;
