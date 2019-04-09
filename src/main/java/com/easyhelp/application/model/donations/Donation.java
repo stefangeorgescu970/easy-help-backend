@@ -16,6 +16,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(name = "donations")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Donation extends BaseEntity {
 
     @ManyToOne(optional = false)

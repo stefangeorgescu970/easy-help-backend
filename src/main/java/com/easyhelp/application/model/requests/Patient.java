@@ -17,6 +17,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(name = "patients")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Patient extends BaseEntity {
 
     @ManyToOne

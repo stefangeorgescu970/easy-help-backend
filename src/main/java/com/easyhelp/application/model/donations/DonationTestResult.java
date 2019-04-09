@@ -5,16 +5,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(name = "donation_test_results")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class DonationTestResult extends BaseEntity {
 
     @OneToOne

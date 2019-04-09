@@ -21,6 +21,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true, exclude = {"donationCenterPersonnelSet", "donations", "donationBookings", "acceptedDonationRequests", "storedBloodSet"})
 @NoArgsConstructor
 @Table(name = "donation_centers")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class DonationCenter extends RealLocation {
 
     @OneToMany(mappedBy = "donationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)

@@ -16,6 +16,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true, exclude = {"doctors"})
 @NoArgsConstructor
 @Table(name = "hospitals")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Hospital extends RealLocation {
 
     @OneToMany(mappedBy = "hospital", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)

@@ -15,6 +15,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(name = "separated_blood_type")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class SeparatedBloodType extends BaseEntity {
 
     @OneToMany(mappedBy = "separatedBloodType", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
