@@ -216,6 +216,12 @@ public class MockDataController {
     private void addDonors() throws EntityNotFoundException, UserAlreadyRegisteredException {
         registerService.registerUser(createDonor("Razvan", "Dumitru", County.BRAILA, "razvan@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
         registerService.registerUser(createDonor("Daniel", "Dormutan", County.BUCURESTI, "daniel@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
+        registerService.registerUser(createDonor("Miho", "Nevaman", County.BUCURESTI, "miho@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
+        registerService.registerUser(createDonor("Sebastian", "Badita", County.BUCURESTI, "sebastian@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
+        registerService.registerUser(createDonor("Sebi", "Puscatu", County.BUCURESTI, "drog@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
+        registerService.registerUser(createDonor("Emin", "Eminovici", County.BUCURESTI, "emin@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
+        registerService.registerUser(createDonor("Veronica", "Popescu", County.BUCURESTI, "vera@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
+        registerService.registerUser(createDonor("Andrei", "Adan", County.BUCURESTI, "andrei@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
         registerService.registerUser(createDonor("Test", "Donor", County.CLUJ, "test@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
         registerService.registerUser(createDonor("Adrian", "Moldovan", County.ALBA, "adetz@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
         registerService.registerUser(createDonor("Stefan", "Georgescu", County.ARGES, "stef@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));

@@ -3,6 +3,7 @@ package com.easyhelp.application.model.dto.account;
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.dto.BaseDTO;
 import com.easyhelp.application.model.users.Donor;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -11,12 +12,14 @@ import java.util.Date;
 public class DonorAccountDTO extends BaseDTO {
     String firstName;
     String lastName;
-    Date dateOfBirth;
     String email;
     Long id;
     Boolean canDonate;
     Boolean rh;
     String group;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    Date dateOfBirth;
 
     public DonorAccountDTO(Donor donor) {
         firstName = donor.getFirstName();
