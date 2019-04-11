@@ -60,4 +60,8 @@ public class Donor extends ApplicationUser {
         setSsn(applicationUser.getSsn());
         setUserType(applicationUser.getUserType());
     }
+
+    public Boolean canDonate() {
+        return true;
+    }
 }

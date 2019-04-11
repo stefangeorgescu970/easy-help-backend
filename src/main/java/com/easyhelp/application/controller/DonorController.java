@@ -1,14 +1,18 @@
 package com.easyhelp.application.controller;
 
 
-import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.dto.account.BloodGroupRhDTO;
 import com.easyhelp.application.model.dto.account.CountySsnDTO;
+import com.easyhelp.application.model.dto.account.DonorAccountDTO;
 import com.easyhelp.application.model.dto.booking.AvailableDate;
 import com.easyhelp.application.model.dto.booking.BookingRequestDTO;
 import com.easyhelp.application.model.dto.booking.DateRequestDTO;
 import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
+import com.easyhelp.application.model.dto.location.CountyDTO;
+import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
+import com.easyhelp.application.model.locations.DonationCenter;
+import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/donor")
@@ -83,5 +88,13 @@ public class DonorController {
         } catch (EntityNotFoundException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
+    }
+
+    @PostMapping("/getInCounty")
+    public ResponseEntity<Response> getDonorsInCounty(@RequestBody CountyDTO countyDTO) {
+        List<Donor> donors = donorService.getDonorsInCounty(countyDTO.getCounty());
+        List<DonorAccountDTO> donorAccountDTOS = donors.stream().map(DonorAccountDTO::new).collect(Collectors.toList());
+
+        return ResponseBuilder.encode(HttpStatus.OK, donorAccountDTOS, 1, 1, 1);
     }
 }

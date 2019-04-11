@@ -15,9 +15,7 @@ import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class DonorServiceImpl implements DonorServiceInterface {
@@ -106,5 +104,10 @@ public class DonorServiceImpl implements DonorServiceInterface {
             donorRepository.save(donor);
         }
 
+    }
+
+    @Override
+    public List<Donor> getDonorsInCounty(County county) {
+        return donorRepository.findAllByCounty(county);
     }
 }

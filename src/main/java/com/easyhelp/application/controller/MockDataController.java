@@ -1,14 +1,12 @@
 package com.easyhelp.application.controller;
 
 
-import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.dto.account.RegisterDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.model.users.UserType;
 import com.easyhelp.application.service.RegisterService;
-import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
