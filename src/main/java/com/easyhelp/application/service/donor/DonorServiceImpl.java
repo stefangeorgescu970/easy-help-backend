@@ -2,6 +2,7 @@ package com.easyhelp.application.service.donor;
 
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.donations.DonationBooking;
+import com.easyhelp.application.model.donations.DonorSummary;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.users.Donor;
@@ -92,6 +93,8 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
         //check if donor has already made a booking
 
+        //TODO - also throw error for not found donation center
+
         if (donorOptional.isPresent()) {
             Donor donor = donorOptional.get();
             DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
@@ -102,6 +105,8 @@ public class DonorServiceImpl implements DonorServiceInterface {
             donor.setDonationBooking(booking);
             donationBookingService.save(booking);
             donorRepository.save(donor);
+        } else {
+            throw new EntityNotFoundException("No donor was found with provided id.");
         }
 
     }
@@ -109,5 +114,22 @@ public class DonorServiceImpl implements DonorServiceInterface {
     @Override
     public List<Donor> getDonorsInCounty(County county) {
         return donorRepository.findAllByCounty(county);
+    }
+
+    @Override
+    public DonorSummary getDonorSummary(Long donorId) throws EntityNotFoundException {
+        Optional<Donor> donorOptional = donorRepository.findById(donorId);
+        DonorSummary donorSummary = new DonorSummary();
+
+        //check if donor has already made a booking
+
+        if (donorOptional.isPresent()) {
+            Donor donor = donorOptional.get();
+            donorSummary.setDonationsNumber(donor.getDonations().size());
+        } else {
+            throw new EntityNotFoundException("No donor was found with provided id.");
+        }
+
+        return donorSummary;
     }
 }

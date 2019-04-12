@@ -1,6 +1,7 @@
 package com.easyhelp.application.controller;
 
 
+import com.easyhelp.application.model.donations.DonorSummary;
 import com.easyhelp.application.model.dto.account.BloodGroupRhDTO;
 import com.easyhelp.application.model.dto.account.CountySsnDTO;
 import com.easyhelp.application.model.dto.account.DonorAccountDTO;
@@ -8,6 +9,7 @@ import com.easyhelp.application.model.dto.booking.AvailableDate;
 import com.easyhelp.application.model.dto.booking.BookingRequestDTO;
 import com.easyhelp.application.model.dto.booking.DateRequestDTO;
 import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
+import com.easyhelp.application.model.dto.donation.DonorSummaryDTO;
 import com.easyhelp.application.model.dto.location.CountyDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.users.Donor;
@@ -94,5 +96,15 @@ public class DonorController {
         List<DonorAccountDTO> donorAccountDTOS = donors.stream().map(DonorAccountDTO::new).collect(Collectors.toList());
 
         return ResponseBuilder.encode(HttpStatus.OK, donorAccountDTOS, 1, 1, 1);
+    }
+
+    @PostMapping("/getDonorSummary")
+    public ResponseEntity<Response> getDonorSummary(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            DonorSummary donorSummary = donorService.getDonorSummary(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK, new DonorSummaryDTO(donorSummary));
+        } catch (EntityNotFoundException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
     }
 }
