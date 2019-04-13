@@ -3,7 +3,9 @@ package com.easyhelp.application.service.donor;
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationBooking;
+import com.easyhelp.application.model.donations.DonationForm;
 import com.easyhelp.application.model.donations.DonorSummary;
+import com.easyhelp.application.model.dto.donation.DonationFormDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.users.Donor;
@@ -146,5 +148,57 @@ public class DonorServiceImpl implements DonorServiceInterface {
         }
 
         return donorSummary;
+    }
+
+    @Override
+    public void addDonationForm(DonationFormDTO donationFormDTO) throws EntityNotFoundException {
+        Optional<Donor> donorOptional = donorRepository.findById(donationFormDTO.getDonorId());
+        if (donorOptional.isPresent()) {
+            Donor donor = donorOptional.get();
+            DonationForm donationForm = new DonationForm();
+            donationForm.setGeneralGoodHealth(donationFormDTO.getGeneralGoodHealth());
+            donationForm.setRecentLossOfWeight(donationFormDTO.getRecentLossOfWeight());
+            donationForm.setRecentInexplicableFever(donationFormDTO.getRecentInexplicableFever());
+            donationForm.setRecentStomatoTreatmentOrVaccine(donationFormDTO.getRecentStomatoTreatmentOrVaccine());
+            donationForm.setCurrentDrugTreatment(donationFormDTO.getCurrentDrugTreatment());
+            donationForm.setSexWithHIVOrHepatitisLast12Months(donationFormDTO.getSexWithHIVOrHepatitisLast12Months());
+            donationForm.setSexWithPersonWhoInjectsDrugsLast12Months(donationFormDTO.getSexWithPersonWhoInjectsDrugsLast12Months());
+            donationForm.setSexWithProstituteLast12Months(donationFormDTO.getSexWithProstituteLast12Months());
+            donationForm.setSexWithMultiplePartnersLast12Months(donationFormDTO.getSexWithMultiplePartnersLast12Months());
+            donationForm.setInjectedDrugs(donationFormDTO.getInjectedDrugs());
+            donationForm.setAcceptedMoneyOrDrugsForSex(donationFormDTO.getAcceptedMoneyOrDrugsForSex());
+            donationForm.setChangedSexPartnerLast6Months(donationFormDTO.getChangedSexPartnerLast6Months());
+            donationForm.setNumberOfPartnersLast6Months(donationFormDTO.getNumberOfPartnersLast6Months());
+            donationForm.setSurgeryOrInvestigationsLast12Months(donationFormDTO.getSurgeryOrInvestigationsLast12Months());
+            donationForm.setTattoosOrPiercingsLast12Months(donationFormDTO.getTattoosOrPiercingsLast12Months());
+            donationForm.setTransfusionLast12Months(donationFormDTO.getTransfusionLast12Months());
+            donationForm.setBeenPregnant(donationFormDTO.getBeenPregnant());
+            donationForm.setBirthDate(donationFormDTO.getBirthDate());
+            donationForm.setLastMenstruation(donationFormDTO.getLastMenstruation());
+            donationForm.setBornLivedTraveledAbroad(donationFormDTO.getBornLivedTraveledAbroad());
+            donationForm.setTravelWhere(donationFormDTO.getTravelWhere());
+            donationForm.setTravelWhen(donationFormDTO.getTravelWhen());
+            donationForm.setPrisonLastYear(donationFormDTO.getPrisonLastYear());
+            donationForm.setSufferFromSet1(donationFormDTO.getSufferFromSet1());
+            donationForm.setSufferFromSet2(donationFormDTO.getSufferFromSet2());
+            donationForm.setSufferFromSet3(donationFormDTO.getSufferFromSet3());
+            donationForm.setSufferFromSet4(donationFormDTO.getSufferFromSet4());
+            donationForm.setSufferFromSet5(donationFormDTO.getSufferFromSet5());
+            donationForm.setSufferFromSet6(donationFormDTO.getSufferFromSet6());
+            donationForm.setSufferFromSet7(donationFormDTO.getSufferFromSet7());
+            donationForm.setSmoker(donationFormDTO.getSmoker());
+            donationForm.setLastAlcoholUse(donationFormDTO.getLastAlcoholUse());
+            donationForm.setAlcoholDrank(donationFormDTO.getAlcoholDrank());
+            donationForm.setAlcoholQuantity(donationFormDTO.getAlcoholQuantity());
+            donationForm.setBeenRefused(donationFormDTO.getBeenRefused());
+            donationForm.setRequireAttentionPostDonation(donationFormDTO.getRequireAttentionPostDonation());
+
+            donationForm.setDonor(donor);
+            donor.setDonationForm(donationForm);
+            donorRepository.save(donor);
+        }
+        else {
+            throw new EntityNotFoundException("No donor was found with provided id.");
+        }
     }
 }
