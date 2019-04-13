@@ -14,7 +14,7 @@ import java.util.List;
 public interface DonorServiceInterface {
     void updateCountyOnDonor(Long donorId, County newCounty) throws EntityNotFoundException;
 
-    void updateSsnOnDonor(Long donorId, String newSsn) throws EntityNotFoundException, SsnInvalidException;
+    void updateSsnOnDonor(Long donorId, String newSsn, Boolean skipCheck) throws EntityNotFoundException, SsnInvalidException;
 
     void updateBloodGroupOnDonor(Long donorId, String groupLetter, Boolean rh) throws EntityNotFoundException;
 

@@ -9,4 +9,5 @@ public class CountySsnDTO extends BaseDTO {
     private String ssn;
     private County county;
     private Long donorId;
+    private Boolean skipSsnCheck;
 }

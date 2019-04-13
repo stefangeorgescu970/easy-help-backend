@@ -7,6 +7,7 @@ import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.model.requests.Patient;
+import com.easyhelp.application.model.misc.SsnData;
 import com.easyhelp.application.model.users.UserType;
 import com.easyhelp.application.repository.PatientRepository;
 import com.easyhelp.application.service.RegisterService;
@@ -14,8 +15,13 @@ import com.easyhelp.application.service.donation_booking.DonationBookingServiceI
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.hospital.HospitalServiceInterface;
+
 import com.easyhelp.application.service.patient.PatientServiceInterface;
+
+import com.easyhelp.application.utils.MiscUtils;
+
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
+import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
@@ -30,12 +36,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 @RestController
 @RequestMapping("/mocks")
 public class MockDataController {
+
+    private final String girlSSN = "2941027370448";
+    private final String boySSN = "1940205248591";
+
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
@@ -61,7 +70,7 @@ public class MockDataController {
     }
 
     @RequestMapping("/populateTables")
-    private ResponseEntity<Response> populateMockDatabase() throws UserAlreadyRegisteredException, EntityNotFoundException {
+    private ResponseEntity<Response> populateMockDatabase() throws UserAlreadyRegisteredException, EntityNotFoundException, SsnInvalidException {
 
         deleteDataBase();
 
@@ -157,82 +166,82 @@ public class MockDataController {
         hospitalService.save(new Hospital("Spital 2", 0, 0, "Adresa 2", County.ARGES));
     }
 
-    private void addDoctors() throws EntityNotFoundException, UserAlreadyRegisteredException {
-        registerService.registerUser(createDoctor("Andrei", "Cretu", County.BUCURESTI, "andrei@doc", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime(), 1L));
-        registerService.registerUser(createDoctor("Andra", "NU Moldovan", County.CLUJ, "andra@doc", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime(), 1L));
-        registerService.registerUser(createDoctor("Alexandra", "Georgescu", County.DOLJ, "alex@doc", "pass", "2970704027633", new GregorianCalendar(1997, GregorianCalendar.NOVEMBER, 2).getTime(), 1L));
-        registerService.registerUser(createDoctor("Apopei", "Apostolescu", County.ARGES, "apopei@doc", "pass", "1970704027633", new GregorianCalendar(1970, GregorianCalendar.MAY, 15).getTime(), 2L));
+    private void addDoctors() throws EntityNotFoundException, UserAlreadyRegisteredException, SsnInvalidException {
+        registerService.registerUser(createDoctor("Andrei", "Cretu", County.BUCURESTI, "andrei@doc", boySSN, 1L));
+        registerService.registerUser(createDoctor("Andra", "NU Moldovan", County.CLUJ, "andra@doc", girlSSN, 1L));
+        registerService.registerUser(createDoctor("Alexandra", "Georgescu", County.DOLJ, "alex@doc", girlSSN, 1L));
+        registerService.registerUser(createDoctor("Apopei", "Apostolescu", County.ARGES, "apopei@doc", girlSSN, 2L));
 
     }
 
-    private RegisterDTO createDoctor(String fn, String ln, County county, String email, String pass, String ssn, Date dob, Long locId) {
+    private RegisterDTO createDoctor(String fn, String ln, County county, String email, String ssn, Long locId) {
         RegisterDTO doctor = new RegisterDTO();
-
+        doctor.setSkipSsnValidation(true);
         doctor.setFirstName(fn);
         doctor.setLastName(ln);
         doctor.setCounty(county);
         doctor.setEmail(email);
-        doctor.setPassword(bCryptPasswordEncoder.encode(pass));
+        doctor.setPassword(bCryptPasswordEncoder.encode("pass"));
         doctor.setSsn(ssn);
-        doctor.setDateOfBirth(dob);
+        doctor.setDateOfBirth(MiscUtils.getDataFromSsn(ssn).getDateOfBirth());
         doctor.setUserType(UserType.DOCTOR);
         doctor.setLocationId(locId);
 
         return doctor;
     }
 
-    private void addDonationCenterPersonnels() throws EntityNotFoundException, UserAlreadyRegisteredException {
-        registerService.registerUser(createDCP("Mariana", "Vitalie", County.BUCURESTI, "mariana@dcp", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime(), 14L));
-        registerService.registerUser(createDCP("Mihai", "Vitalie", County.CLUJ, "mihai@dcp", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime(), 14L));
+    private void addDonationCenterPersonnels() throws EntityNotFoundException, UserAlreadyRegisteredException, SsnInvalidException {
+        registerService.registerUser(createDCP("Mariana", "Vitalie", County.BUCURESTI, "mariana@dcp", girlSSN, 14L));
+        registerService.registerUser(createDCP("Mihai", "Vitalie", County.CLUJ, "mihai@dcp", boySSN, 14L));
     }
 
-    private RegisterDTO createDCP(String fn, String ln, County county, String email, String pass, String ssn, Date dob, Long locId) {
+    private RegisterDTO createDCP(String fn, String ln, County county, String email, String ssn, Long locId) {
         RegisterDTO dcp = new RegisterDTO();
-
+        dcp.setSkipSsnValidation(true);
         dcp.setFirstName(fn);
         dcp.setLastName(ln);
         dcp.setCounty(county);
         dcp.setEmail(email);
-        dcp.setPassword(bCryptPasswordEncoder.encode(pass));
+        dcp.setPassword(bCryptPasswordEncoder.encode("pass"));
         dcp.setSsn(ssn);
-        dcp.setDateOfBirth(dob);
+        dcp.setDateOfBirth(MiscUtils.getDataFromSsn(ssn).getDateOfBirth());
         dcp.setUserType(UserType.DONATION_CENTER_PERSONNEL);
         dcp.setLocationId(locId);
 
         return dcp;
     }
 
-    private void addSysAdmin() throws EntityNotFoundException, UserAlreadyRegisteredException {
-        registerService.registerUser(createSysAdmin("Admin", "Adminovici", County.CLUJ, "admin", "admin", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
+    private void addSysAdmin() throws EntityNotFoundException, UserAlreadyRegisteredException, SsnInvalidException {
+        registerService.registerUser(createSysAdmin("Admin", "Adminovici", County.CLUJ, "admin", boySSN));
     }
 
-    private RegisterDTO createSysAdmin(String fn, String ln, County county, String email, String pass, String ssn, Date dob) {
+    private RegisterDTO createSysAdmin(String fn, String ln, County county, String email, String ssn) {
         RegisterDTO sysAdmin = new RegisterDTO();
-
+        sysAdmin.setSkipSsnValidation(true);
         sysAdmin.setFirstName(fn);
         sysAdmin.setLastName(ln);
         sysAdmin.setCounty(county);
         sysAdmin.setEmail(email);
-        sysAdmin.setPassword(bCryptPasswordEncoder.encode(pass));
+        sysAdmin.setPassword(bCryptPasswordEncoder.encode("admin"));
         sysAdmin.setSsn(ssn);
-        sysAdmin.setDateOfBirth(dob);
+        sysAdmin.setDateOfBirth(MiscUtils.getDataFromSsn(ssn).getDateOfBirth());
         sysAdmin.setUserType(UserType.SYSADMIN);
 
         return sysAdmin;
     }
 
-    private void addDonors() throws EntityNotFoundException, UserAlreadyRegisteredException {
-        registerService.registerUser(createDonor("Razvan", "Dumitru", County.BRAILA, "razvan@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
-        registerService.registerUser(createDonor("Daniel", "Dormutan", County.BUCURESTI, "daniel@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
-        registerService.registerUser(createDonor("Miho", "Nevaman", County.BUCURESTI, "miho@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
-        registerService.registerUser(createDonor("Sebastian", "Badita", County.BUCURESTI, "sebastian@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
-        registerService.registerUser(createDonor("Sebi", "Puscatu", County.BUCURESTI, "drog@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
-        registerService.registerUser(createDonor("Emin", "Eminovici", County.BUCURESTI, "emin@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
-        registerService.registerUser(createDonor("Veronica", "Popescu", County.BUCURESTI, "vera@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
-        registerService.registerUser(createDonor("Andrei", "Adan", County.BUCURESTI, "andrei@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
-        registerService.registerUser(createDonor("Test", "Donor", County.CLUJ, "test@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
-        registerService.registerUser(createDonor("Adrian", "Moldovan", County.ALBA, "adetz@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
-        registerService.registerUser(createDonor("Stefan", "Georgescu", County.ARGES, "stef@don", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime()));
+    private void addDonors() throws EntityNotFoundException, UserAlreadyRegisteredException, SsnInvalidException {
+        registerService.registerUser(createDonor("Razvan", "Dumitru", County.BRAILA, "razvan@don", boySSN));
+        registerService.registerUser(createDonor("Daniel", "Dormutan", County.BUCURESTI, "daniel@don", boySSN));
+        registerService.registerUser(createDonor("Miho", "Nevaman", County.BUCURESTI, "miho@don", boySSN));
+        registerService.registerUser(createDonor("Sebastian", "Badita", County.BUCURESTI, "sebastian@don", boySSN));
+        registerService.registerUser(createDonor("Sebi", "Puscatu", County.BUCURESTI, "drog@don", boySSN));
+        registerService.registerUser(createDonor("Emin", "Eminovici", County.BUCURESTI, "emin@don", boySSN));
+        registerService.registerUser(createDonor("Veronica", "Popescu", County.BUCURESTI, "vera@don", girlSSN));
+        registerService.registerUser(createDonor("Andrei", "Adan", County.BUCURESTI, "andrei@don", boySSN));
+        registerService.registerUser(createDonor("Test", "Donor", County.CLUJ, "test@don", girlSSN));
+        registerService.registerUser(createDonor("Adrian", "Moldovan", County.ALBA, "adetz@don", girlSSN));
+        registerService.registerUser(createDonor("Stefan", "Georgescu", County.ARGES, "stef@don", boySSN));
 
         donorService.updateBloodGroupOnDonor(1L, "A", false);
         donorService.updateBloodGroupOnDonor(2L, "AB", false);
@@ -241,16 +250,17 @@ public class MockDataController {
         donorService.updateBloodGroupOnDonor(5L, "A", false);
     }
 
-    private RegisterDTO createDonor(String fn, String ln, County county, String email, String pass, String ssn, Date dob) {
+    private RegisterDTO createDonor(String fn, String ln, County county, String email, String ssn) {
         RegisterDTO donor = new RegisterDTO();
-
+        donor.setSkipSsnValidation(true);
         donor.setFirstName(fn);
         donor.setLastName(ln);
         donor.setCounty(county);
         donor.setEmail(email);
-        donor.setPassword(bCryptPasswordEncoder.encode(pass));
+        donor.setPassword(bCryptPasswordEncoder.encode("pass"));
         donor.setSsn(ssn);
-        donor.setDateOfBirth(dob);
+        SsnData ssnData = MiscUtils.getDataFromSsn(ssn);
+        donor.setDateOfBirth(ssnData.getDateOfBirth());
         donor.setUserType(UserType.DONOR);
 
         return donor;
