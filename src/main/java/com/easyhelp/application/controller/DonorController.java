@@ -5,9 +5,7 @@ import com.easyhelp.application.model.donations.DonorSummary;
 import com.easyhelp.application.model.dto.account.BloodGroupRhDTO;
 import com.easyhelp.application.model.dto.account.CountySsnDTO;
 import com.easyhelp.application.model.dto.account.DonorAccountDTO;
-import com.easyhelp.application.model.dto.booking.AvailableDate;
 import com.easyhelp.application.model.dto.booking.BookingRequestDTO;
-import com.easyhelp.application.model.dto.booking.DateRequestDTO;
 import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
 import com.easyhelp.application.model.dto.donation.DonorSummaryDTO;
 import com.easyhelp.application.model.dto.location.CountyDTO;
@@ -27,7 +25,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @RestController
@@ -63,17 +64,11 @@ public class DonorController {
         }
     }
 
-    @PostMapping("/getAvailableHours")
-    public ResponseEntity<Response> getAvailableHours(@RequestBody DateRequestDTO dateRequestDTO) {
-        List<AvailableDate> hours = donationBookingService.getAvailableDates(dateRequestDTO.getId(), dateRequestDTO.getSelectedDate(),
-                dateRequestDTO.getId());
-        return ResponseBuilder.encode(HttpStatus.OK, hours, 1, 1, 1);
-    }
-
-    @PostMapping("/bookHour")
-    public ResponseEntity<Response> bookHour(@RequestBody BookingRequestDTO bookingRequestDTO) {
+    @PostMapping("/bookDonation")
+    public ResponseEntity<Response> bookDonation(@RequestBody BookingRequestDTO bookingRequestDTO) {
         try {
-            donorService.bookDonationHour(bookingRequestDTO.getId(), bookingRequestDTO.getSelectedDate(), bookingRequestDTO.getDonationCenterId());
+            Calendar calendar = bookingRequestDTO.getSelectedDate();
+            donorService.bookDonationHour(bookingRequestDTO.getId(), calendar, bookingRequestDTO.getDonationCenterId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());

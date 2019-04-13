@@ -49,6 +49,8 @@ public class DonationCenter extends RealLocation {
     @JsonIgnore
     private Set<StoredBlood> storedBloodSet = new HashSet<>();
 
+    private Integer numberOfConcurrentDonors = 10;
+
     public DonationCenter(String name, double longitude, double latitude, String address, County county) {
         super(name, longitude, latitude, address, county);
     }
@@ -59,5 +61,12 @@ public class DonationCenter extends RealLocation {
                 && donationBookings.isEmpty()
                 && acceptedDonationRequests.isEmpty()
                 && storedBloodSet.isEmpty();
+    }
+
+    public void addBooking(DonationBooking donationBooking) {
+        if (donationBookings == null) {
+            donationBookings = new HashSet<>();
+        }
+        donationBookings.add(donationBooking);
     }
 }

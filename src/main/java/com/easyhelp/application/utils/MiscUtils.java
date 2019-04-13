@@ -1,15 +1,18 @@
 package com.easyhelp.application.utils;
 
-import com.easyhelp.application.model.dto.booking.AvailableDate;
+import com.easyhelp.application.model.donations.AvailableDate;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class MiscUtils {
 
-    private static int OPEN_HOUR = 6;
+    private static int OPEN_HOUR = 7;
     private static int CLOSE_HOUR = 13;
-    private static int SCHEDULE_PERIOD = 6;
+    private static int SCHEDULE_PERIOD = 7;
 
     private static Boolean validateSsn(String ssn) {
         return true;
@@ -31,12 +34,20 @@ public class MiscUtils {
             calendar.setTime(date);
             calendar.add(Calendar.DAY_OF_MONTH, day);
             List<Date> hours = new ArrayList<>();
-            calendar.add(Calendar.HOUR_OF_DAY, OPEN_HOUR);
+            calendar.set(Calendar.HOUR_OF_DAY, OPEN_HOUR);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
 
+            hours.add(calendar.getTime());
             for (int hour = OPEN_HOUR; hour < CLOSE_HOUR; hour++) {
-                calendar.add(Calendar.HOUR_OF_DAY, 1);
-                hours.add(calendar.getTime());
+                for (int j = 0; j < 3; j++) {
+                    calendar.add(Calendar.MINUTE, 20);
+                    hours.add(calendar.getTime());
+                }
             }
+            hours.remove(hours.size() - 1);
+
             dates.add(new AvailableDate(calendar.getTime(), hours));
         }
 

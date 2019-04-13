@@ -1,6 +1,8 @@
 package com.easyhelp.application.controller;
 
 import com.easyhelp.application.model.donations.DonationBooking;
+import com.easyhelp.application.model.donations.AvailableDate;
+import com.easyhelp.application.model.dto.booking.AvailableDateDTO;
 import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
 import com.easyhelp.application.model.dto.location.CountyDTO;
 import com.easyhelp.application.model.dto.location.LocationDTO;
@@ -75,5 +77,12 @@ public class DonationCenterController {
         List<DonationBooking> bookings = donationBookingService.getDCBookings(identifierDTO.getId());
         List<DonationBookingDTO> dtoList = bookings.stream().map(DonationBookingDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+    }
+
+    @PostMapping("/getAvailableHours")
+    public ResponseEntity<Response> getAvailableHoursForDCNext7Days(@RequestBody IdentifierDTO identifierDTO) {
+        List<AvailableDate> hours = donationBookingService.getAvailableBookingSlots(identifierDTO.getId());
+        List<AvailableDateDTO> hoursDTO = hours.stream().map(AvailableDateDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, hoursDTO, 1, 1, 1);
     }
 }

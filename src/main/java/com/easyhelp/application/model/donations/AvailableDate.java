@@ -1,14 +1,13 @@
-package com.easyhelp.application.model.dto.booking;
+package com.easyhelp.application.model.donations;
 
 
-import com.easyhelp.application.model.dto.BaseDTO;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class AvailableDate extends BaseDTO {
+public class AvailableDate {
 
     private Date date;
     private List<Date> availableHours;
