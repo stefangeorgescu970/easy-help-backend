@@ -6,6 +6,7 @@ import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.DonorSummary;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
+import com.easyhelp.application.model.misc.SsnData;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
@@ -15,6 +16,7 @@ import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
+import com.sun.tools.hat.internal.util.Misc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,12 +52,20 @@ public class DonorServiceImpl implements DonorServiceInterface {
     }
 
     @Override
-    public void updateSsnOnDonor(Long donorId, String newSsn) throws EntityNotFoundException, SsnInvalidException {
+    public void updateSsnOnDonor(Long donorId, String newSsn, Boolean skipCheck) throws EntityNotFoundException, SsnInvalidException {
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
+        if (!skipCheck) {
+            // Possibility to skip check for ssn. Make sure at least the first 7 digits are ok, since these
+            // tell the parser the dob and sex of a donor.
+
+            MiscUtils.validateSsn(newSsn);
+        }
 
         if (donorOptional.isPresent()) {
             Donor donor = donorOptional.get();
-            Date dob = MiscUtils.getDateFromSsn(newSsn);
+            SsnData ssnData = MiscUtils.getDataFromSsn(newSsn);
+            Date dob = ssnData.getDateOfBirth();
+            donor.setIsMale(ssnData.getIsMale());
             donor.setSsn(newSsn);
             donor.setDateOfBirth(dob);
             donorRepository.save(donor);

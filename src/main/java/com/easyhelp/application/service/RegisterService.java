@@ -13,8 +13,10 @@ import com.easyhelp.application.security.JwtTokenProvider;
 import com.easyhelp.application.service.applicationuser.ApplicationUserService;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.hospital.HospitalServiceInterface;
+import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
+import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +52,7 @@ public class RegisterService {
     @Autowired
     private DonationCenterServiceInterface donationCenterService;
 
-    public void registerUser(RegisterDTO user) throws UserAlreadyRegisteredException, EntityNotFoundException {
+    public void registerUser(RegisterDTO user) throws UserAlreadyRegisteredException, EntityNotFoundException, SsnInvalidException {
         //TODO - this is really ugly code
 
         Set<String> role = new HashSet<>();
@@ -60,6 +62,11 @@ public class RegisterService {
             applicationUserService.findByEmailInAllUsers(user.getEmail());
             throw new UserAlreadyRegisteredException("A user with the email " + user.getEmail() + " already exists!");
         } catch (UsernameNotFoundException exception) {
+            if (user.getSsn() != null && !user.getSkipSsnValidation()) {
+                String ssn = user.getSsn();
+                MiscUtils.validateSsn(ssn);
+            }
+
             switch (user.getUserType()) {
                 case DONOR: {
                     Donor donor = new Donor(user);

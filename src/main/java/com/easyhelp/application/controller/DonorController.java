@@ -27,9 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @RestController
@@ -46,7 +44,7 @@ public class DonorController {
     public ResponseEntity<Response> setCountyAndSSN(@RequestBody CountySsnDTO countySsnDTO) {
         try {
             donorService.updateCountyOnDonor(countySsnDTO.getDonorId(), countySsnDTO.getCounty());
-            donorService.updateSsnOnDonor(countySsnDTO.getDonorId(), countySsnDTO.getSsn());
+            donorService.updateSsnOnDonor(countySsnDTO.getDonorId(), countySsnDTO.getSsn(), countySsnDTO.getSkipSsnCheck());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());

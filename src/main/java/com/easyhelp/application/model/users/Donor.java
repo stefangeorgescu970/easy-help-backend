@@ -6,6 +6,8 @@ import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.DonationForm;
 import com.easyhelp.application.model.dto.account.RegisterDTO;
+import com.easyhelp.application.model.misc.SsnData;
+import com.easyhelp.application.utils.MiscUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -50,6 +52,8 @@ public class Donor extends ApplicationUser {
     @JsonIgnore
     private Set<StoredBlood> storedBloodSet;
 
+    private Boolean isMale;
+
     public Donor(RegisterDTO applicationUser) {
         setCounty(applicationUser.getCounty());
         setDateOfBirth(applicationUser.getDateOfBirth());
@@ -58,6 +62,14 @@ public class Donor extends ApplicationUser {
         setLastName(applicationUser.getLastName());
         setPassword(applicationUser.getPassword());
         setSsn(applicationUser.getSsn());
+
+        String ssn = applicationUser.getSsn();
+        if (ssn != null) {
+            SsnData ssnData = MiscUtils.getDataFromSsn(ssn);
+            setDateOfBirth(ssnData.getDateOfBirth());
+            setIsMale(ssnData.getIsMale());
+        }
+
         setUserType(applicationUser.getUserType());
     }
 

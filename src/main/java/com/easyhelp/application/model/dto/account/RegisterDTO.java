@@ -7,4 +7,6 @@ import lombok.Data;
 public class RegisterDTO extends AccountDTO {
     private Long locationId;
     private String password;
+
+    private Boolean skipSsnValidation;
 }
