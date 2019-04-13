@@ -14,6 +14,7 @@ import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
+import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
@@ -70,7 +71,7 @@ public class DonorController {
             Calendar calendar = bookingRequestDTO.getSelectedDate();
             donorService.bookDonationHour(bookingRequestDTO.getId(), calendar, bookingRequestDTO.getDonationCenterId());
             return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }

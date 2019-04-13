@@ -1,6 +1,7 @@
 package com.easyhelp.application.service.donor;
 
 import com.easyhelp.application.model.blood.BloodType;
+import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.DonorSummary;
 import com.easyhelp.application.model.locations.County;
@@ -11,11 +12,13 @@ import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
+import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -88,16 +91,17 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
 
     @Override
-    public void bookDonationHour(Long donorId, Calendar selectedHour, Long donationCenterId) throws EntityNotFoundException {
+    public void bookDonationHour(Long donorId, Calendar selectedHour, Long donationCenterId) throws EntityNotFoundException, EntityAlreadyExistsException {
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
 
         Date date = selectedHour.getTime();
         date.setHours(date.getHours() + date.getTimezoneOffset() / 60);
 
-        //TODO - check if donor has already made a booking
-
         if (donorOptional.isPresent()) {
             Donor donor = donorOptional.get();
+            if (donor.getDonationBooking() != null)
+                throw new EntityAlreadyExistsException("The donor has already made a booking");
+
             DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
             DonationBooking booking = new DonationBooking();
             booking.setDateAndTime(date);
@@ -121,14 +125,25 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
     @Override
     public DonorSummary getDonorSummary(Long donorId) throws EntityNotFoundException {
+        String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
         DonorSummary donorSummary = new DonorSummary();
-
-        //check if donor has already made a booking
 
         if (donorOptional.isPresent()) {
             Donor donor = donorOptional.get();
             donorSummary.setDonationsNumber(donor.getDonations().size());
+
+            if (donor.getDonationBooking() != null &&
+                    donor.getDonationBooking().getDateAndTime().after(new Date()))
+                donorSummary.setNextBooking(dateFormat.format(donor.getDonationBooking().getDateAndTime()));
+
+            if (!donor.getDonations().isEmpty()) {
+                Optional<Donation> lastDonation = donor.getDonations().stream().max(Comparator.comparing(Donation::getDateAndTime));
+                donorSummary.setLastDonation(dateFormat.format(lastDonation.get().getDateAndTime().toString()));
+            }
+
         } else {
             throw new EntityNotFoundException("No donor was found with provided id.");
         }

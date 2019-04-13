@@ -152,8 +152,8 @@ public class MockDataController {
 
     private void addDoctors() throws EntityNotFoundException, UserAlreadyRegisteredException {
         registerService.registerUser(createDoctor("Andrei", "Cretu", County.BUCURESTI, "andrei@doc", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime(), 1L));
-        registerService.registerUser(createDoctor("Andra", "Moldovan", County.CLUJ, "andra@doc", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime(), 1L));
-        registerService.registerUser(createDoctor("Alexandra", "Constantinescu", County.DOLJ, "alex@doc", "pass", "2970704027633", new GregorianCalendar(1997, GregorianCalendar.NOVEMBER, 2).getTime(), 1L));
+        registerService.registerUser(createDoctor("Andra", "NU Moldovan", County.CLUJ, "andra@doc", "pass", "1970704027633", new GregorianCalendar(1997, GregorianCalendar.MAY, 15).getTime(), 1L));
+        registerService.registerUser(createDoctor("Alexandra", "Georgescu", County.DOLJ, "alex@doc", "pass", "2970704027633", new GregorianCalendar(1997, GregorianCalendar.NOVEMBER, 2).getTime(), 1L));
         registerService.registerUser(createDoctor("Apopei", "Apostolescu", County.ARGES, "apopei@doc", "pass", "1970704027633", new GregorianCalendar(1970, GregorianCalendar.MAY, 15).getTime(), 2L));
 
     }

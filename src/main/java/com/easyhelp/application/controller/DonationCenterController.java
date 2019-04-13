@@ -11,6 +11,7 @@ import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
+import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,8 +82,12 @@ public class DonationCenterController {
 
     @PostMapping("/getAvailableHours")
     public ResponseEntity<Response> getAvailableHoursForDCNext7Days(@RequestBody IdentifierDTO identifierDTO) {
-        List<AvailableDate> hours = donationBookingService.getAvailableBookingSlots(identifierDTO.getId());
-        List<AvailableDateDTO> hoursDTO = hours.stream().map(AvailableDateDTO::new).collect(Collectors.toList());
-        return ResponseBuilder.encode(HttpStatus.OK, hoursDTO, 1, 1, 1);
+        try {
+            List<AvailableDate>hours = donationBookingService.getAvailableBookingSlots(identifierDTO.getId());
+            List<AvailableDateDTO> hoursDTO = hours.stream().map(AvailableDateDTO::new).collect(Collectors.toList());
+            return ResponseBuilder.encode(HttpStatus.OK, hoursDTO, 1, 1, 1);
+        } catch (EntityNotFoundException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
     }
 }

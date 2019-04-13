@@ -10,7 +10,7 @@ public interface DonationBookingServiceInterface {
 
     void save(DonationBooking donationBooking);
 
-    List<AvailableDate> getAvailableBookingSlots(Long donationCenterId);
+    List<AvailableDate> getAvailableBookingSlots(Long donationCenterId) throws EntityNotFoundException;
 
     List<DonationBooking> getDCBookings(Long donationCenterId);
 
