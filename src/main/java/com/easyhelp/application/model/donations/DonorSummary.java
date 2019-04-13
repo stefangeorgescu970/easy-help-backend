@@ -5,11 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class DonorSummary extends BaseEntity {
     private Integer donationsNumber;
-    private String lastDonation;
-    private String nextBooking;
+    private Donation lastDonation;
+    private DonationBooking nextBooking;
 }

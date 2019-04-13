@@ -125,9 +125,6 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
     @Override
     public DonorSummary getDonorSummary(Long donorId) throws EntityNotFoundException {
-        String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
-
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
         DonorSummary donorSummary = new DonorSummary();
 
@@ -137,11 +134,11 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
             if (donor.getDonationBooking() != null &&
                     donor.getDonationBooking().getDateAndTime().after(new Date()))
-                donorSummary.setNextBooking(dateFormat.format(donor.getDonationBooking().getDateAndTime()));
+                donorSummary.setNextBooking(donor.getDonationBooking());
 
             if (!donor.getDonations().isEmpty()) {
                 Optional<Donation> lastDonation = donor.getDonations().stream().max(Comparator.comparing(Donation::getDateAndTime));
-                donorSummary.setLastDonation(dateFormat.format(lastDonation.get().getDateAndTime().toString()));
+                donorSummary.setLastDonation(lastDonation.get());
             }
 
         } else {
