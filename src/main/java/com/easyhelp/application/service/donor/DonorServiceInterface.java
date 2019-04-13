@@ -1,6 +1,7 @@
 package com.easyhelp.application.service.donor;
 
 import com.easyhelp.application.model.donations.DonorSummary;
+import com.easyhelp.application.model.dto.donation.DonationFormDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
@@ -22,4 +23,6 @@ public interface DonorServiceInterface {
     List<Donor> getDonorsInCounty(County county);
 
     DonorSummary getDonorSummary(Long donorId) throws EntityNotFoundException;
+
+    void addDonationForm(DonationFormDTO donationForm) throws EntityNotFoundException;
 }

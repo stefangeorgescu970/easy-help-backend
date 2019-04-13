@@ -1,26 +1,14 @@
-package com.easyhelp.application.model.donations;
+package com.easyhelp.application.model.dto.donation;
 
-import com.easyhelp.application.model.BaseEntity;
-import com.easyhelp.application.model.users.Donor;
+import com.easyhelp.application.model.dto.BaseDTO;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.util.Date;
 
-@Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@Table(name = "donation_forms")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class DonationForm extends BaseEntity {
+public class DonationFormDTO extends BaseDTO {
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "fk_donor")
-    private Donor donor;
-
+    private Long donorId;
     private Boolean generalGoodHealth;
     private Boolean recentLossOfWeight;
     private Boolean recentInexplicableFever;
@@ -59,5 +47,3 @@ public class DonationForm extends BaseEntity {
     private Boolean beenRefused;
     private Boolean requireAttentionPostDonation;
 }
-
-

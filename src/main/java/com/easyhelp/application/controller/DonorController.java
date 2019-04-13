@@ -7,6 +7,7 @@ import com.easyhelp.application.model.dto.account.CountySsnDTO;
 import com.easyhelp.application.model.dto.account.DonorAccountDTO;
 import com.easyhelp.application.model.dto.booking.BookingRequestDTO;
 import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
+import com.easyhelp.application.model.dto.donation.DonationFormDTO;
 import com.easyhelp.application.model.dto.donation.DonorSummaryDTO;
 import com.easyhelp.application.model.dto.location.CountyDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
@@ -98,6 +99,16 @@ public class DonorController {
             DonorSummary donorSummary = donorService.getDonorSummary(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK, new DonorSummaryDTO(donorSummary));
         } catch (EntityNotFoundException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/addDonationForm")
+    public ResponseEntity<Response> addDonationForm(@RequestBody DonationFormDTO donationFormDTO) {
+        try {
+            donorService.addDonationForm(donationFormDTO);
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }

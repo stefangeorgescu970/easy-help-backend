@@ -16,6 +16,7 @@ public class DonorSummaryDTO extends BaseDTO {
 
     public DonorSummaryDTO(DonorSummary donorSummary) {
         donationsNumber = donorSummary.getDonationsNumber();
-        nextBooking = new DonationBookingDTO(donorSummary.getNextBooking());
+        if (donorSummary.getNextBooking() != null)
+            nextBooking = new DonationBookingDTO(donorSummary.getNextBooking());
     }
 }
