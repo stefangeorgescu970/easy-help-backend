@@ -1,16 +1,20 @@
 package com.easyhelp.application.controller;
 
 
+import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.dto.account.RegisterDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
+import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.users.UserType;
+import com.easyhelp.application.repository.PatientRepository;
 import com.easyhelp.application.service.RegisterService;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.hospital.HospitalServiceInterface;
+import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import com.easyhelp.application.utils.response.Response;
@@ -48,6 +52,9 @@ public class MockDataController {
 
     @Autowired
     private DonorServiceInterface donorService;
+
+    @Autowired
+    private PatientServiceInterface patientService;
 
     public MockDataController(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -248,8 +255,5 @@ public class MockDataController {
 
         return donor;
     }
-
-    private void addDonationBookings() {
-
-    }
+    
 }

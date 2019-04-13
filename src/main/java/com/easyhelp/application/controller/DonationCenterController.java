@@ -9,6 +9,7 @@ import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
+import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
@@ -34,6 +35,9 @@ public class DonationCenterController {
 
     @Autowired
     private DonationBookingServiceInterface donationBookingService;
+
+    @Autowired
+    private DonationRequestServiceInterface donationRequestService;
 
     @PostMapping("/add")
     private ResponseEntity<Response> addDonationCenter(@RequestBody LocationDTO location) {
@@ -83,7 +87,7 @@ public class DonationCenterController {
     @PostMapping("/getAvailableHours")
     public ResponseEntity<Response> getAvailableHoursForDCNext7Days(@RequestBody IdentifierDTO identifierDTO) {
         try {
-            List<AvailableDate>hours = donationBookingService.getAvailableBookingSlots(identifierDTO.getId());
+            List<AvailableDate> hours = donationBookingService.getAvailableBookingSlots(identifierDTO.getId());
             List<AvailableDateDTO> hoursDTO = hours.stream().map(AvailableDateDTO::new).collect(Collectors.toList());
             return ResponseBuilder.encode(HttpStatus.OK, hoursDTO, 1, 1, 1);
         } catch (EntityNotFoundException e) {

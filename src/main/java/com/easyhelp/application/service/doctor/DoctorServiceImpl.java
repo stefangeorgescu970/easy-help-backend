@@ -73,4 +73,14 @@ public class DoctorServiceImpl implements DoctorServiceInterface {
             throw new EntityNotFoundException("user not found");
         }
     }
+
+    @Override
+    public Doctor findById(Long doctorId) throws EntityNotFoundException {
+        Optional<Doctor> doctor = doctorRepository.findById(doctorId);
+        if (doctor.isPresent()) {
+            return doctor.get();
+        } else {
+            throw new EntityNotFoundException("User not found");
+        }
+    }
 }
