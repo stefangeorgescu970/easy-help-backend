@@ -3,7 +3,9 @@ package com.easyhelp.application.controller;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.dto.requests.DonationRequestDTO;
 import com.easyhelp.application.model.dto.requests.DonationRequestDetailsDTO;
+import com.easyhelp.application.model.dto.requests.PatientDTO;
 import com.easyhelp.application.model.requests.DonationRequest;
+import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
@@ -44,14 +46,30 @@ public class DoctorController {
         }
     }
 
-    @RequestMapping("/getMyRequests")
+    @RequestMapping("/seeMyBloodRequests")
     private ResponseEntity<Response> getMyRequests(@RequestBody IdentifierDTO identifierDTO) {
         List<DonationRequest> donationRequests = donationRequestService.getAllRequestsForDoctor(identifierDTO.getId());
         List<DonationRequestDetailsDTO> dtoList = donationRequests.stream().map(DonationRequestDetailsDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
+    @RequestMapping("/addPatient")
+    private ResponseEntity<Response> addPatient(@RequestBody PatientDTO patientDTO) {
+        try {
+            patientService.addPatient(patientDTO.getDoctorId(), patientDTO.getSsn(), patientDTO.getBloodType().getGroupLetter(),
+                    patientDTO.getBloodType().getRh());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
 
+    @RequestMapping("/seeMyPatients")
+    private ResponseEntity<Response> getMyPatients(@RequestBody IdentifierDTO identifierDTO) {
+        List<Patient> patients = patientService.getPatientsForDoctor(identifierDTO.getId());
+        List<PatientDTO> dtoList = patients.stream().map(PatientDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+    }
 }
 
 

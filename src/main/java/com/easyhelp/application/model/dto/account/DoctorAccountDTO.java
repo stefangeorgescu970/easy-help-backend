@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class DoctorAccountDTO extends AccountDTO {
+public class /**/DoctorAccountDTO extends AccountDTO {
     private LocationDTO hospital;
 
     public DoctorAccountDTO(Doctor doctor) {

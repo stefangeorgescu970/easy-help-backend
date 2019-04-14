@@ -37,4 +37,5 @@ public class DonationRequest extends BaseEntity {
     private Integer quantity;
     private RequestUrgency urgency;
     private RequestStatus status;
+
 }

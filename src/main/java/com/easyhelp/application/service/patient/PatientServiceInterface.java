@@ -8,10 +8,11 @@ import java.util.List;
 public interface PatientServiceInterface {
     List<Patient> getAll();
 
-    void save(Patient patient);
 
     Patient findById(Long patientId) throws EntityNotFoundException;
 
-    void updateBloodGroupOnPatient(Long patient, String groupLetter, Boolean rh) throws EntityNotFoundException;
 
+    void addPatient(Long doctorId, String ssn, String groupLetter, Boolean rh) throws EntityNotFoundException;
+
+    List<Patient> getPatientsForDoctor(Long doctorId);
 }

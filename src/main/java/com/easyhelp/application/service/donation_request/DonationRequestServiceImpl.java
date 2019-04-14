@@ -87,7 +87,7 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
     public List<DonationRequest> getAllRequestsForDoctor(Long doctorId) {
         return donationRequestRepository.findAll()
                 .stream()
-                .filter(r -> r.getDoctor().getId() == doctorId)
+                .filter(r -> r.getDoctor().getId().equals( doctorId))
                 .collect(Collectors.toList());
     }
 }

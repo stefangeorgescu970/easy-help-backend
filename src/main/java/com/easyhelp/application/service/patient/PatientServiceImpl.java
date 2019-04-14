@@ -2,14 +2,17 @@ package com.easyhelp.application.service.patient;
 
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.requests.Patient;
+import com.easyhelp.application.model.users.Doctor;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.PatientRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
+import com.easyhelp.application.service.doctor.DoctorServiceInterface;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PatientServiceImpl implements PatientServiceInterface {
@@ -20,14 +23,12 @@ public class PatientServiceImpl implements PatientServiceInterface {
     @Autowired
     private BloodTypeServiceInterface bloodTypeService;
 
+    @Autowired
+    private DoctorServiceInterface doctorService;
+
     @Override
     public List<Patient> getAll() {
         return new ArrayList<>(patientRepository.findAll());
-    }
-
-    @Override
-    public void save(Patient patient) {
-        patientRepository.save(patient);
     }
 
     @Override
@@ -41,29 +42,37 @@ public class PatientServiceImpl implements PatientServiceInterface {
     }
 
     @Override
-    public void updateBloodGroupOnPatient(Long patientId, String groupLetter, Boolean rh) throws EntityNotFoundException {
-        Optional<Patient> patientOptional = patientRepository.findById(patientId);
+    public void addPatient(Long doctorId, String ssn, String groupLetter, Boolean rh) throws EntityNotFoundException {
 
-        if (patientOptional.isPresent()) {
-            Patient patient = patientOptional.get();
-            BloodType bloodTypeInDB = bloodTypeService.findBloodTypeInDB(groupLetter, rh);
-            if (bloodTypeInDB == null) {
-                BloodType newBloodType = new BloodType(groupLetter, rh);
-                Set<Patient> patients = new HashSet<>();
-                patients.add(patient);
-                newBloodType.setPatients(patients);
-                patient.setBloodType(newBloodType);
-                bloodTypeService.saveBloodType(newBloodType);
-            } else {
-                patient.setBloodType(bloodTypeInDB);
-                if (bloodTypeInDB.getPatients() == null)
-                    bloodTypeInDB.setPatients(new HashSet<>());
-                bloodTypeInDB.getPatients().add(patient);
-                bloodTypeService.saveBloodType(bloodTypeInDB);
-            }
-            patientRepository.save(patient);
-        } else {
-            throw new EntityNotFoundException("No patient was found with provided id.");
+        Doctor doctor = doctorService.findById(doctorId);
+        Patient patient = new Patient();
+        patient.setSsn(ssn);
+        patient.setDoctor(doctor);
+
+        BloodType bloodTypeInDB = bloodTypeService.findBloodTypeInDB(groupLetter, rh);
+        if (bloodTypeInDB == null) {
+            BloodType newBloodType = new BloodType(groupLetter, rh);
+            Set<Patient> patients = new HashSet<>();
+            patients.add(patient);
+            newBloodType.setPatients(patients);
+            patient.setBloodType(newBloodType);
+            bloodTypeService.saveBloodType(newBloodType);
         }
+        else {
+            if (bloodTypeInDB.getPatients() == null)
+                bloodTypeInDB.setPatients(new HashSet<>());
+            bloodTypeInDB.getPatients().add(patient);
+            patient.setBloodType(bloodTypeInDB);
+            bloodTypeService.saveBloodType(bloodTypeInDB);
+        }
+        patientRepository.save(patient);
+    }
+
+    @Override
+    public List<Patient> getPatientsForDoctor(Long doctorId) {
+        return patientRepository.findAll()
+                .stream()
+                .filter(p -> p.getDoctor().getId().equals(doctorId))
+                .collect(Collectors.toList());
     }
 }

@@ -275,24 +275,14 @@ public class MockDataController {
     }
 
     private void addPatients() {
-        patientService.save(createPatient("111111111"));
-        patientService.save(createPatient("211111111"));
-        patientService.save(createPatient("22211111111"));
-        patientService.save(createPatient("1111111111"));
-
         try {
-            patientService.updateBloodGroupOnPatient(1L, "A", false);
-            patientService.updateBloodGroupOnPatient(2L, "0", true);
-            patientService.updateBloodGroupOnPatient(3L, "B", true);
-            patientService.updateBloodGroupOnPatient(4L, "AB", false);
+            patientService.addPatient(1L, "111111111", "A", false);
+            patientService.addPatient(2L, "1111111111", "B", true);
+            patientService.addPatient(2L, "21311111111", "AB", false);
+            patientService.addPatient(3L, "22111111111", "0", true);
         } catch (EntityNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    private Patient createPatient(String ssn) {
-        Patient patient = new Patient();
-        patient.setSsn(ssn);
-        return patient;
-    }
 }
