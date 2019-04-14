@@ -22,6 +22,7 @@ import com.easyhelp.application.service.patient.PatientServiceInterface;
 
 import com.easyhelp.application.utils.MiscUtils;
 
+import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
@@ -280,7 +281,7 @@ public class MockDataController {
             patientService.addPatient(2L, "1111111111", "B", true);
             patientService.addPatient(2L, "21311111111", "AB", false);
             patientService.addPatient(3L, "22111111111", "0", true);
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             e.printStackTrace();
         }
     }

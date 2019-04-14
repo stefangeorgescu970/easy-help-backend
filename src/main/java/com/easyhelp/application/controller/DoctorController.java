@@ -59,7 +59,7 @@ public class DoctorController {
             patientService.addPatient(patientDTO.getDoctorId(), patientDTO.getSsn(), patientDTO.getBloodType().getGroupLetter(),
                     patientDTO.getBloodType().getRh());
             return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }

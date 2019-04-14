@@ -8,5 +8,7 @@ import javax.transaction.Transactional;
 
 @Transactional
 public interface PatientRepository extends JpaRepository<Patient, Long> {
+
+    Patient findBySsn(String ssn);
 }
 

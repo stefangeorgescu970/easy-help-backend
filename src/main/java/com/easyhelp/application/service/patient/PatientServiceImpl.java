@@ -4,9 +4,11 @@ import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.users.Doctor;
 import com.easyhelp.application.model.users.Donor;
+import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.repository.PatientRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
+import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ public class PatientServiceImpl implements PatientServiceInterface {
     @Autowired
     private DoctorServiceInterface doctorService;
 
+    @Autowired
+    private DonorRepository donorRepository;
+
     @Override
     public List<Patient> getAll() {
         return new ArrayList<>(patientRepository.findAll());
@@ -42,7 +47,10 @@ public class PatientServiceImpl implements PatientServiceInterface {
     }
 
     @Override
-    public void addPatient(Long doctorId, String ssn, String groupLetter, Boolean rh) throws EntityNotFoundException {
+    public void addPatient(Long doctorId, String ssn, String groupLetter, Boolean rh) throws EntityNotFoundException, EntityAlreadyExistsException {
+
+        if (patientRepository.findBySsn(ssn) != null)
+            throw new EntityAlreadyExistsException("Patient with this ssn was already added.");
 
         Doctor doctor = doctorService.findById(doctorId);
         Patient patient = new Patient();
@@ -57,14 +65,14 @@ public class PatientServiceImpl implements PatientServiceInterface {
             newBloodType.setPatients(patients);
             patient.setBloodType(newBloodType);
             bloodTypeService.saveBloodType(newBloodType);
-        }
-        else {
+        } else {
             if (bloodTypeInDB.getPatients() == null)
                 bloodTypeInDB.setPatients(new HashSet<>());
-            bloodTypeInDB.getPatients().add(patient);
             patient.setBloodType(bloodTypeInDB);
+            bloodTypeInDB.getPatients().add(patient);
             bloodTypeService.saveBloodType(bloodTypeInDB);
         }
+
         patientRepository.save(patient);
     }
 
