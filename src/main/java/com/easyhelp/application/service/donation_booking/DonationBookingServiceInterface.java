@@ -1,7 +1,7 @@
 package com.easyhelp.application.service.donation_booking;
 
-import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.AvailableDate;
+import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 
 import java.util.Date;
@@ -18,4 +18,6 @@ public interface DonationBookingServiceInterface {
     DonationBooking getDonorBooking(Long donorId) throws EntityNotFoundException;
 
     Long getDonorsNumberForSlot(Long donationCenterId, Date slotSelected);
+
+    void cancelBooking(Long bookingId) throws EntityNotFoundException;
 }

@@ -84,6 +84,16 @@ public class DonationCenterController {
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
+    @PostMapping("/cancelBooking")
+    private  ResponseEntity<Response> cancelBooking(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            donationBookingService.cancelBooking(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
     @PostMapping("/getAvailableHours")
     public ResponseEntity<Response> getAvailableHoursForDCNext7Days(@RequestBody IdentifierDTO identifierDTO) {
         try {

@@ -212,4 +212,9 @@ public class DonorServiceImpl implements DonorServiceInterface {
             throw new EntityNotFoundException("No donor was found with provided id.");
         }
     }
+
+    @Override
+    public void save(Donor donor) {
+        donorRepository.save(donor);
+    }
 }

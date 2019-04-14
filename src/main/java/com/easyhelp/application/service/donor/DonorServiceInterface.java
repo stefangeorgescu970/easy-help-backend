@@ -25,4 +25,6 @@ public interface DonorServiceInterface {
     DonorSummary getDonorSummary(Long donorId) throws EntityNotFoundException;
 
     void addDonationForm(DonationFormDTO donationForm) throws EntityNotFoundException;
+
+    void save(Donor donor);
 }

@@ -3,14 +3,10 @@ package com.easyhelp.application.model.dto.account;
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.dto.BaseDTO;
 import com.easyhelp.application.model.locations.County;
-import com.easyhelp.application.model.users.ApplicationUser;
-import com.easyhelp.application.model.users.Donor;
-import com.easyhelp.application.model.users.PartnerUser;
-import com.easyhelp.application.model.users.UserType;
+import com.easyhelp.application.model.users.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -27,6 +23,8 @@ public class AccountDTO extends BaseDTO {
 
     private String bloodGroupLetter;
     private Boolean rh;
+
+    private Long locationId;
 
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -49,6 +47,16 @@ public class AccountDTO extends BaseDTO {
                 bloodGroupLetter = bloodType.getGroupLetter();
                 rh = bloodType.getRh();
             }
+        }
+
+        if (user instanceof DonationCenterPersonnel) {
+            DonationCenterPersonnel donationCenterPersonnel = (DonationCenterPersonnel) user;
+            locationId = donationCenterPersonnel.getDonationCenter().getId();
+        }
+
+        if (user instanceof Doctor) {
+            Doctor doctor = (Doctor) user;
+            locationId = doctor.getHospital().getId();
         }
     }
 }

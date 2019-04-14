@@ -3,9 +3,12 @@ package com.easyhelp.application.service.donation_booking;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.AvailableDate;
 import com.easyhelp.application.model.locations.DonationCenter;
+import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.DonationBookingRepository;
+import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceImpl;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
+import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +31,9 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
 
     @Autowired
     private DonationCenterServiceInterface donationCenterService;
+
+    @Autowired
+    private DonorServiceInterface donorService;
 
     @Override
     public void save(DonationBooking donationBooking) {
@@ -94,5 +101,24 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
                 .filter(b -> b.getDonationCenter().getId().equals(donationCenterId))
                 .filter(b -> dateFormat.format(b.getDateAndTime()).equals(s))
                 .count();
+    }
+
+    @Override
+    public void cancelBooking(Long bookingId) throws EntityNotFoundException {
+        Optional<DonationBooking> donationBookingOptional = donationBookingRepository.findById(bookingId);
+
+        if (!donationBookingOptional.isPresent())
+            throw new EntityNotFoundException("No donation booking with that id exists");
+
+        DonationBooking donationBooking = donationBookingOptional.get();
+        Donor donor = donationBooking.getDonor();
+        DonationCenter donationCenter = donationBooking.getDonationCenter();
+
+        donor.setDonationBooking(null);
+        donationCenter.getDonationBookings().remove(donationBooking);
+
+        donationCenterService.save(donationCenter);
+        donorService.save(donor);
+        donationBookingRepository.delete(donationBooking);
     }
 }
