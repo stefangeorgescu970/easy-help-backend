@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"separatedBloodTypes", "donors"})
 @NoArgsConstructor
 @Table(name = "blood_type")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)

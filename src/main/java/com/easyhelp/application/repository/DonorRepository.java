@@ -14,4 +14,6 @@ public interface DonorRepository extends JpaRepository<Donor, Long> {
     Donor findByEmail(String username);
 
     List<Donor> findAllByCounty(County county);
+
+
 }

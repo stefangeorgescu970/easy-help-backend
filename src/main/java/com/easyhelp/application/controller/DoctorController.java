@@ -1,12 +1,13 @@
 package com.easyhelp.application.controller;
 
-import com.easyhelp.application.model.dto.location.LocationDTO;
+import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.dto.requests.DonationRequestDTO;
-import com.easyhelp.application.model.locations.DonationCenter;
+import com.easyhelp.application.model.dto.requests.DonationRequestDetailsDTO;
 import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
+import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
@@ -38,9 +39,16 @@ public class DoctorController {
         try {
             donationRequestService.requestDonation(donationRequestDTO);
             return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
+    }
+
+    @RequestMapping("/getMyRequests")
+    private ResponseEntity<Response> getMyRequests(@RequestBody IdentifierDTO identifierDTO) {
+        List<DonationRequest> donationRequests = donationRequestService.getAllRequestsForDoctor(identifierDTO.getId());
+        List<DonationRequestDetailsDTO> dtoList = donationRequests.stream().map(DonationRequestDetailsDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
 

@@ -11,4 +11,7 @@ public interface PatientServiceInterface {
     void save(Patient patient);
 
     Patient findById(Long patientId) throws EntityNotFoundException;
+
+    void updateBloodGroupOnPatient(Long patient, String groupLetter, Boolean rh) throws EntityNotFoundException;
+
 }

@@ -18,11 +18,12 @@ import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
-import com.sun.tools.hat.internal.util.Misc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -104,17 +105,18 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
     @Override
     public void bookDonationHour(Long donorId, Calendar selectedHour, Long donationCenterId) throws EntityNotFoundException, EntityAlreadyExistsException {
-        Optional<Donor> donorOptional = donorRepository.findById(donorId);
-
         Date date = selectedHour.getTime();
         date.setHours(date.getHours() + date.getTimezoneOffset() / 60);
-
+        Optional<Donor> donorOptional = donorRepository.findById(donorId);
         if (donorOptional.isPresent()) {
             Donor donor = donorOptional.get();
             if (donor.getDonationBooking() != null)
                 throw new EntityAlreadyExistsException("The donor has already made a booking");
 
             DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
+            if (donationBookingService.getDonorsNumberForSlot(donationCenterId, date) >= donationCenter.getNumberOfConcurrentDonors())
+                throw new EntityAlreadyExistsException("There are too many booking requests for this slot");
+
             DonationBooking booking = new DonationBooking();
             booking.setDateAndTime(date);
             booking.setDonor(donor);
@@ -206,8 +208,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
             donationForm.setDonor(donor);
             donor.setDonationForm(donationForm);
             donorRepository.save(donor);
-        }
-        else {
+        } else {
             throw new EntityNotFoundException("No donor was found with provided id.");
         }
     }

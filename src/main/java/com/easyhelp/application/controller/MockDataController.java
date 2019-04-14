@@ -8,9 +8,11 @@ import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.misc.SsnData;
+import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.model.users.UserType;
 import com.easyhelp.application.repository.PatientRepository;
 import com.easyhelp.application.service.RegisterService;
+import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
@@ -37,6 +39,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/mocks")
@@ -65,6 +69,9 @@ public class MockDataController {
     @Autowired
     private PatientServiceInterface patientService;
 
+    @Autowired
+    private BloodTypeServiceInterface bloodTypeService;
+
     public MockDataController(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -82,6 +89,7 @@ public class MockDataController {
         addDoctors();
         addDonationCenterPersonnels();
         addDonors();
+        addPatients();
 
         return ResponseBuilder.encode(HttpStatus.OK);
     }
@@ -265,5 +273,26 @@ public class MockDataController {
 
         return donor;
     }
-    
+
+    private void addPatients() {
+        patientService.save(createPatient("111111111"));
+        patientService.save(createPatient("211111111"));
+        patientService.save(createPatient("22211111111"));
+        patientService.save(createPatient("1111111111"));
+
+        try {
+            patientService.updateBloodGroupOnPatient(1L, "A", false);
+            patientService.updateBloodGroupOnPatient(2L, "0", true);
+            patientService.updateBloodGroupOnPatient(3L, "B", true);
+            patientService.updateBloodGroupOnPatient(4L, "AB", false);
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Patient createPatient(String ssn) {
+        Patient patient = new Patient();
+        patient.setSsn(ssn);
+        return patient;
+    }
 }

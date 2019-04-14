@@ -11,6 +11,8 @@ import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.crypto.Data;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -78,5 +80,19 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
         if (donationBooking.isEmpty())
             throw new EntityNotFoundException("No current donation");
         return donationBooking.get(0);
+    }
+
+    @Override
+    public Long getDonorsNumberForSlot(Long donationCenterId, Date slotSelected) {
+        String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+
+        String s = dateFormat.format(slotSelected);
+        return donationBookingRepository
+                .findAll()
+                .stream()
+                .filter(b -> b.getDonationCenter().getId().equals(donationCenterId))
+                .filter(b -> dateFormat.format(b.getDateAndTime()).equals(s))
+                .count();
     }
 }
