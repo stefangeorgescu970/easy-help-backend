@@ -3,11 +3,12 @@ package com.easyhelp.application.service.patient;
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.users.Doctor;
-import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.repository.PatientRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
+import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
+import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class PatientServiceImpl implements PatientServiceInterface {
 
     @Autowired
     private DonorRepository donorRepository;
+
+    @Autowired
+    private DonationRequestServiceInterface donationRequestService;
 
     @Override
     public List<Patient> getAll() {
@@ -82,5 +86,21 @@ public class PatientServiceImpl implements PatientServiceInterface {
                 .stream()
                 .filter(p -> p.getDoctor().getId().equals(doctorId))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deletePatient(Long patientId) throws EasyHelpException {
+        Optional<Patient> patientOptional = patientRepository.findById(patientId);
+
+        if (!patientOptional.isPresent())
+            throw new EntityNotFoundException("Patient with this id does not exist.");
+
+        Patient patient = patientOptional.get();
+        if (patient.getDonationRequests() != null && !patient.getDonationRequests().isEmpty())
+            throw new EasyHelpException("This patient still has donation requests ongoing");
+
+        patient.getDoctor().getPatients().remove(patient);
+        patient.getDonations().forEach(donation -> donation.setPatient(null));
+        patientRepository.delete(patient);
     }
 }

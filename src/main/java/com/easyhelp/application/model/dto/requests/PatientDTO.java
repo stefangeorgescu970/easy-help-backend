@@ -15,10 +15,12 @@ public class PatientDTO extends BaseDTO {
     private String ssn;
     private BloodTypeDTO bloodType;
     private Long doctorId;
+    private Long id;
 
     public PatientDTO(Patient patient) {
         this.bloodType = new BloodTypeDTO(patient.getBloodType());
         this.ssn = patient.getSsn();
         this.doctorId = patient.getDoctor().getId();
+        this.id = patient.getId();
     }
 }

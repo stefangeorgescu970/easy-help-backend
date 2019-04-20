@@ -1,6 +1,7 @@
 package com.easyhelp.application.service.patient;
 
 import com.easyhelp.application.model.requests.Patient;
+import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 
@@ -15,5 +16,5 @@ public interface PatientServiceInterface {
 
     List<Patient> getPatientsForDoctor(Long doctorId);
 
-
+    void deletePatient(Long patientId) throws EntityNotFoundException, EasyHelpException;
 }

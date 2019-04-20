@@ -9,6 +9,7 @@ import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
+import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.response.Response;
@@ -65,11 +66,21 @@ public class DoctorController {
         }
     }
 
-    @RequestMapping("/seeMyPatients")
+    @PostMapping("/seeMyPatients")
     private ResponseEntity<Response> getMyPatients(@RequestBody IdentifierDTO identifierDTO) {
         List<Patient> patients = patientService.getPatientsForDoctor(identifierDTO.getId());
         List<PatientDTO> dtoList = patients.stream().map(PatientDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+    }
+
+    @PostMapping("/deletePatient")
+    private ResponseEntity<Response> deletePatient(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            patientService.deletePatient(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
     }
 }
 

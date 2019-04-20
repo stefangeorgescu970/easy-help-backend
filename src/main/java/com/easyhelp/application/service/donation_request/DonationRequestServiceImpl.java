@@ -17,8 +17,10 @@ import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SealedObject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,7 +89,15 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
     public List<DonationRequest> getAllRequestsForDoctor(Long doctorId) {
         return donationRequestRepository.findAll()
                 .stream()
-                .filter(r -> r.getDoctor().getId().equals( doctorId))
+                .filter(r -> r.getDoctor().getId().equals(doctorId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DonationRequest> getAllRequestsForPatient(Long patientId) {
+        return donationRequestRepository.findAll()
+                .stream()
+                .filter(r -> r.getPatient().getId().equals(patientId))
                 .collect(Collectors.toList());
     }
 }

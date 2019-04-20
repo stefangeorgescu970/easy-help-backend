@@ -13,4 +13,6 @@ public interface  DonationRequestServiceInterface  {
     void requestDonation(DonationRequestDTO donationRequest) throws EntityNotFoundException, EntityAlreadyExistsException;
 
     List<DonationRequest> getAllRequestsForDoctor(Long doctorId);
+
+    List<DonationRequest> getAllRequestsForPatient(Long patientId);
 }

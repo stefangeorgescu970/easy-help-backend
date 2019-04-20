@@ -24,10 +24,10 @@ public class Patient extends BaseEntity {
     @JoinColumn(name = "fk_doctor")
     private Doctor doctor;
 
-    @OneToMany(mappedBy = "patient", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "patient", orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Donation> donations = new HashSet<>();
 
-    @OneToMany(mappedBy = "patient", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "patient", orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<DonationRequest> donationRequests = new HashSet<>();
 
     @ManyToOne

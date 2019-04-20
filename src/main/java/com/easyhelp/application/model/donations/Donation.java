@@ -36,4 +36,5 @@ public class Donation extends BaseEntity {
 
     private DonationStatus status;
     private Date dateAndTime;
+    private Boolean withPatient;
 }
