@@ -56,23 +56,18 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
             throw new EntityAlreadyExistsException("You have already made a request for this patient");
 
 
-        SeparatedBloodType separatedBloodType = separatedBloodTypeService.findSeparatedBloodTypeInDB(donationRequest.getBloodGroup(), donationRequest.getRh(), donationRequest.getBloodComponent());
+        SeparatedBloodType separatedBloodType = separatedBloodTypeService.findSeparatedBloodTypeInDB(patient.getBloodType().getGroupLetter(), patient.getBloodType().getRh(), donationRequest.getBloodComponent());
         if (separatedBloodType == null) {
             separatedBloodType = new SeparatedBloodType();
             separatedBloodType.setComponent(donationRequest.getBloodComponent());
-            BloodType bloodTypeInDb = bloodTypeService.findBloodTypeInDB(donationRequest.getBloodGroup(), donationRequest.getRh());
-            if (bloodTypeInDb == null) {
-                BloodType newBloodType = new BloodType(donationRequest.getBloodGroup(), donationRequest.getRh());
-                bloodTypeService.saveBloodType(newBloodType);
-                separatedBloodType.setBloodType(newBloodType);
-            } else {
-                separatedBloodType.setBloodType(bloodTypeInDb);
-            }
+            BloodType bloodTypeInDb = bloodTypeService.findBloodTypeInDB(patient.getBloodType().getGroupLetter(), patient.getBloodType().getRh());
+            separatedBloodType.setBloodType(bloodTypeInDb);
             Set<DonationRequest> donationRequests = new HashSet<>();
             donationRequests.add(request);
             separatedBloodType.setDonationRequests(donationRequests);
-        } else
+        } else {
             separatedBloodType.getDonationRequests().add(request);
+        }
 
         separatedBloodTypeService.save(separatedBloodType);
 

@@ -15,8 +15,5 @@ public class DonationRequestDTO extends BaseDTO {
     private Long patientId;
     private Integer quantity;
     private RequestUrgency urgency;
-    private String bloodGroup;
-    private Boolean rh;
     private BloodComponent bloodComponent;
-
 }

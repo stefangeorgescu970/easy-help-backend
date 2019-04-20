@@ -38,7 +38,7 @@ public class DoctorController {
     @Autowired
     private DonationRequestServiceInterface donationRequestService;
 
-    @RequestMapping("/requestBlood")
+    @PostMapping("/requestBlood")
     private ResponseEntity<Response> requestBlood(@RequestBody DonationRequestDTO donationRequestDTO) {
         try {
             donationRequestService.requestDonation(donationRequestDTO);
