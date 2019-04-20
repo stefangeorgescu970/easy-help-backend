@@ -24,27 +24,27 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class DonationCenter extends RealLocation {
 
-    @OneToMany(mappedBy = "donationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "donationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
     private Set<DonationCenterPersonnel> donationCenterPersonnelSet = new HashSet<>();
 
-    @OneToMany(mappedBy = "donationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "donationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
     private Set<Donation> donations = new HashSet<>();
 
-    @OneToMany(mappedBy = "donationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "donationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
     private Set<DonationBooking> donationBookings = new HashSet<>();
 
-    @OneToMany(mappedBy = "acceptingDonationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "acceptingDonationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
     private Set<DonationRequest> acceptedDonationRequests = new HashSet<>();
 
-    @OneToMany(mappedBy = "donationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "donationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
     private Set<StoredBlood> storedBloodSet = new HashSet<>();

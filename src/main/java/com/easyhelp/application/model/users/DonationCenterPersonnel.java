@@ -18,7 +18,7 @@ import javax.persistence.*;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class DonationCenterPersonnel extends PartnerUser {
 
-    @ManyToOne(optional = true, fetch = FetchType.EAGER)
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_donation_center")
     @ToString.Exclude
     @JsonIgnore

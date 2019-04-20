@@ -18,13 +18,13 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class BloodType extends BaseEntity {
 
-    @OneToMany(mappedBy = "bloodType", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "bloodType", orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Patient> patients;
 
-    @OneToMany(mappedBy = "bloodType", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "bloodType", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private Set<Donor> donors;
 
-    @OneToMany(mappedBy = "bloodType", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "bloodType", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private Set<SeparatedBloodType> separatedBloodTypes;
 
     private String groupLetter;

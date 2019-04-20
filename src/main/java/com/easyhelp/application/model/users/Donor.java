@@ -30,7 +30,7 @@ public class Donor extends ApplicationUser {
     @JsonIgnore
     private DonationForm donationForm;
 
-    @OneToMany(mappedBy = "donor", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "donor", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
     private Set<Donation> donations;
@@ -47,7 +47,7 @@ public class Donor extends ApplicationUser {
     private BloodType bloodType;
 
 
-    @OneToMany(mappedBy = "donor", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "donor", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
     private Set<StoredBlood> storedBloodSet;

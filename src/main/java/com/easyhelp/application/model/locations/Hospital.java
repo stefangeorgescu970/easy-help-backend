@@ -19,7 +19,7 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Hospital extends RealLocation {
 
-    @OneToMany(mappedBy = "hospital", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "hospital", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
     private Set<Doctor> doctors = new HashSet<>();

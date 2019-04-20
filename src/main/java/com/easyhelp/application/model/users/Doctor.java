@@ -28,12 +28,12 @@ public class Doctor extends PartnerUser {
     @JsonIgnore
     private Hospital hospital;
 
-    @OneToMany(mappedBy = "doctor", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "doctor", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
     private Set<DonationRequest> donationRequests = new HashSet<>();
 
-    @OneToMany(mappedBy = "doctor", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "doctor", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
     private Set<Patient> patients = new HashSet<>();
