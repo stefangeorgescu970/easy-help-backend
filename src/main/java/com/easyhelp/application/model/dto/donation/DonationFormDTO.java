@@ -9,6 +9,7 @@ import java.util.Date;
 public class DonationFormDTO extends BaseDTO {
 
     private Long donorId;
+
     private Boolean generalGoodHealth;
     private Boolean recentLossOfWeight;
     private Boolean recentInexplicableFever;
@@ -21,16 +22,11 @@ public class DonationFormDTO extends BaseDTO {
     private Boolean injectedDrugs;
     private Boolean acceptedMoneyOrDrugsForSex;
     private Boolean changedSexPartnerLast6Months;
-    private Integer numberOfPartnersLast6Months;
     private Boolean surgeryOrInvestigationsLast12Months;
     private Boolean tattoosOrPiercingsLast12Months;
     private Boolean transfusionLast12Months;
     private Boolean beenPregnant;
-    private Date birthDate;
-    private Date lastMenstruation;
     private Boolean bornLivedTraveledAbroad;
-    private String travelWhere;
-    private String travelWhen;
     private Boolean prisonLastYear;
     private Boolean exposedHepatitis;
     private Boolean sufferFromSet1;
@@ -41,9 +37,18 @@ public class DonationFormDTO extends BaseDTO {
     private Boolean sufferFromSet6;
     private Boolean sufferFromSet7;
     private Boolean smoker;
-    private Date lastAlcoholUse;
-    private String alcoholDrank;
-    private String alcoholQuantity;
     private Boolean beenRefused;
     private Boolean requireAttentionPostDonation;
+
+    private Integer numberOfPartnersLast6Months;
+
+    private Date birthDate;
+    private Date lastMenstruation;
+    private Date lastAlcoholUse;
+
+    private String travelWhere;
+    private String travelWhen;
+    private String alcoholDrank;
+    private String alcoholQuantity;
+
 }

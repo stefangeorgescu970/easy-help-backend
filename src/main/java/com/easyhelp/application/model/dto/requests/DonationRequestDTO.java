@@ -2,7 +2,6 @@ package com.easyhelp.application.model.dto.requests;
 
 import com.easyhelp.application.model.blood.BloodComponent;
 import com.easyhelp.application.model.dto.BaseDTO;
-import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.requests.RequestUrgency;
 import lombok.Data;
 import lombok.NoArgsConstructor;

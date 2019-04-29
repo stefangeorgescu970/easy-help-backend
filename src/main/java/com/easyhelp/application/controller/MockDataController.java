@@ -1,27 +1,22 @@
 package com.easyhelp.application.controller;
 
 
-import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.dto.account.RegisterDTO;
+import com.easyhelp.application.model.dto.donation.DonationFormDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
-import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.misc.SsnData;
-import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.model.users.UserType;
-import com.easyhelp.application.repository.PatientRepository;
 import com.easyhelp.application.service.RegisterService;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
+import com.easyhelp.application.service.donation_form.DonationFormServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.hospital.HospitalServiceInterface;
-
 import com.easyhelp.application.service.patient.PatientServiceInterface;
-
 import com.easyhelp.application.utils.MiscUtils;
-
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
@@ -39,9 +34,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/mocks")
@@ -73,6 +66,9 @@ public class MockDataController {
     @Autowired
     private BloodTypeServiceInterface bloodTypeService;
 
+    @Autowired
+    private DonationFormServiceInterface donationFormService;
+
     public MockDataController(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -91,6 +87,8 @@ public class MockDataController {
         addDonationCenterPersonnels();
         addDonors();
         addPatients();
+
+        addDonationForm();
 
         return ResponseBuilder.encode(HttpStatus.OK);
     }
@@ -284,6 +282,55 @@ public class MockDataController {
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             e.printStackTrace();
         }
+    }
+
+    private void addDonationForm() throws EntityNotFoundException {
+        DonationFormDTO donationForm = new DonationFormDTO();
+
+        donationForm.setDonorId(1L);
+
+        donationForm.setGeneralGoodHealth(false);
+        donationForm.setRecentLossOfWeight(false);
+        donationForm.setRecentInexplicableFever(false);
+        donationForm.setRecentStomatoTreatmentOrVaccine(false);
+        donationForm.setCurrentDrugTreatment(false);
+        donationForm.setSexWithHIVOrHepatitisLast12Months(false);
+        donationForm.setSexWithPersonWhoInjectsDrugsLast12Months(false);
+        donationForm.setSexWithProstituteLast12Months(false);
+        donationForm.setSexWithMultiplePartnersLast12Months(false);
+        donationForm.setInjectedDrugs(false);
+        donationForm.setAcceptedMoneyOrDrugsForSex(false);
+        donationForm.setChangedSexPartnerLast6Months(false);
+        donationForm.setSurgeryOrInvestigationsLast12Months(false);
+        donationForm.setTattoosOrPiercingsLast12Months(false);
+        donationForm.setTransfusionLast12Months(false);
+        donationForm.setBeenPregnant(false);
+        donationForm.setBornLivedTraveledAbroad(false);
+        donationForm.setPrisonLastYear(false);
+        donationForm.setExposedHepatitis(false);
+        donationForm.setSufferFromSet1(false);
+        donationForm.setSufferFromSet2(false);
+        donationForm.setSufferFromSet3(false);
+        donationForm.setSufferFromSet4(false);
+        donationForm.setSufferFromSet5(false);
+        donationForm.setSufferFromSet6(false);
+        donationForm.setSufferFromSet7(false);
+        donationForm.setSmoker(false);
+        donationForm.setBeenRefused(false);
+        donationForm.setRequireAttentionPostDonation(false);
+
+        donationForm.setNumberOfPartnersLast6Months(0);
+
+        donationForm.setBirthDate(new Date());
+        donationForm.setLastMenstruation(new Date());
+        donationForm.setLastAlcoholUse(new Date());
+
+        donationForm.setTravelWhere("Capalna");
+        donationForm.setTravelWhen("tommorow");
+        donationForm.setAlcoholDrank("Jec");
+        donationForm.setAlcoholQuantity("1L");
+
+        donorService.addDonationForm(donationForm);
     }
 
 }

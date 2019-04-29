@@ -13,6 +13,7 @@ import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
+import com.easyhelp.application.service.donation_form.DonationFormServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
@@ -21,9 +22,6 @@ import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -40,6 +38,9 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
     @Autowired
     private DonationCenterServiceInterface donationCenterService;
+
+    @Autowired
+    private DonationFormServiceInterface donationFormService;
 
     @Override
     public void updateCountyOnDonor(Long donorId, County newCounty) throws EntityNotFoundException {
@@ -207,6 +208,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
             donationForm.setDonor(donor);
             donor.setDonationForm(donationForm);
+            donationFormService.addDonationForm(donationForm);
             donorRepository.save(donor);
         } else {
             throw new EntityNotFoundException("No donor was found with provided id.");

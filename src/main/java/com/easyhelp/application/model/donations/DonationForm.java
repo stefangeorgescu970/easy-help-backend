@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"donor"})
 @NoArgsConstructor
 @Table(name = "donation_forms")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
