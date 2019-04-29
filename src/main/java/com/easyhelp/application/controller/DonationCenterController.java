@@ -7,7 +7,9 @@ import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
 import com.easyhelp.application.model.dto.location.CountyDTO;
 import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
+import com.easyhelp.application.model.dto.requests.DonationRequestDetailsDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
+import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
@@ -85,7 +87,7 @@ public class DonationCenterController {
     }
 
     @PostMapping("/cancelBooking")
-    private  ResponseEntity<Response> cancelBooking(@RequestBody IdentifierDTO identifierDTO) {
+    private ResponseEntity<Response> cancelBooking(@RequestBody IdentifierDTO identifierDTO) {
         try {
             donationBookingService.cancelBooking(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
@@ -100,6 +102,18 @@ public class DonationCenterController {
             List<AvailableDate> hours = donationBookingService.getAvailableBookingSlots(identifierDTO.getId());
             List<AvailableDateDTO> hoursDTO = hours.stream().map(AvailableDateDTO::new).collect(Collectors.toList());
             return ResponseBuilder.encode(HttpStatus.OK, hoursDTO, 1, 1, 1);
+        } catch (EntityNotFoundException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @RequestMapping("/seeAllBloodRequests")
+    private ResponseEntity<Response> getRequestsForDC(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            DonationCenter donationCenter = donationCenterService.findById(identifierDTO.getId());
+            List<DonationRequest> donationRequests = donationRequestService.getAllRequestsForDC(identifierDTO.getId());
+            List<DonationRequestDetailsDTO> dtoList = donationRequests.stream().map(dc -> new DonationRequestDetailsDTO(dc, donationCenter)).collect(Collectors.toList());
+            return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
         } catch (EntityNotFoundException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }

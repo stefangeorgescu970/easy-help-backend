@@ -14,5 +14,7 @@ public interface  DonationRequestServiceInterface  {
 
     List<DonationRequest> getAllRequestsForDoctor(Long doctorId);
 
+    List<DonationRequest> getAllRequestsForDC(Long donationCenterId) throws EntityNotFoundException;
+
     List<DonationRequest> getAllRequestsForPatient(Long patientId);
 }

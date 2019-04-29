@@ -169,8 +169,8 @@ public class MockDataController {
     }
 
     private void addHospitals() {
-        hospitalService.save(new Hospital("Spital 1", 0, 0, "Adresa 1", County.CLUJ));
-        hospitalService.save(new Hospital("Spital 2", 0, 0, "Adresa 2", County.ARGES));
+        hospitalService.save(new Hospital("Spital 1", 25.3316741, 43.967557, "Adresa 1", County.CLUJ));
+        hospitalService.save(new Hospital("Spital 2", 23.57949, 47.65331, "Adresa 2", County.ARGES));
     }
 
     private void addDoctors() throws EntityNotFoundException, UserAlreadyRegisteredException, SsnInvalidException {

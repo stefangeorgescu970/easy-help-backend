@@ -3,6 +3,7 @@ package com.easyhelp.application.service.donation_request;
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.blood.SeparatedBloodType;
 import com.easyhelp.application.model.dto.requests.DonationRequestDTO;
+import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.requests.RequestStatus;
@@ -10,17 +11,16 @@ import com.easyhelp.application.model.users.Doctor;
 import com.easyhelp.application.repository.DonationRequestRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
+import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.service.separated_bloodtype.SeparatedBloodTypeServiceInterface;
+import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +41,9 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
     @Autowired
     private BloodTypeServiceInterface bloodTypeService;
 
+    @Autowired
+    private DonationCenterServiceInterface donationCenterService;
+
     @Override
     public List<DonationRequest> getAll() {
         return new ArrayList<>(donationRequestRepository.findAll());
@@ -54,6 +57,9 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
 
         if (getAllRequestsForDoctor(doctor.getId()).stream().anyMatch(r -> r.getPatient() == patient))
             throw new EntityAlreadyExistsException("You have already made a request for this patient");
+
+        if (getAll().stream().anyMatch(r -> r.getPatient() == patient))
+            throw new EntityAlreadyExistsException("There is already a request made for this patient");
 
 
         SeparatedBloodType separatedBloodType = separatedBloodTypeService.findSeparatedBloodTypeInDB(patient.getBloodType().getGroupLetter(), patient.getBloodType().getRh(), donationRequest.getBloodComponent());
@@ -94,5 +100,18 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
                 .stream()
                 .filter(r -> r.getPatient().getId().equals(patientId))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DonationRequest> getAllRequestsForDC(Long donationCenterId) throws EntityNotFoundException {
+
+        DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
+
+        return donationRequestRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparingInt(e -> MiscUtils.computeDistance(donationCenter.getLatitude(), donationCenter.getLongitude(),
+                        e.getDoctor().getHospital().getLatitude(), e.getDoctor().getHospital().getLongitude())))
+                .collect(Collectors.toList());
+
     }
 }
