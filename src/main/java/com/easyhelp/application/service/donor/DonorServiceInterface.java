@@ -22,6 +22,8 @@ public interface DonorServiceInterface {
 
     List<Donor> getDonorsInCounty(County county);
 
+    List<Donor> filterDonors(County county, String groupLetter, Boolean canDonate);
+
     DonorSummary getDonorSummary(Long donorId) throws EntityNotFoundException;
 
     void addDonationForm(DonationFormDTO donationForm) throws EntityNotFoundException;

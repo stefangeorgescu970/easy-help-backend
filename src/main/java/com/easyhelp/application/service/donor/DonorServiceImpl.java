@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DonorServiceImpl implements DonorServiceInterface {
@@ -218,5 +219,19 @@ public class DonorServiceImpl implements DonorServiceInterface {
     @Override
     public void save(Donor donor) {
         donorRepository.save(donor);
+    }
+
+    @Override
+    public List<Donor> filterDonors(County county, String groupLetter, Boolean canDonate) {
+        if (groupLetter == null)
+            return donorRepository.findAllByCounty(county)
+                    .stream()
+                    .filter(d -> d.canDonate() == canDonate)
+                    .collect(Collectors.toList());
+
+        return donorRepository.findAllByCounty(county)
+                .stream()
+                .filter(d -> d.canDonate() == canDonate && d.getBloodType() != null && d.getBloodType().getGroupLetter().equals(groupLetter))
+                .collect(Collectors.toList());
     }
 }

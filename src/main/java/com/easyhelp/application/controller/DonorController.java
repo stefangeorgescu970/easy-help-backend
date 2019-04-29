@@ -9,6 +9,7 @@ import com.easyhelp.application.model.dto.booking.BookingRequestDTO;
 import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
 import com.easyhelp.application.model.dto.donation.DonationFormDTO;
 import com.easyhelp.application.model.dto.donation.DonorSummaryDTO;
+import com.easyhelp.application.model.dto.filter.FilterDonorDTO;
 import com.easyhelp.application.model.dto.location.CountyDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.users.Donor;
@@ -89,7 +90,13 @@ public class DonorController {
     public ResponseEntity<Response> getDonorsInCounty(@RequestBody CountyDTO countyDTO) {
         List<Donor> donors = donorService.getDonorsInCounty(countyDTO.getCounty());
         List<DonorAccountDTO> donorAccountDTOS = donors.stream().map(DonorAccountDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, donorAccountDTOS, 1, 1, 1);
+    }
 
+    @PostMapping("/filterDonors")
+    public ResponseEntity<Response> getDonorsInCounty(@RequestBody FilterDonorDTO filterDonorDTO) {
+        List<Donor> donors = donorService.filterDonors(filterDonorDTO.getCounty(), filterDonorDTO.getGroupLetter(), filterDonorDTO.getCanDonate());
+        List<DonorAccountDTO> donorAccountDTOS = donors.stream().map(DonorAccountDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, donorAccountDTOS, 1, 1, 1);
     }
 
