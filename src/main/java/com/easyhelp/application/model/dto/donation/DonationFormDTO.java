@@ -3,8 +3,6 @@ package com.easyhelp.application.model.dto.donation;
 import com.easyhelp.application.model.dto.BaseDTO;
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
 public class DonationFormDTO extends BaseDTO {
 
@@ -42,9 +40,9 @@ public class DonationFormDTO extends BaseDTO {
 
     private Integer numberOfPartnersLast6Months;
 
-    private Date birthDate;
-    private Date lastMenstruation;
-    private Date lastAlcoholUse;
+    private String birthDate;
+    private String lastMenstruation;
+    private String lastAlcoholUse;
 
     private String travelWhere;
     private String travelWhen;

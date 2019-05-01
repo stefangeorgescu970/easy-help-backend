@@ -34,7 +34,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
 
 @RestController
 @RequestMapping("/mocks")
@@ -321,14 +320,14 @@ public class MockDataController {
 
         donationForm.setNumberOfPartnersLast6Months(0);
 
-        donationForm.setBirthDate(new Date());
-        donationForm.setLastMenstruation(new Date());
-        donationForm.setLastAlcoholUse(new Date());
+        donationForm.setBirthDate("01 May 2019");
+        donationForm.setLastMenstruation("01 May 2019");
+        donationForm.setLastAlcoholUse("01 May 2019");
 
         donationForm.setTravelWhere("Capalna");
         donationForm.setTravelWhen("tommorow");
         donationForm.setAlcoholDrank("Jec");
-        donationForm.setAlcoholQuantity("1L");
+        donationForm.setAlcoholQuantity("200");
 
         donorService.addDonationForm(donationForm);
     }

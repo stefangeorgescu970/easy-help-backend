@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Entity
 @Data
@@ -38,8 +37,8 @@ public class DonationForm extends BaseEntity {
     private Boolean tattoosOrPiercingsLast12Months;
     private Boolean transfusionLast12Months;
     private Boolean beenPregnant;
-    private Date birthDate;
-    private Date lastMenstruation;
+    private String birthDate;
+    private String lastMenstruation;
     private Boolean bornLivedTraveledAbroad;
     private String travelWhere;
     private String travelWhen;
@@ -53,7 +52,7 @@ public class DonationForm extends BaseEntity {
     private Boolean sufferFromSet6;
     private Boolean sufferFromSet7;
     private Boolean smoker;
-    private Date lastAlcoholUse;
+    private String lastAlcoholUse;
     private String alcoholDrank;
     private String alcoholQuantity;
     private Boolean beenRefused;
