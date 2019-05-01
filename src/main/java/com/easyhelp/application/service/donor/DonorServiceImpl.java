@@ -207,6 +207,10 @@ public class DonorServiceImpl implements DonorServiceInterface {
             donationForm.setBeenRefused(donationFormDTO.getBeenRefused());
             donationForm.setRequireAttentionPostDonation(donationFormDTO.getRequireAttentionPostDonation());
 
+            DonationForm oldForm = donationFormService.getDonationFormForDonor(donor.getId());
+            if (oldForm != null)
+                donationFormService.removeForm(oldForm);
+
             donationForm.setDonor(donor);
             donor.setDonationForm(donationForm);
             donationFormService.addDonationForm(donationForm);

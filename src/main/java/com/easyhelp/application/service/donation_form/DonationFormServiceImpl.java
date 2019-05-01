@@ -15,4 +15,14 @@ public class DonationFormServiceImpl implements DonationFormServiceInterface {
     public void addDonationForm(DonationForm donationForm) {
         donationFormRepository.save(donationForm);
     }
+
+    @Override
+    public DonationForm getDonationFormForDonor(Long donorId) {
+        return donationFormRepository.findByDonorId(donorId);
+    }
+
+    @Override
+    public void removeForm(DonationForm donationForm) {
+        donationFormRepository.delete(donationForm);
+    }
 }

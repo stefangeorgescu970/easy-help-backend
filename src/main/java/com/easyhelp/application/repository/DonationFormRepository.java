@@ -7,4 +7,6 @@ import javax.transaction.Transactional;
 
 @Transactional
 public interface DonationFormRepository extends JpaRepository<DonationForm, Long> {
+
+    DonationForm findByDonorId(Long donorId);
 }
