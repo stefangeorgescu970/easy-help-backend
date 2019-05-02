@@ -12,9 +12,12 @@ import com.easyhelp.application.model.dto.donation.DonorSummaryDTO;
 import com.easyhelp.application.model.dto.filter.FilterDonorDTO;
 import com.easyhelp.application.model.dto.location.CountyDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
+import com.easyhelp.application.model.dto.misc.StringDTO;
+import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
+import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
@@ -41,6 +44,9 @@ public class DonorController {
 
     @Autowired
     DonationBookingServiceInterface donationBookingService;
+
+    @Autowired
+    PatientServiceInterface patientService;
 
     @PostMapping("/updateSsnCounty")
     public ResponseEntity<Response> setCountyAndSSN(@RequestBody CountySsnDTO countySsnDTO) {
@@ -114,6 +120,16 @@ public class DonorController {
     public ResponseEntity<Response> addDonationForm(@RequestBody DonationFormDTO donationFormDTO) {
         try {
             donorService.addDonationForm(donationFormDTO);
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/checkPatientSSN")
+    public ResponseEntity<Response> checkPatientSSN(@RequestBody StringDTO stringDTO) {
+        try {
+            Patient patient = patientService.findBySSN(stringDTO.getParam());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());

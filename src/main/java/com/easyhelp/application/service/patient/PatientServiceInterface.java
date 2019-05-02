@@ -17,4 +17,6 @@ public interface PatientServiceInterface {
     List<Patient> getPatientsForDoctor(Long doctorId);
 
     void deletePatient(Long patientId) throws EntityNotFoundException, EasyHelpException;
+
+    Patient findBySSN(String ssn) throws EntityNotFoundException;
 }

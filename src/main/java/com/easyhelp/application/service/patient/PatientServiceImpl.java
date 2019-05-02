@@ -103,4 +103,14 @@ public class PatientServiceImpl implements PatientServiceInterface {
         patient.getDonations().forEach(donation -> donation.setPatient(null));
         patientRepository.delete(patient);
     }
+
+    @Override
+    public Patient findBySSN(String ssn) throws EntityNotFoundException {
+        Patient patient = patientRepository.findBySsn(ssn);
+
+        if (patient == null)
+            throw new EntityNotFoundException("Patient with this ssn does not exist.");
+
+        return patient;
+    }
 }
