@@ -1,5 +1,6 @@
 package com.easyhelp.application.model.dto.donation;
 
+import com.easyhelp.application.model.donations.DonationForm;
 import com.easyhelp.application.model.dto.BaseDTO;
 import lombok.Data;
 
@@ -49,4 +50,49 @@ public class DonationFormDTO extends BaseDTO {
     private String alcoholDrank;
     private String alcoholQuantity;
 
+    public DonationFormDTO() {
+    }
+
+    public DonationFormDTO(DonationForm donationForm) {
+        donorId = donationForm.getDonor().getId();
+        generalGoodHealth = donationForm.getGeneralGoodHealth();
+        recentLossOfWeight = donationForm.getRecentLossOfWeight();
+        recentInexplicableFever = donationForm.getRecentInexplicableFever();
+        currentDrugTreatment = donationForm.getCurrentDrugTreatment();
+        sexWithHIVOrHepatitisLast12Months = donationForm.getSexWithHIVOrHepatitisLast12Months();
+        sexWithPersonWhoInjectsDrugsLast12Months = donationForm.getSexWithPersonWhoInjectsDrugsLast12Months();
+        sexWithProstituteLast12Months = donationForm.getSexWithProstituteLast12Months();
+        sexWithMultiplePartnersLast12Months = donationForm.getSexWithMultiplePartnersLast12Months();
+        injectedDrugs = donationForm.getInjectedDrugs();
+        acceptedMoneyOrDrugsForSex = donationForm.getAcceptedMoneyOrDrugsForSex();
+        changedSexPartnerLast6Months = donationForm.getChangedSexPartnerLast6Months();
+        surgeryOrInvestigationsLast12Months = donationForm.getSurgeryOrInvestigationsLast12Months();
+        tattoosOrPiercingsLast12Months = donationForm.getTattoosOrPiercingsLast12Months();
+        transfusionLast12Months = donationForm.getTransfusionLast12Months();
+        beenPregnant = donationForm.getBeenPregnant();
+        bornLivedTraveledAbroad = donationForm.getBornLivedTraveledAbroad();
+        prisonLastYear = donationForm.getPrisonLastYear();
+        exposedHepatitis = donationForm.getExposedHepatitis();
+        sufferFromSet1 = donationForm.getSufferFromSet1();
+        sufferFromSet2 = donationForm.getSufferFromSet2();
+        sufferFromSet3 = donationForm.getSufferFromSet3();
+        sufferFromSet4 = donationForm.getSufferFromSet4();
+        sufferFromSet5 = donationForm.getSufferFromSet5();
+        sufferFromSet6 = donationForm.getSufferFromSet6();
+        sufferFromSet7 = donationForm.getSufferFromSet7();
+        smoker = donationForm.getSmoker();
+        beenRefused = donationForm.getBeenRefused();
+        requireAttentionPostDonation = donationForm.getRequireAttentionPostDonation();
+
+        numberOfPartnersLast6Months = donationForm.getNumberOfPartnersLast6Months();
+
+        birthDate = donationForm.getBirthDate();
+        lastMenstruation = donationForm.getLastMenstruation();
+        lastAlcoholUse = donationForm.getLastAlcoholUse();
+
+        travelWhere = donationForm.getTravelWhere();
+        travelWhen = donationForm.getTravelWhen();
+        alcoholDrank = donationForm.getAlcoholDrank();
+        alcoholQuantity = donationForm.getAlcoholQuantity();
+    }
 }

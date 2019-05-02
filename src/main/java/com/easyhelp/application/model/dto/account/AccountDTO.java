@@ -1,7 +1,9 @@
 package com.easyhelp.application.model.dto.account;
 
 import com.easyhelp.application.model.blood.BloodType;
+import com.easyhelp.application.model.donations.DonationForm;
 import com.easyhelp.application.model.dto.BaseDTO;
+import com.easyhelp.application.model.dto.donation.DonationFormDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.users.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -26,6 +28,8 @@ public class AccountDTO extends BaseDTO {
 
     private Long locationId;
 
+    private Boolean isMale;
+    private DonationFormDTO donationForm;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dateOfBirth;
@@ -46,6 +50,11 @@ public class AccountDTO extends BaseDTO {
             if (bloodType != null) {
                 bloodGroupLetter = bloodType.getGroupLetter();
                 rh = bloodType.getRh();
+            }
+
+            isMale = donor.getIsMale();
+            if (donor.getDonationForm() != null) {
+                donationForm = new DonationFormDTO(donor.getDonationForm());
             }
         }
 
