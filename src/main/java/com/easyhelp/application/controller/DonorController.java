@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,7 +75,7 @@ public class DonorController {
     @PostMapping("/bookDonation")
     public ResponseEntity<Response> bookDonation(@RequestBody BookingRequestDTO bookingRequestDTO) {
         try {
-            Calendar calendar = bookingRequestDTO.getSelectedDate();
+            Date calendar = bookingRequestDTO.getSelectedDate();
             donorService.bookDonationHour(bookingRequestDTO.getId(), calendar, bookingRequestDTO.getDonationCenterId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {

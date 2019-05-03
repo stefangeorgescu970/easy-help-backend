@@ -9,6 +9,7 @@ import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public interface DonorServiceInterface {
@@ -18,7 +19,7 @@ public interface DonorServiceInterface {
 
     void updateBloodGroupOnDonor(Long donorId, String groupLetter, Boolean rh) throws EntityNotFoundException;
 
-    void bookDonationHour(Long donorId, Calendar selectedHour, Long donationCenterId) throws EntityNotFoundException, EntityAlreadyExistsException;
+    void bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId) throws EntityNotFoundException, EntityAlreadyExistsException;
 
     List<Donor> getDonorsInCounty(County county);
 

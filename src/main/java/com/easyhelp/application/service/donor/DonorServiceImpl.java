@@ -106,8 +106,8 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
 
     @Override
-    public void bookDonationHour(Long donorId, Calendar selectedHour, Long donationCenterId) throws EntityNotFoundException, EntityAlreadyExistsException {
-        Date date = selectedHour.getTime();
+    public void bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId) throws EntityNotFoundException, EntityAlreadyExistsException {
+        Date date = selectedHour;
         date.setHours(date.getHours() + date.getTimezoneOffset() / 60);
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
         if (donorOptional.isPresent()) {

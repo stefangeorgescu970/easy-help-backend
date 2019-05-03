@@ -59,7 +59,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
             Map<Date, Long> counterMap = bookedDates.stream().collect(Collectors.groupingBy(d -> d, Collectors.counting()));
             Set<Date> unavailableSlots = bookedDates
                     .stream()
-                    .filter(b -> counterMap.get(b) > donationCenter.getNumberOfConcurrentDonors())
+                    .filter(b -> counterMap.get(b) >= donationCenter.getNumberOfConcurrentDonors())
                     .collect(Collectors.toSet());
 
             date.getAvailableHours().removeAll(unavailableSlots);

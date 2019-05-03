@@ -11,7 +11,7 @@ import java.util.Date;
 public class BookingRequestDTO extends IdentifierDTO {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-    private Calendar selectedDate;
+    private Date selectedDate;
     private Long donationCenterId;
 }
 
