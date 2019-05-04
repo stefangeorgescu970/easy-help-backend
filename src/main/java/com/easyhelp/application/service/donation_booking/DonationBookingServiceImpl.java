@@ -10,6 +10,7 @@ import com.easyhelp.application.repository.DonationBookingRepository;
 import com.easyhelp.application.service.donation.DonationServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
+import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
 
     @Autowired
     private DonationServiceInterface donationService;
+
+    @Autowired
+    private PatientServiceInterface patientService;
 
     @Override
     public void save(DonationBooking donationBooking) {
@@ -139,6 +143,13 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
         donation.setDonationCenter(donationBooking.getDonationCenter());
         donation.setStatus(DonationStatus.AWAITING_CONTROL_TESTS);
         donation.setDateAndTime(new Date());
+
+        if (donationBooking.getIsForPatient()) {
+            donation.setPatient(donationBooking.getPatient());
+            donation.setWithPatient(true);
+            donationBooking.getPatient().getDonations().add(donation);
+            patientService.save(donation.getPatient());
+        }
 
         donationService.saveDonation(donation);
         donationBookingRepository.delete(donationBooking);

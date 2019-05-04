@@ -9,6 +9,7 @@ import com.easyhelp.application.model.dto.donation.DonationFormDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.misc.SsnData;
+import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.users.AppPlatform;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.DonorRepository;
@@ -16,6 +17,7 @@ import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donation_form.DonationFormServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
+import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
@@ -43,6 +45,9 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
     @Autowired
     private DonationFormServiceInterface donationFormService;
+
+    @Autowired
+    private PatientServiceInterface patientService;
 
     @Override
     public void updateCountyOnDonor(Long donorId, County newCounty) throws EntityNotFoundException {
@@ -107,7 +112,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
 
     @Override
-    public void bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId) throws EntityNotFoundException, EntityAlreadyExistsException {
+    public void bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException {
         Date date = selectedHour;
         date.setHours(date.getHours() + date.getTimezoneOffset() / 60);
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
@@ -121,6 +126,26 @@ public class DonorServiceImpl implements DonorServiceInterface {
                 throw new EntityAlreadyExistsException("There are too many booking requests for this slot");
 
             DonationBooking booking = new DonationBooking();
+            Patient patient = null;
+
+            if (patientSSN != null) {
+                patient = patientService.findBySSN(patientSSN);
+                if (patient == null) {
+                    // Backup, you should never put ssn on call if the ssn was not previously checked
+
+                    throw new EntityNotFoundException("No patient was found with provided ssn.");
+                }
+                booking.setPatient(patient);
+                booking.setIsForPatient(true);
+                if (patient.getDonationBookings() == null) {
+                    Set<DonationBooking> donationBookings = new HashSet<>();
+                    donationBookings.add(booking);
+                    patient.setDonationBookings(donationBookings);
+                } else {
+                    patient.getDonationBookings().add(booking);
+                }
+            }
+
             booking.setDateAndTime(date);
             booking.setDonor(donor);
             booking.setDonationCenter(donationCenter);
@@ -129,6 +154,11 @@ public class DonorServiceImpl implements DonorServiceInterface {
             donationBookingService.save(booking);
             donorRepository.save(donor);
             donationCenterService.save(donationCenter);
+
+            if (patient != null) {
+                patientService.save(patient);
+            }
+
         } else {
             throw new EntityNotFoundException("No donor was found with provided id.");
         }

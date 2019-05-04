@@ -34,7 +34,7 @@ public class DonationCenter extends RealLocation {
     @JsonIgnore
     private Set<Donation> donations = new HashSet<>();
 
-    @OneToMany(mappedBy = "donationCenter", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "donationCenter", orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
     private Set<DonationBooking> donationBookings = new HashSet<>();
