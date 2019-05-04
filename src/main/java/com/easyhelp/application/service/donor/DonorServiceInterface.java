@@ -1,8 +1,10 @@
 package com.easyhelp.application.service.donor;
 
 import com.easyhelp.application.model.donations.DonorSummary;
+import com.easyhelp.application.model.dto.account.PushNotificationDTO;
 import com.easyhelp.application.model.dto.donation.DonationFormDTO;
 import com.easyhelp.application.model.locations.County;
+import com.easyhelp.application.model.users.AppPlatform;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
@@ -31,4 +33,8 @@ public interface DonorServiceInterface {
     void save(Donor donor);
 
     Donor findByEmail(String email);
+
+    void registerPushToken(Long donorId, String token, AppPlatform appPlatform) throws EntityNotFoundException;
+
+    Donor findDonorByEmail(String email) throws EntityNotFoundException;
 }

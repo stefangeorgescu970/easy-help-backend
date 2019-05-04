@@ -5,6 +5,7 @@ import com.easyhelp.application.model.donations.DonorSummary;
 import com.easyhelp.application.model.dto.account.BloodGroupRhDTO;
 import com.easyhelp.application.model.dto.account.CountySsnDTO;
 import com.easyhelp.application.model.dto.account.DonorAccountDTO;
+import com.easyhelp.application.model.dto.account.PushNotificationDTO;
 import com.easyhelp.application.model.dto.booking.BookingRequestDTO;
 import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
 import com.easyhelp.application.model.dto.donation.DonationFormDTO;
@@ -131,6 +132,16 @@ public class DonorController {
     public ResponseEntity<Response> checkPatientSSN(@RequestBody StringDTO stringDTO) {
         try {
             Patient patient = patientService.findBySSN(stringDTO.getParam());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/registerPushToken")
+    public ResponseEntity<Response> registerPushToken(@RequestBody PushNotificationDTO pushNotificationDTO) {
+        try {
+            donorService.registerPushToken(pushNotificationDTO.getId(), pushNotificationDTO.getToken(), pushNotificationDTO.getAppPlatform());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());

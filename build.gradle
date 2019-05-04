@@ -49,4 +49,8 @@ dependencies {
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("junit:junit")
+    
+    //apns
+    // https://mvnrepository.com/artifact/com.notnoop.apns/apns
+    compile group: 'com.notnoop.apns', name: 'apns', version: '0.1.6'
 }

@@ -9,6 +9,7 @@ import com.easyhelp.application.model.dto.donation.DonationFormDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.misc.SsnData;
+import com.easyhelp.application.model.users.AppPlatform;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
@@ -223,6 +224,31 @@ public class DonorServiceImpl implements DonorServiceInterface {
     @Override
     public void save(Donor donor) {
         donorRepository.save(donor);
+    }
+
+    @Override
+    public void registerPushToken(Long donorId, String token, AppPlatform appPlatform) throws EntityNotFoundException {
+        Optional<Donor> donorOptional = donorRepository.findById(donorId);
+
+        if (donorOptional.isPresent()) {
+            Donor donor = donorOptional.get();
+            donor.setPushToken(token);
+            donor.setAppPlatform(appPlatform);
+            donorRepository.save(donor);
+        } else {
+            throw new EntityNotFoundException("No donor was found with provided id.");
+        }
+    }
+
+    @Override
+    public Donor findDonorByEmail(String email) throws EntityNotFoundException {
+        Donor donor = donorRepository.findByEmail(email);
+
+        if (donor != null) {
+            return donor;
+        } else {
+            throw new EntityNotFoundException("No donor was found with provided email.");
+        }
     }
 
     @Override

@@ -54,6 +54,9 @@ public class Donor extends ApplicationUser {
 
     private Boolean isMale;
 
+    private String pushToken;
+    private AppPlatform appPlatform;
+
     public Donor(RegisterDTO applicationUser) {
         setCounty(applicationUser.getCounty());
         setDateOfBirth(applicationUser.getDateOfBirth());
