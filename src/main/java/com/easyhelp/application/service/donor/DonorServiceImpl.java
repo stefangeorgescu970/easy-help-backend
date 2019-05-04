@@ -264,4 +264,9 @@ public class DonorServiceImpl implements DonorServiceInterface {
                 .filter(d -> d.canDonate() == canDonate && d.getBloodType() != null && d.getBloodType().getGroupLetter().equals(groupLetter))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Donor findByEmail(String email) {
+        return donorRepository.findByEmail(email);
+    }
 }

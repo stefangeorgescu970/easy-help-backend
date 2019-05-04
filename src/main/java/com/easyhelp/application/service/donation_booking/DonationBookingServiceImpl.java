@@ -1,12 +1,13 @@
 package com.easyhelp.application.service.donation_booking;
 
-import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.AvailableDate;
+import com.easyhelp.application.model.donations.Donation;
+import com.easyhelp.application.model.donations.DonationBooking;
+import com.easyhelp.application.model.donations.DonationStatus;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.DonationBookingRepository;
-import com.easyhelp.application.repository.DonorRepository;
-import com.easyhelp.application.service.donationcenter.DonationCenterServiceImpl;
+import com.easyhelp.application.service.donation.DonationServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
@@ -14,12 +15,7 @@ import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.xml.crypto.Data;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,6 +30,9 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
 
     @Autowired
     private DonorServiceInterface donorService;
+
+    @Autowired
+    private DonationServiceInterface donationService;
 
     @Override
     public void save(DonationBooking donationBooking) {
@@ -119,6 +118,29 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
 
         donationCenterService.save(donationCenter);
         donorService.save(donor);
+        donationBookingRepository.delete(donationBooking);
+    }
+
+    @Override
+    public void createDonationFromBooking(Long bookingId, String bloodGroup, Boolean rh) throws EntityNotFoundException {
+        Optional<DonationBooking> donationBookingOptional = donationBookingRepository.findById(bookingId);
+
+        if (!donationBookingOptional.isPresent())
+            throw new EntityNotFoundException("No donation booking with that id exists");
+
+        DonationBooking donationBooking = donationBookingOptional.get();
+        Donor donor = donorService.findByEmail(donationBooking.getDonor().getEmail());
+        if (donor.getBloodType() == null || !donor.getBloodType().getGroupLetter().equals(bloodGroup) || donor.getBloodType().getRh() != rh) {
+            donorService.updateBloodGroupOnDonor(donor.getId(), bloodGroup, rh);
+        }
+
+        Donation donation = new Donation();
+        donation.setDonor(donor);
+        donation.setDonationCenter(donationBooking.getDonationCenter());
+        donation.setStatus(DonationStatus.AWAITING_CONTROL_TESTS);
+        donation.setDateAndTime(new Date());
+
+        donationService.saveDonation(donation);
         donationBookingRepository.delete(donationBooking);
     }
 }

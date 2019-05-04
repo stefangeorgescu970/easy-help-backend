@@ -27,4 +27,5 @@ public class DonationBooking extends BaseEntity {
     private DonationCenter donationCenter;
 
     private Date dateAndTime;
+
 }
