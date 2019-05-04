@@ -1,7 +1,6 @@
 package com.easyhelp.application.service.donor;
 
 import com.easyhelp.application.model.donations.DonorSummary;
-import com.easyhelp.application.model.dto.account.PushNotificationDTO;
 import com.easyhelp.application.model.dto.donation.DonationFormDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.users.AppPlatform;
