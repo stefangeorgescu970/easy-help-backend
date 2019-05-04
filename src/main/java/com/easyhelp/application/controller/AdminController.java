@@ -5,8 +5,12 @@ import com.easyhelp.application.model.dto.account.ActiveAccountDTO;
 import com.easyhelp.application.model.dto.account.DoctorAccountDTO;
 import com.easyhelp.application.model.dto.account.DonationCenterPersonnelAccountDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
+import com.easyhelp.application.model.dto.misc.StringDTO;
+import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
 import com.easyhelp.application.service.donationcenterpersonnel.DonationCenterPersonnelServiceInterface;
+import com.easyhelp.application.service.donor.DonorServiceInterface;
+import com.easyhelp.application.utils.PushNotificationUtils;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.response.Response;
@@ -30,6 +34,9 @@ public class AdminController {
 
     @Autowired
     private DonationCenterPersonnelServiceInterface donationCenterPersonnelService;
+
+    @Autowired
+    private DonorServiceInterface donorService;
 
     @RequestMapping("/doctorAccountRequests")
     private ResponseEntity<Response> getDoctorAccountRequests() {
@@ -124,6 +131,17 @@ public class AdminController {
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException exp) {
             return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
+        }
+    }
+
+    @PostMapping("/sendTestNotification")
+    private ResponseEntity<Response> sendTestNotification(@RequestBody StringDTO stringDTO) {
+        try {
+            Donor donor = donorService.findDonorByEmail(stringDTO.getParam());
+            PushNotificationUtils.sendPushNotification(donor, "Test Notification sent by System Admin");
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }
 }
