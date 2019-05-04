@@ -20,7 +20,7 @@ public interface DonorServiceInterface {
 
     void updateBloodGroupOnDonor(Long donorId, String groupLetter, Boolean rh) throws EntityNotFoundException;
 
-    void bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId) throws EntityNotFoundException, EntityAlreadyExistsException;
+    void bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException;
 
     List<Donor> getDonorsInCounty(County county);
 

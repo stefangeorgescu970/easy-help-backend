@@ -78,7 +78,7 @@ public class DonorController {
     public ResponseEntity<Response> bookDonation(@RequestBody BookingRequestDTO bookingRequestDTO) {
         try {
             Date calendar = bookingRequestDTO.getSelectedDate();
-            donorService.bookDonationHour(bookingRequestDTO.getId(), calendar, bookingRequestDTO.getDonationCenterId());
+            donorService.bookDonationHour(bookingRequestDTO.getId(), calendar, bookingRequestDTO.getDonationCenterId(), bookingRequestDTO.getPatientSSN());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());

@@ -113,4 +113,9 @@ public class PatientServiceImpl implements PatientServiceInterface {
 
         return patient;
     }
+
+    @Override
+    public void save(Patient patient) {
+        patientRepository.save(patient);
+    }
 }
