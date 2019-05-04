@@ -8,7 +8,6 @@ import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -30,4 +29,6 @@ public interface DonorServiceInterface {
     void addDonationForm(DonationFormDTO donationForm) throws EntityNotFoundException;
 
     void save(Donor donor);
+
+    Donor findByEmail(String email);
 }

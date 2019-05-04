@@ -15,5 +15,4 @@ public interface DonorRepository extends JpaRepository<Donor, Long> {
 
     List<Donor> findAllByCounty(County county);
 
-
 }

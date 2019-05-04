@@ -197,8 +197,8 @@ public class MockDataController {
     }
 
     private void addDonationCenterPersonnels() throws EntityNotFoundException, UserAlreadyRegisteredException, SsnInvalidException {
-        registerService.registerUser(createDCP("Mariana", "Vitalie", County.BUCURESTI, "mariana@dcp", girlSSN, 14L));
-        registerService.registerUser(createDCP("Mihai", "Vitalie", County.CLUJ, "mihai@dcp", boySSN, 14L));
+        registerService.registerUser(createDCP("Mariana", "Vitalie", County.BUCURESTI, "mariana@dcp", girlSSN, 1L));
+        registerService.registerUser(createDCP("Mihai", "Vitalie", County.CLUJ, "mihai@dcp", boySSN, 1L));
     }
 
     private RegisterDTO createDCP(String fn, String ln, County county, String email, String ssn, Long locId) {
