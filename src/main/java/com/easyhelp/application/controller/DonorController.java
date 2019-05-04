@@ -19,6 +19,7 @@ import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
+import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
@@ -131,6 +132,7 @@ public class DonorController {
     @PostMapping("/checkPatientSSN")
     public ResponseEntity<Response> checkPatientSSN(@RequestBody StringDTO stringDTO) {
         try {
+//            MiscUtils.validateSsn(stringDTO.getParam());
             Patient patient = patientService.findBySSN(stringDTO.getParam());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
