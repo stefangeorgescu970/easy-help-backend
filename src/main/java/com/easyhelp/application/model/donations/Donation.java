@@ -20,7 +20,7 @@ import java.util.Date;
 public class Donation extends BaseEntity {
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "fk_doctor")
+    @JoinColumn(name = "fk_donor")
     private Donor donor;
 
     @ManyToOne(optional = false)

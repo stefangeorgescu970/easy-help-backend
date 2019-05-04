@@ -138,6 +138,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
         donation.setDonor(donor);
         donation.setDonationCenter(donationBooking.getDonationCenter());
         donation.setStatus(DonationStatus.AWAITING_CONTROL_TESTS);
+        donation.setDateAndTime(new Date());
 
         donationService.saveDonation(donation);
         donationBookingRepository.delete(donationBooking);
