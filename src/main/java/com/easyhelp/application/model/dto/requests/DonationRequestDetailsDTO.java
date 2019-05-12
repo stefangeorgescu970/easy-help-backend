@@ -16,7 +16,6 @@ public class DonationRequestDetailsDTO extends BaseDTO {
 
     private Long id;
     private DoctorAccountDTO doctor;
-    private LocationDTO acceptingDonationCenter;
     private PatientDTO patient;
     private SeparatedBloodTypeDTO separatedBloodTypeDTO;
     private Integer quantity;
@@ -32,9 +31,6 @@ public class DonationRequestDetailsDTO extends BaseDTO {
         this.urgency = donationRequest.getUrgency();
         this.status = donationRequest.getStatus();
         this.patient = new PatientDTO(donationRequest.getPatient());
-
-        if (donationRequest.getAcceptingDonationCenter() != null)
-            this.acceptingDonationCenter = new LocationDTO(donationRequest.getAcceptingDonationCenter());
 
         if (donationRequest.getSeparatedBloodType() != null) {
             this.separatedBloodTypeDTO = new SeparatedBloodTypeDTO(donationRequest.getSeparatedBloodType());
@@ -53,9 +49,6 @@ public class DonationRequestDetailsDTO extends BaseDTO {
             this.distance = MiscUtils.computeDistance(donationCenter.getLatitude(), donationCenter.getLongitude(),
                     doctor.getHospital().getLatitude(), doctor.getHospital().getLongitude());
         }
-
-        if (donationRequest.getAcceptingDonationCenter() != null)
-            this.acceptingDonationCenter = new LocationDTO(donationRequest.getAcceptingDonationCenter());
 
         if (donationRequest.getSeparatedBloodType() != null) {
             this.separatedBloodTypeDTO = new SeparatedBloodTypeDTO(donationRequest.getSeparatedBloodType());

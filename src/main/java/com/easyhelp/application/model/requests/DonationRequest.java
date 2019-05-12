@@ -9,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -23,12 +25,11 @@ public class DonationRequest extends BaseEntity {
     private Doctor doctor;
 
     @ManyToOne
-    @JoinColumn(name = "fk_donation_center")
-    private DonationCenter acceptingDonationCenter;
-
-    @ManyToOne
     @JoinColumn(name = "fk_patient")
     private Patient patient;
+
+    @OneToMany(mappedBy = "donationRequest")
+    private Set<DonationCommitment> donationCommitments = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "fk_blood_type")
