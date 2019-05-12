@@ -282,6 +282,17 @@ public class DonorServiceImpl implements DonorServiceInterface {
     }
 
     @Override
+    public Donor findById(Long donorId) throws EntityNotFoundException {
+        Optional<Donor> donor = donorRepository.findById(donorId);
+
+        if (donor.isPresent()) {
+            return donor.get();
+        } else {
+            throw new EntityNotFoundException("No donor was found with provided id.");
+        }
+    }
+
+    @Override
     public List<Donor> filterDonors(County county, String groupLetter, Boolean canDonate) {
         if (groupLetter == null)
             return donorRepository.findAllByCounty(county)

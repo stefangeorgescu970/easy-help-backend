@@ -24,6 +24,7 @@ public class PushNotificationUtils {
 
             String payload = APNS.newPayload()
                     .alertBody(message)
+                    .sound("default")
                     .build();
 
             System.out.println("payload: " + payload);
