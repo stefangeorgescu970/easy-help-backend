@@ -37,7 +37,6 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 // all users
                 .antMatchers( "/users/**").permitAll()
                 .antMatchers( "/enums").permitAll()
-                .antMatchers("/**").hasRole("SYS_ADMIN")
 
                 // sys admin
                 .antMatchers("/admin/**").hasRole("SYS_ADMIN")
@@ -63,11 +62,13 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
 
                 //donor
-                .antMatchers("/donor/**").hasRole("DONOR")
+                .antMatchers("/donor/**").hasAnyRole("DONOR")
                 .antMatchers("/donationCenter/createDonation").hasRole("DONOR")
                 .antMatchers("/donationCenter/getAvailableHours").hasRole("DONOR")
                 .antMatchers("/donationCenter/cancelBooking").hasRole("DONOR")
                 .antMatchers("/donationCenter/getAll").hasRole("DONOR")
+
+                .antMatchers("/**").hasRole("SYS_ADMIN")
 
 
                 .anyRequest().authenticated()

@@ -6,8 +6,8 @@ import com.easyhelp.application.service.android_pn_service.AndroidPushNotificati
 import com.easyhelp.application.utils.exceptions.PushTokenUnavailableException;
 import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 
 import java.util.concurrent.CompletableFuture;
@@ -15,8 +15,7 @@ import java.util.concurrent.ExecutionException;
 
 public class PushNotificationUtils {
 
-    @Autowired
-    private static AndroidPushNotificationsService androidPushNotificationsService;
+    private static AndroidPushNotificationsService androidPushNotificationsService = new AndroidPushNotificationsService();
 
     public static void sendPushNotification(Donor donor, String message) throws PushTokenUnavailableException {
         if (donor.getPushToken() == null)
@@ -43,25 +42,26 @@ public class PushNotificationUtils {
 
             System.out.println("The message has been hopefully sent…");
         } else if (donor.getAppPlatform() == AppPlatform.ANDROID) {
-            JSONObject body = new JSONObject();
-            body.put("priority", "high");
-
-            JSONObject notification = new JSONObject();
-            notification.put("title", "Easy Help");
-            notification.put("body", message);
-
-            body.put("notification", notification);
-
-            body.put("to", donor.getPushToken());
-
-            HttpEntity<String> request = new HttpEntity<>(body.toString());
-
-            CompletableFuture<String> pushNotification = androidPushNotificationsService.send(request);
-            CompletableFuture.allOf(pushNotification).join();
-
             try {
+                JSONObject body = new JSONObject();
+                body.put("priority", "high");
+
+                JSONObject notification = new JSONObject();
+                notification.put("title", "Easy Help");
+                notification.put("body", message);
+
+                body.put("notification", notification);
+
+                body.put("to", donor.getPushToken());
+
+                HttpEntity<String> request = new HttpEntity<>(body.toString());
+
+                CompletableFuture<String> pushNotification = androidPushNotificationsService.send(request);
+                CompletableFuture.allOf(pushNotification).join();
+
+
                 String firebaseResponse = pushNotification.get();
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException | ExecutionException | JSONException e) {
                 e.printStackTrace();
             }
         }
