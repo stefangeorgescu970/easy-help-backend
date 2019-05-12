@@ -3,7 +3,6 @@ package com.easyhelp.application.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -34,12 +33,44 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .anyRequest().permitAll()
-//                .antMatchers(HttpMethod.POST, "/users/**").permitAll()
-//                .antMatchers("/admin").hasAnyRole("SYS_")
-//                .anyRequest().authenticated()
-//                .and()
-//                .apply(new JwtConfigurer(jwtTokenProvider))
+
+                // all users
+                .antMatchers( "/users/**").permitAll()
+                .antMatchers( "/enums").permitAll()
+
+                // sys admin
+                .antMatchers("/admin/**").hasRole("SYS_ADMIN")
+                .antMatchers("/hospital/add").hasRole("SYS_ADMIN")
+                .antMatchers("/hospital/remove").hasRole("SYS_ADMIN")
+                .antMatchers("/hospital/getAllHospitals").hasRole("SYS_ADMIN")
+                .antMatchers("/donationCenter/add").hasRole("SYS_ADMIN")
+                .antMatchers("/donationCenter/remove").hasRole("SYS_ADMIN")
+                .antMatchers("/donationCenter/getAll").hasRole("SYS_ADMIN")
+
+                // doctor
+                .antMatchers("/doctor/**").hasRole("DOCTOR")
+                .antMatchers("/donor/checkPatientSSN").hasAnyRole( "DOCTOR, DONOR")
+
+                // dcp
+                .antMatchers("/donationCenter/getDCBookings").hasRole("DCP")
+                .antMatchers("/donationCenter/getInCounty").hasRole("DCP")
+                .antMatchers("/donationCenter/seeAllBloodRequests").hasRole("DCP")
+                .antMatchers("/donation/addTestResult").hasRole("DCP")
+                .antMatchers("/donation/addSplitResults").hasRole("DCP")
+                .antMatchers("/donor/filterDonors").hasRole("DCP")
+                .antMatchers("/donor/getInCounty").hasRole("DCP")
+
+
+                //donor
+                .antMatchers("/donor/**").hasRole("DONOR")
+                .antMatchers("/donationCenter/createDonation").hasRole("DONOR")
+                .antMatchers("/donationCenter/getAvailableHours").hasRole("DONOR")
+                .antMatchers("/donationCenter/cancelBooking").hasRole("DONOR")
+                .antMatchers("/donationCenter/getAll").hasRole("DONOR")
+
+                .anyRequest().authenticated()
+                .and()
+                .apply(new JwtConfigurer(jwtTokenProvider))
         ;
     }
 

@@ -2,13 +2,13 @@ package com.easyhelp.application.controller;
 
 import com.easyhelp.application.model.dto.account.AccountDTO;
 import com.easyhelp.application.model.dto.account.RegisterDTO;
+import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.users.ApplicationUser;
 import com.easyhelp.application.model.users.LoginResponse;
 import com.easyhelp.application.security.JwtTokenProvider;
 import com.easyhelp.application.service.RegisterService;
 import com.easyhelp.application.service.applicationuser.ApplicationUserService;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
-import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +70,16 @@ public class AuthenticationController {
 
         } catch (AuthenticationException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Response> signUp(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            registerService.logoutDonor(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException exception) {
+            return ResponseBuilder.encode(HttpStatus.OK, exception.getMessage());
         }
     }
 
