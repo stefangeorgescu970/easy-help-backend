@@ -55,6 +55,11 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers("/donationCenter/getDCBookings").hasRole("DCP")
                 .antMatchers("/donationCenter/getInCounty").hasRole("DCP")
                 .antMatchers("/donationCenter/seeAllBloodRequests").hasRole("DCP")
+                .antMatchers("/donation/addTestResult").hasRole("DCP")
+                .antMatchers("/donation/addSplitResults").hasRole("DCP")
+                .antMatchers("/donor/filterDonors").hasRole("DCP")
+                .antMatchers("/donor/getInCounty").hasRole("DCP")
+
 
                 //donor
                 .antMatchers("/donor/**").hasRole("DONOR")
@@ -62,7 +67,6 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers("/donationCenter/getAvailableHours").hasRole("DONOR")
                 .antMatchers("/donationCenter/cancelBooking").hasRole("DONOR")
                 .antMatchers("/donationCenter/getAll").hasRole("DONOR")
-
 
                 .anyRequest().authenticated()
                 .and()
