@@ -1,15 +1,21 @@
 package com.easyhelp.application.controller;
 
 
+import com.easyhelp.application.model.donations.Donation;
+import com.easyhelp.application.model.donations.DonationStatus;
 import com.easyhelp.application.model.dto.account.RegisterDTO;
 import com.easyhelp.application.model.dto.donation.DonationFormDTO;
+import com.easyhelp.application.model.dto.donation.DonationTestResultDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.model.misc.SsnData;
+import com.easyhelp.application.model.requests.Patient;
+import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.model.users.UserType;
 import com.easyhelp.application.service.RegisterService;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
+import com.easyhelp.application.service.donation.DonationServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donation_form.DonationFormServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
@@ -17,23 +23,19 @@ import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.hospital.HospitalServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
-import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
-import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
-import com.easyhelp.application.utils.exceptions.SsnInvalidException;
-import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
+import com.easyhelp.application.utils.exceptions.*;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Date;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 @RestController
 @RequestMapping("/mocks")
@@ -68,6 +70,9 @@ public class MockDataController {
     @Autowired
     private DonationFormServiceInterface donationFormService;
 
+    @Autowired
+    private DonationServiceInterface donationService;
+
     public MockDataController(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -87,7 +92,11 @@ public class MockDataController {
         addDonors();
         addPatients();
 
-        addDonationForm();
+        addDonationForm(1L);
+        addDonationForm(2L);
+        addDonationForm(3L);
+
+        addDonations();
 
         return ResponseBuilder.encode(HttpStatus.OK);
     }
@@ -283,10 +292,10 @@ public class MockDataController {
         }
     }
 
-    private void addDonationForm() throws EntityNotFoundException {
+    private void addDonationForm(Long forId) throws EntityNotFoundException {
         DonationFormDTO donationForm = new DonationFormDTO();
 
-        donationForm.setDonorId(1L);
+        donationForm.setDonorId(forId);
 
         donationForm.setGeneralGoodHealth(false);
         donationForm.setRecentLossOfWeight(false);
@@ -332,4 +341,69 @@ public class MockDataController {
         donorService.addDonationForm(donationForm);
     }
 
+    private void addDonations() {
+        donationService.saveDonation(buildWaitingTestResultDonation(1L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(2L, 1L, 1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(3L, 1L, 1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(4L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(5L, 2L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(6L, 3L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(7L, 4L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(8L, 5L, -1L));
+
+        DonationTestResultDTO donationTestResultDTO = new DonationTestResultDTO();
+
+
+        try {
+            donationTestResultDTO.setDonationId(1L);
+            donationService.addTestResults(donationTestResultDTO);
+
+            donationTestResultDTO.setDonationId(2L);
+            donationService.addTestResults(donationTestResultDTO);
+
+            donationTestResultDTO.setHiv(true);
+            donationTestResultDTO.setHasFailed(true);
+
+            donationTestResultDTO.setDonationId(3L);
+            donationService.addTestResults(donationTestResultDTO);
+
+            donationTestResultDTO.setDonationId(4L);
+            donationService.addTestResults(donationTestResultDTO);
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private Donation buildWaitingTestResultDonation(Long donorId, Long donationCenterId, Long patientId) {
+        try {
+            Donor donor = donorService.findById(donorId);
+            DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
+
+            Donation donation = new Donation();
+            donation.setDonor(donor);
+            donation.setDonationCenter(donationCenter);
+
+            try {
+                Patient patient = patientService.findById(patientId);
+                donation.setPatient(patient);
+                patient.getDonations().add(donation);
+                patientService.save(patient);
+
+                donation.setWithPatient(true);
+
+            } catch (EntityNotFoundException e) {
+                donation.setWithPatient(false);
+            }
+
+            donation.setDateAndTime(new Date());
+            donation.setStatus(DonationStatus.AWAITING_CONTROL_TESTS);
+
+            return donation;
+
+        } catch (EasyHelpException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

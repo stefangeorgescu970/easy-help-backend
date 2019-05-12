@@ -36,4 +36,6 @@ public interface DonorServiceInterface {
     void registerPushToken(Long donorId, String token, AppPlatform appPlatform) throws EntityNotFoundException;
 
     Donor findDonorByEmail(String email) throws EntityNotFoundException;
+
+    Donor findById(Long donorId) throws EntityNotFoundException;
 }

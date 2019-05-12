@@ -29,6 +29,6 @@ public class StoredBlood extends BaseEntity {
     @JoinColumn(name = "fk_blood_type")
     private SeparatedBloodType separatedBloodType;
 
-    private Integer amount;
+    private Double amount;
     private Date storedDate;
 }
