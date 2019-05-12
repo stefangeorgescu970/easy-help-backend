@@ -19,8 +19,6 @@ import java.util.concurrent.ExecutionException;
 @RestController
 public class NotificationController {
 
-    private final String TOPIC = "JavaSampleApproach";
-
     @Autowired
     AndroidPushNotificationsService androidPushNotificationsService;
 

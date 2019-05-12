@@ -1,30 +1,29 @@
 package com.easyhelp.application.service;
 
-import com.easyhelp.application.controller.AuthenticationController;
 import com.easyhelp.application.model.dto.account.RegisterDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
-import com.easyhelp.application.model.users.*;
+import com.easyhelp.application.model.users.Doctor;
+import com.easyhelp.application.model.users.DonationCenterPersonnel;
+import com.easyhelp.application.model.users.Donor;
+import com.easyhelp.application.model.users.SystemAdmin;
 import com.easyhelp.application.repository.DoctorRepository;
 import com.easyhelp.application.repository.DonationCenterPersonnelRepository;
 import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.repository.SystemAdminRepository;
-import com.easyhelp.application.security.JwtTokenProvider;
 import com.easyhelp.application.service.applicationuser.ApplicationUserService;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.hospital.HospitalServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
-import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -105,5 +104,18 @@ public class RegisterService {
                 }
             }
         }
+    }
+
+    public void logoutDonor(Long donorId) throws EntityNotFoundException {
+        Optional<Donor> donorOptional = donorRepository.findById(donorId);
+        if (donorOptional.isPresent()) {
+            Donor donor = donorOptional.get();
+            donor.setPushToken(null);
+            donor.setAppPlatform(null);
+            donorRepository.save(donor);
+        } else {
+            throw new EntityNotFoundException("No donor was found with provided id.");
+        }
+
     }
 }
