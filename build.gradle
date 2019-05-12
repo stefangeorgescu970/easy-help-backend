@@ -53,4 +53,6 @@ dependencies {
     //apns
     // https://mvnrepository.com/artifact/com.notnoop.apns/apns
     compile group: 'com.notnoop.apns', name: 'apns', version: '0.1.6'
+
+    compile 'org.json:json:20171018'
 }

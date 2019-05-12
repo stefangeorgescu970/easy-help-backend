@@ -58,6 +58,7 @@ public class DonationFormDTO extends BaseDTO {
         generalGoodHealth = donationForm.getGeneralGoodHealth();
         recentLossOfWeight = donationForm.getRecentLossOfWeight();
         recentInexplicableFever = donationForm.getRecentInexplicableFever();
+        recentStomatoTreatmentOrVaccine = donationForm.getRecentStomatoTreatmentOrVaccine();
         currentDrugTreatment = donationForm.getCurrentDrugTreatment();
         sexWithHIVOrHepatitisLast12Months = donationForm.getSexWithHIVOrHepatitisLast12Months();
         sexWithPersonWhoInjectsDrugsLast12Months = donationForm.getSexWithPersonWhoInjectsDrugsLast12Months();
