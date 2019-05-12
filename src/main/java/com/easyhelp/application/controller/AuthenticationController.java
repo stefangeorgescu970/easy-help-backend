@@ -4,7 +4,9 @@ import com.easyhelp.application.model.dto.account.AccountDTO;
 import com.easyhelp.application.model.dto.account.RegisterDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.users.ApplicationUser;
+import com.easyhelp.application.model.users.Doctor;
 import com.easyhelp.application.model.users.LoginResponse;
+import com.easyhelp.application.model.users.PartnerUser;
 import com.easyhelp.application.security.JwtTokenProvider;
 import com.easyhelp.application.service.RegisterService;
 import com.easyhelp.application.service.applicationuser.ApplicationUserService;
@@ -63,6 +65,16 @@ public class AuthenticationController {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword()));
 
             ApplicationUser user = this.applicationUserService.findByEmailInAllUsers(data.getEmail());
+
+            if (user instanceof PartnerUser) {
+                PartnerUser partnerUser = (PartnerUser) user;
+                if (!partnerUser.getIsReviewed())
+                    return ResponseBuilder.encode(HttpStatus.OK, "Your account has not been validated yet. Try later or contact our email.");
+
+                if (!partnerUser.getIsValid())
+                    return ResponseBuilder.encode(HttpStatus.OK, "Your account has been deactivated. Please contact our email for info.");
+            }
+
             AccountDTO accountDTO = new AccountDTO(user);
 
             String token = jwtTokenProvider.createToken(data.getEmail(), user.getRoles());
