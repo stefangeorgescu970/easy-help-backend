@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"doctor", "patient", "donationCommitments", "separatedBloodType"})
 @NoArgsConstructor
 @Table(name = "donation_requests")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -32,11 +32,10 @@ public class DonationRequest extends BaseEntity {
     private Set<DonationCommitment> donationCommitments = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "fk_blood_type")
+    @JoinColumn(name = "fk_separated_blood_type")
     private SeparatedBloodType separatedBloodType;
 
-    private Integer quantity;
+    private Double quantity;
     private RequestUrgency urgency;
     private RequestStatus status;
-
 }

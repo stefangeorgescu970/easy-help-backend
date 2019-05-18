@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -50,7 +51,7 @@ public class Donor extends ApplicationUser {
     @OneToMany(mappedBy = "donor", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
-    private Set<StoredBlood> storedBloodSet;
+    private Set<StoredBlood> storedBloodSet = new HashSet<>();
 
     private Boolean isMale;
 

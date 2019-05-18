@@ -2,6 +2,7 @@ package com.easyhelp.application.model.requests;
 
 
 import com.easyhelp.application.model.BaseEntity;
+import com.easyhelp.application.model.blood.StoredBlood;
 import com.easyhelp.application.model.locations.DonationCenter;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,14 +18,17 @@ import javax.persistence.*;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class DonationCommitment extends BaseEntity {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_donation_center")
     private DonationCenter donationCenter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_donation_request")
     private DonationRequest donationRequest;
 
-    private Double quantity;
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_stored_blood")
+    private StoredBlood storedBlood;
+
     private DonationCommitmentStatus status;
 }

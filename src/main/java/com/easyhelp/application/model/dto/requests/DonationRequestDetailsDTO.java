@@ -18,7 +18,7 @@ public class DonationRequestDetailsDTO extends BaseDTO {
     private DoctorAccountDTO doctor;
     private PatientDTO patient;
     private SeparatedBloodTypeDTO separatedBloodTypeDTO;
-    private Integer quantity;
+    private Double quantity;
     private RequestUrgency urgency;
     private RequestStatus status;
 

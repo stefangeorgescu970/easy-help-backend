@@ -1,12 +1,15 @@
 package com.easyhelp.application.controller;
 
+import com.easyhelp.application.model.dto.donation.DonationCommitmentDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.dto.requests.DonationRequestDTO;
 import com.easyhelp.application.model.dto.requests.DonationRequestDetailsDTO;
 import com.easyhelp.application.model.dto.requests.PatientDTO;
+import com.easyhelp.application.model.requests.DonationCommitment;
 import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
+import com.easyhelp.application.service.donation_commitment.DonationCommitmentServiceInterface;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
@@ -37,6 +40,9 @@ public class DoctorController {
 
     @Autowired
     private DonationRequestServiceInterface donationRequestService;
+
+    @Autowired
+    private DonationCommitmentServiceInterface donationCommitmentService;
 
     @PostMapping("/requestBlood")
     private ResponseEntity<Response> requestBlood(@RequestBody DonationRequestDTO donationRequestDTO) {
@@ -79,6 +85,40 @@ public class DoctorController {
             patientService.deletePatient(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/requestCommitments")
+    private ResponseEntity<Response> getRequestCommitments(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            List<DonationCommitment> donationCommitments = donationCommitmentService.getDonationCommitments(identifierDTO.getId());
+            List<DonationCommitmentDTO> dtoList = donationCommitments.stream().map(DonationCommitmentDTO::new).collect(Collectors.toList());
+            return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/acceptCommitment")
+    private ResponseEntity<Response> acceptCommitment(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            donationCommitmentService.acceptCommitment(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/commitmentArrived")
+    private ResponseEntity<Response> markCommitmentAsArrived(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            donationCommitmentService.markCommitmentAsArrived(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }

@@ -1,19 +1,27 @@
 package com.easyhelp.application.controller;
 
+import com.easyhelp.application.model.blood.StoredBlood;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.AvailableDate;
+import com.easyhelp.application.model.dto.blood.StoredBloodDTO;
 import com.easyhelp.application.model.dto.booking.AvailableDateDTO;
 import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
+import com.easyhelp.application.model.dto.donation.DonationCommitmentCreateDTO;
+import com.easyhelp.application.model.dto.donation.DonationCommitmentDTO;
 import com.easyhelp.application.model.dto.donation.DonationCreationDTO;
 import com.easyhelp.application.model.dto.location.CountyDTO;
 import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.dto.requests.DonationRequestDetailsDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
+import com.easyhelp.application.model.requests.DonationCommitment;
+import com.easyhelp.application.model.requests.DonationCommitmentStatus;
 import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
+import com.easyhelp.application.service.donation_commitment.DonationCommitmentServiceInterface;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
+import com.easyhelp.application.service.stored_blood.StoredBloodServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.response.Response;
@@ -41,6 +49,12 @@ public class DonationCenterController {
 
     @Autowired
     private DonationRequestServiceInterface donationRequestService;
+
+    @Autowired
+    private StoredBloodServiceInterface storedBloodService;
+
+    @Autowired
+    private DonationCommitmentServiceInterface donationCommitmentService;
 
     @PostMapping("/add")
     private ResponseEntity<Response> addDonationCenter(@RequestBody LocationDTO location) {
@@ -126,6 +140,50 @@ public class DonationCenterController {
             donationBookingService.createDonationFromBooking(donationCreationDTO.getBookingId(), donationCreationDTO.getGroupLetter(), donationCreationDTO.getRh());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/commitToBloodRequest")
+    private ResponseEntity<Response> commitToBloodRequest(@RequestBody DonationCommitmentCreateDTO donationCommitmentCreateDTO) {
+        try {
+            donationRequestService.commitToDonation(donationCommitmentCreateDTO);
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/getCommitmentsForSending")
+    private ResponseEntity<Response> getCommitmentsForSending(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            DonationCenter donationCenter = donationCenterService.findById(identifierDTO.getId());
+            List<DonationCommitment> donationCommitments = donationCommitmentService.getCommitmentsForDonationCenter(donationCenter, DonationCommitmentStatus.ACCEPTED_BY_DOCTOR);
+            List<DonationCommitmentDTO> dtoList = donationCommitments.stream().map(DonationCommitmentDTO::new).collect(Collectors.toList());
+            return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+        } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/getAvailableBloodInDC")
+    private ResponseEntity<Response> getAvailableBloodInDC(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            List<StoredBlood> storedBloods = storedBloodService.getAvailableBloodInDC(identifierDTO.getId());
+            List<StoredBloodDTO> storedBloodDTOS = storedBloods.stream().map(StoredBloodDTO::new).collect(Collectors.toList());;
+            return ResponseBuilder.encode(HttpStatus.OK, storedBloodDTOS, 1, 1, 1);
+        } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/shipCommitment")
+    private ResponseEntity<Response> shipCommitment(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            donationCommitmentService.shipCommitment(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }

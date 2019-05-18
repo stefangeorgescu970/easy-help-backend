@@ -1,24 +1,31 @@
 package com.easyhelp.application.controller;
 
 
+import com.easyhelp.application.model.blood.BloodComponent;
 import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationStatus;
 import com.easyhelp.application.model.dto.account.RegisterDTO;
 import com.easyhelp.application.model.dto.donation.DonationFormDTO;
+import com.easyhelp.application.model.dto.donation.DonationSplitResultsDTO;
 import com.easyhelp.application.model.dto.donation.DonationTestResultDTO;
+import com.easyhelp.application.model.dto.requests.DonationRequestDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.model.misc.SsnData;
 import com.easyhelp.application.model.requests.Patient;
+import com.easyhelp.application.model.requests.RequestUrgency;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.model.users.UserType;
 import com.easyhelp.application.service.RegisterService;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
+import com.easyhelp.application.service.doctor.DoctorServiceInterface;
 import com.easyhelp.application.service.donation.DonationServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donation_form.DonationFormServiceInterface;
+import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
+import com.easyhelp.application.service.donationcenterpersonnel.DonationCenterPersonnelServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.hospital.HospitalServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
@@ -32,9 +39,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.Date;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/mocks")
@@ -44,6 +54,12 @@ public class MockDataController {
     private final String boySSN = "1940205248591";
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private DonationCenterPersonnelServiceInterface donationCenterPersonnelService;
+
+    @Autowired
+    private DoctorServiceInterface doctorService;
 
     @Autowired
     private HospitalServiceInterface hospitalService;
@@ -72,6 +88,9 @@ public class MockDataController {
     @Autowired
     private DonationServiceInterface donationService;
 
+    @Autowired
+    private DonationRequestServiceInterface donationRequestService;
+
     public MockDataController(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -91,11 +110,15 @@ public class MockDataController {
         addDonors();
         addPatients();
 
+        validateAccounts();
+
         addDonationForm(1L);
         addDonationForm(2L);
         addDonationForm(3L);
 
         addDonations();
+
+        addDonationRequests();
 
         return ResponseBuilder.encode(HttpStatus.OK);
     }
@@ -111,7 +134,7 @@ public class MockDataController {
             Statement stm = connection.createStatement();
             String statement = "truncate table blood_type, doctor_roles, doctors, donation_bookings, donation_center_personnel_roles,\n" +
                     "donation_center_personnels, donation_centers, donation_forms, donation_requests, donation_test_results, donations,\n" +
-                    "hospitals, patients, separated_blood_type, stored_bloods, system_admin_roles, system_admins,\n" +
+                    "hospitals, patients, separated_blood_type, stored_bloods, donation_commitments, system_admin_roles, system_admins,\n" +
                     "donors, donor_roles restart identity;";
             stm.executeUpdate(statement);
 
@@ -244,6 +267,20 @@ public class MockDataController {
         return sysAdmin;
     }
 
+    private void validateAccounts() {
+            try {
+                for (long i = 1L; i <= 4L; i++) {
+                    doctorService.reviewAccount(i, true);
+                }
+
+                for (long i = 1L; i <= 2L; i++) {
+                    donationCenterPersonnelService.reviewAccount(i, true);
+                }
+            } catch (EntityNotFoundException e) {
+                e.printStackTrace();
+            }
+    }
+
     private void addDonors() throws EntityNotFoundException, UserAlreadyRegisteredException, SsnInvalidException {
         registerService.registerUser(createDonor("Razvan", "Dumitru", County.BRAILA, "razvan@don", boySSN));
         registerService.registerUser(createDonor("Daniel", "Dormutan", County.BUCURESTI, "daniel@don", boySSN));
@@ -368,7 +405,17 @@ public class MockDataController {
 
             donationTestResultDTO.setDonationId(4L);
             donationService.addTestResults(donationTestResultDTO);
-        } catch (EntityNotFoundException e) {
+
+            DonationSplitResultsDTO donationSplitResultsDTO = new DonationSplitResultsDTO();
+            donationSplitResultsDTO.setPlasmaUnits(1);
+            donationSplitResultsDTO.setPlateletsUnits(2);
+            donationSplitResultsDTO.setRedBloodCellsUnits(3);
+            donationSplitResultsDTO.setDonationId(1L);
+            donationService.separateBlood(donationSplitResultsDTO);
+
+            donationSplitResultsDTO.setDonationId(2L);
+            donationService.separateBlood(donationSplitResultsDTO);
+        } catch (EasyHelpException e) {
             e.printStackTrace();
         }
 
@@ -404,5 +451,26 @@ public class MockDataController {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private void addDonationRequests() {
+        DonationRequestDTO donationRequestDTO = new DonationRequestDTO();
+        donationRequestDTO.setDoctorId(1L);
+        donationRequestDTO.setPatientId(1L);
+        donationRequestDTO.setBloodComponent(BloodComponent.PLASMA);
+        donationRequestDTO.setQuantity(1.0);
+        donationRequestDTO.setUrgency(RequestUrgency.MEDIUM);
+        try {
+            donationRequestService.requestDonation(donationRequestDTO);
+            donationRequestDTO.setPatientId(2L);
+
+            donationRequestService.requestDonation(donationRequestDTO);
+        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addDonationCommitment() {
+
     }
 }

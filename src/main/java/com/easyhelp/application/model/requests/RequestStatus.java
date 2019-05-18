@@ -2,8 +2,8 @@ package com.easyhelp.application.model.requests;
 
 public enum RequestStatus {
     PROCESSING,
-    ACCEPTED,
-    ON_THE_WAY,
+    PARTIALLY_COMMITTED_TO,
+    FULLY_COMMITTED_TO,
     COMPLETED,
-    DENIED
+    FAILED
 }

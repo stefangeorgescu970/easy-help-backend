@@ -2,19 +2,22 @@ package com.easyhelp.application.service.donation_request;
 
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.blood.SeparatedBloodType;
+import com.easyhelp.application.model.blood.StoredBlood;
+import com.easyhelp.application.model.dto.donation.DonationCommitmentCreateDTO;
 import com.easyhelp.application.model.dto.requests.DonationRequestDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
-import com.easyhelp.application.model.requests.DonationRequest;
-import com.easyhelp.application.model.requests.Patient;
-import com.easyhelp.application.model.requests.RequestStatus;
+import com.easyhelp.application.model.requests.*;
 import com.easyhelp.application.model.users.Doctor;
 import com.easyhelp.application.repository.DonationRequestRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
+import com.easyhelp.application.service.donation_commitment.DonationCommitmentServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.service.separated_bloodtype.SeparatedBloodTypeServiceInterface;
+import com.easyhelp.application.service.stored_blood.StoredBloodServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
+import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,12 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
 
     @Autowired
     private DonationCenterServiceInterface donationCenterService;
+
+    @Autowired
+    private StoredBloodServiceInterface storedBloodService;
+
+    @Autowired
+    private DonationCommitmentServiceInterface donationCommitmentService;
 
     @Override
     public List<DonationRequest> getAll() {
@@ -87,6 +96,25 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
     }
 
     @Override
+    public void markRequestAsFinished(DonationRequest donationRequest, DonationCommitment finalCommitment) {
+        donationRequest.getDonationCommitments().forEach(donationCommitment -> {
+            if (!donationCommitment.equals(finalCommitment)) {
+                // TODO - notify dc that the request was solved and that their blood is not needed
+                donationCommitment.setStatus(DonationCommitmentStatus.UNFUFILLED);
+                donationCommitmentService.save(donationCommitment);
+            }
+        });
+
+        donationRequest.setStatus(RequestStatus.COMPLETED);
+        donationRequestRepository.save(donationRequest);
+    }
+
+    @Override
+    public void saveRequest(DonationRequest donationRequest) {
+        donationRequestRepository.save(donationRequest);
+    }
+
+    @Override
     public List<DonationRequest> getAllRequestsForDoctor(Long doctorId) {
         return donationRequestRepository.findAll()
                 .stream()
@@ -100,6 +128,38 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
                 .stream()
                 .filter(r -> r.getPatient().getId().equals(patientId))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void commitToDonation(DonationCommitmentCreateDTO donationCommitmentCreateDTO) throws EasyHelpException {
+        DonationCenter donationCenter = donationCenterService.findById(donationCommitmentCreateDTO.getDonationCenterId());
+        Optional<DonationRequest> donationRequestOpt = donationRequestRepository.findById(donationCommitmentCreateDTO.getDonationRequestId());
+        StoredBlood storedBlood = storedBloodService.findById(donationCommitmentCreateDTO.getStoredBloodId());
+
+        if (!donationRequestOpt.isPresent()) {
+            throw new EntityNotFoundException("Donation request with that id not there");
+        }
+
+        DonationRequest donationRequest = donationRequestOpt.get();
+
+        if(!donationCenter.getStoredBloodSet().contains(storedBlood)) {
+            throw new EasyHelpException("Stored blood with that id is not in that donation center.");
+        }
+
+        DonationCommitment donationCommitment = new DonationCommitment();
+        donationCommitment.setDonationCenter(donationCenter);
+        donationCommitment.setDonationRequest(donationRequest);
+        donationCommitment.setStoredBlood(storedBlood);
+        donationCommitment.setStatus(DonationCommitmentStatus.COMMITTED_BY_DONATION_CENTER);
+
+        donationCenter.getDonationCommitments().add(donationCommitment);
+        donationRequest.getDonationCommitments().add(donationCommitment);
+        storedBlood.setDonationCommitment(donationCommitment);
+
+        donationCommitmentService.save(donationCommitment);
+        donationCenterService.save(donationCenter);
+        donationRequestRepository.save(donationRequest);
+        storedBloodService.storeBlood(storedBlood);
     }
 
     @Override

@@ -18,10 +18,10 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class SeparatedBloodType extends BaseEntity {
 
-    @OneToMany(mappedBy = "separatedBloodType", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "separatedBloodType", orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<DonationRequest> donationRequests = new HashSet<>();
 
-    @OneToMany(mappedBy = "separatedBloodType", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "separatedBloodType", orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<StoredBlood> storedBloodSet = new HashSet<>();
 
     @ManyToOne(optional = false)
