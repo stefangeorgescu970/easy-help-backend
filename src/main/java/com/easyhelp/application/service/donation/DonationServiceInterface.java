@@ -6,6 +6,8 @@ import com.easyhelp.application.model.dto.donation.DonationTestResultDTO;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 
+import java.util.List;
+
 public interface DonationServiceInterface {
 
     void saveDonation(Donation donation);
@@ -13,4 +15,6 @@ public interface DonationServiceInterface {
     void addTestResults(DonationTestResultDTO donationTestResultDTO) throws EntityNotFoundException;
 
     void separateBlood(DonationSplitResultsDTO donationSplitResultsDTO) throws EasyHelpException;
+
+    List<Donation> getDonationsForDonor(Long donorId);
 }

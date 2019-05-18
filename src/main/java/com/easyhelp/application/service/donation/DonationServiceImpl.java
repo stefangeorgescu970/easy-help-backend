@@ -24,10 +24,8 @@ import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DonationServiceImpl implements DonationServiceInterface {
@@ -109,6 +107,11 @@ public class DonationServiceImpl implements DonationServiceInterface {
 
         donationUnwrapped.setStatus(DonationStatus.COMPLETED);
         donationRepository.save(donationUnwrapped);
+    }
+
+    @Override
+    public List<Donation> getDonationsForDonor(Long donorId) {
+        return donationRepository.findAll().stream().filter(donation -> donation.getDonor().getId().equals(donorId)).collect(Collectors.toList());
     }
 
     private void storeBlood(BloodComponent bloodComponent, Double quantity, Donor donor, DonationCenter donationCenter) {

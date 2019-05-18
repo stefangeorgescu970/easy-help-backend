@@ -1,6 +1,7 @@
 package com.easyhelp.application.controller;
 
 
+import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonorSummary;
 import com.easyhelp.application.model.dto.account.BloodGroupRhDTO;
 import com.easyhelp.application.model.dto.account.CountySsnDTO;
@@ -8,6 +9,7 @@ import com.easyhelp.application.model.dto.account.DonorAccountDTO;
 import com.easyhelp.application.model.dto.account.PushNotificationDTO;
 import com.easyhelp.application.model.dto.booking.BookingRequestDTO;
 import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
+import com.easyhelp.application.model.dto.donation.DonationDTO;
 import com.easyhelp.application.model.dto.donation.DonationFormDTO;
 import com.easyhelp.application.model.dto.donation.DonorSummaryDTO;
 import com.easyhelp.application.model.dto.filter.FilterDonorDTO;
@@ -16,6 +18,7 @@ import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.model.dto.misc.StringDTO;
 import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.users.Donor;
+import com.easyhelp.application.service.donation.DonationServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
@@ -43,13 +46,16 @@ import java.util.stream.Collectors;
 public class DonorController {
 
     @Autowired
-    DonorServiceInterface donorService;
+    private DonorServiceInterface donorService;
 
     @Autowired
-    DonationBookingServiceInterface donationBookingService;
+    private DonationBookingServiceInterface donationBookingService;
 
     @Autowired
-    PatientServiceInterface patientService;
+    private PatientServiceInterface patientService;
+
+    @Autowired
+    private DonationServiceInterface donationService;
 
     @PostMapping("/updateSsnCounty")
     public ResponseEntity<Response> setCountyAndSSN(@RequestBody CountySsnDTO countySsnDTO) {
@@ -148,5 +154,12 @@ public class DonorController {
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
+    }
+
+    @PostMapping("/history")
+    public ResponseEntity<Response> getDonorHistory(@RequestBody IdentifierDTO identifierDTO) {
+        List<Donation> donations = donationService.getDonationsForDonor(identifierDTO.getId());
+        List<DonationDTO> dtos = donations.stream().map(DonationDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtos, 1, 1, 1);
     }
 }

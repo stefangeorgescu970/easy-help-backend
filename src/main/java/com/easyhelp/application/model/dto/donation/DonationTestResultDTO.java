@@ -1,5 +1,6 @@
 package com.easyhelp.application.model.dto.donation;
 
+import com.easyhelp.application.model.donations.DonationTestResult;
 import com.easyhelp.application.model.dto.BaseDTO;
 import lombok.Data;
 
@@ -25,5 +26,14 @@ public class DonationTestResultDTO extends BaseDTO {
         alt = false;
 
         hasFailed = false;
+    }
+
+    public DonationTestResultDTO(DonationTestResult donationTestResult) {
+        hepatitisB = donationTestResult.getHepatitisB();
+        hepatitisC = donationTestResult.getHepatitisC();
+        hiv = donationTestResult.getHiv();
+        htlv = donationTestResult.getHtlv();
+        vdrl = donationTestResult.getVdrl();
+        alt = donationTestResult.getAlt();
     }
 }

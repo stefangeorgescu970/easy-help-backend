@@ -5,7 +5,6 @@ import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.requests.DonationCommitment;
 import com.easyhelp.application.model.requests.DonationCommitmentStatus;
 import com.easyhelp.application.model.requests.DonationRequest;
-import com.easyhelp.application.model.requests.RequestStatus;
 import com.easyhelp.application.repository.DonationCommitmentRepository;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.stored_blood.StoredBloodServiceInterface;
@@ -97,7 +96,6 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
         if (!donationCommitmentOptional.isPresent()) {
             throw new EntityNotFoundException("Donation commitment with this id does not exist");
         }
-
 
         DonationCommitment donationCommitment = donationCommitmentOptional.get();
 

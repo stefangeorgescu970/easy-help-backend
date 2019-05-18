@@ -106,7 +106,7 @@ public class DoctorController {
         try {
             donationCommitmentService.acceptCommitment(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
+        } catch (EasyHelpException e) {
             e.printStackTrace();
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
@@ -117,7 +117,7 @@ public class DoctorController {
         try {
             donationCommitmentService.markCommitmentAsArrived(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
+        } catch (EasyHelpException e) {
             e.printStackTrace();
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
