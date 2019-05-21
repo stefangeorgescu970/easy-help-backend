@@ -86,7 +86,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Response> signUp(@RequestBody IdentifierDTO identifierDTO) {
+    public ResponseEntity<Response> logout(@RequestBody IdentifierDTO identifierDTO) {
         try {
             registerService.logoutDonor(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);

@@ -3,6 +3,7 @@ package com.easyhelp.application.service.donation_request;
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.blood.SeparatedBloodType;
 import com.easyhelp.application.model.blood.StoredBlood;
+import com.easyhelp.application.model.donations.DonationStatus;
 import com.easyhelp.application.model.dto.donation.DonationCommitmentCreateDTO;
 import com.easyhelp.application.model.dto.requests.DonationRequestDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
@@ -155,11 +156,29 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
         donationCenter.getDonationCommitments().add(donationCommitment);
         donationRequest.getDonationCommitments().add(donationCommitment);
         storedBlood.setDonationCommitment(donationCommitment);
+        storedBlood.setIsUsable(false);
 
         donationCommitmentService.save(donationCommitment);
         donationCenterService.save(donationCenter);
         donationRequestRepository.save(donationRequest);
         storedBloodService.storeBlood(storedBlood);
+    }
+
+    @Override
+    public void cancelRequest(Long requestId) throws EasyHelpException {
+        Optional<DonationRequest> donationRequestOpt = donationRequestRepository.findById(requestId);
+
+        if (!donationRequestOpt.isPresent()) {
+            throw new EntityNotFoundException("Donation request with that id not there");
+        }
+
+        DonationRequest donationRequest = donationRequestOpt.get();
+
+        if (!donationRequest.getDonationCommitments().isEmpty()) {
+            throw new EasyHelpException("This donation has pending commitments. Please handle these first");
+        }
+
+        donationRequestRepository.delete(donationRequest);
     }
 
     @Override
@@ -169,6 +188,7 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
 
         return donationRequestRepository.findAll()
                 .stream()
+                .filter(donationRequest -> !(donationRequest.getStatus().equals(RequestStatus.FULLY_COMMITTED_TO) || donationRequest.getStatus().equals(RequestStatus.COMPLETED) || donationRequest.getStatus().equals(RequestStatus.FAILED)))
                 .sorted(Comparator.comparingInt(e -> MiscUtils.computeDistance(donationCenter.getLatitude(), donationCenter.getLongitude(),
                         e.getDoctor().getHospital().getLatitude(), e.getDoctor().getHospital().getLongitude())))
                 .collect(Collectors.toList());

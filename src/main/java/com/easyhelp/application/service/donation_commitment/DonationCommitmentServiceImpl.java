@@ -128,10 +128,9 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
         donationCommitment.setStatus(DonationCommitmentStatus.ARRIVED_AT_DOCTOR);
         donationCommitmentRepository.save(donationCommitment);
 
-        // Mark Stored Blood as Used
+        // Mark Stored Blood as Arrived
         StoredBlood storedBlood = donationCommitment.getStoredBlood();
         storedBlood.setUsedDate(new Date());
-        storedBlood.setIsUsable(false);
         storedBloodService.storeBlood(storedBlood);
     }
 

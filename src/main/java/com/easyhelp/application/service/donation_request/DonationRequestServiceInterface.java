@@ -26,4 +26,6 @@ public interface  DonationRequestServiceInterface  {
     List<DonationRequest> getAllRequestsForPatient(Long patientId);
 
     void commitToDonation(DonationCommitmentCreateDTO donationCommitmentCreateDTO) throws EasyHelpException;
+
+    void cancelRequest(Long requestId) throws EasyHelpException;
 }

@@ -122,6 +122,16 @@ public class DoctorController {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }
+
+    @PostMapping("/cancelBloodRequest")
+    private ResponseEntity<Response> cancelBloodRequest(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            donationRequestService.cancelRequest(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
 }
 
 

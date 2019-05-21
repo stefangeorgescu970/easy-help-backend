@@ -320,9 +320,9 @@ public class MockDataController {
     private void addPatients() {
         try {
             patientService.addPatient(1L, "111111111", "A", false);
-            patientService.addPatient(2L, "1111111111", "B", true);
-            patientService.addPatient(2L, "21311111111", "AB", false);
-            patientService.addPatient(3L, "22111111111", "0", true);
+            patientService.addPatient(1L, "1111111111", "B", true);
+            patientService.addPatient(1L, "21311111111", "AB", false);
+            patientService.addPatient(1L, "22111111111", "0", true);
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             e.printStackTrace();
         }
@@ -462,9 +462,14 @@ public class MockDataController {
         donationRequestDTO.setUrgency(RequestUrgency.MEDIUM);
         try {
             donationRequestService.requestDonation(donationRequestDTO);
-            donationRequestDTO.setPatientId(2L);
 
+            donationRequestDTO.setPatientId(2L);
             donationRequestService.requestDonation(donationRequestDTO);
+
+            donationRequestDTO.setQuantity(3.0);
+            donationRequestDTO.setPatientId(3L);
+            donationRequestService.requestDonation(donationRequestDTO);
+
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             e.printStackTrace();
         }
