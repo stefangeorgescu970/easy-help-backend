@@ -17,4 +17,8 @@ public interface DonationServiceInterface {
     void separateBlood(DonationSplitResultsDTO donationSplitResultsDTO) throws EasyHelpException;
 
     List<Donation> getDonationsForDonor(Long donorId);
+
+    List<Donation> getDonationsAwaitingTestResultForDonationCenter(Long donationCenterId);
+
+    List<Donation> getDonationsAwaitingSplitResultForDonationCenter(Long donationCenterId);
 }

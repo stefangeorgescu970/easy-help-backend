@@ -228,8 +228,8 @@ public class MockDataController {
     }
 
     private void addDonationCenterPersonnels() throws EntityNotFoundException, UserAlreadyRegisteredException, SsnInvalidException {
-        registerService.registerUser(createDCP("Mariana", "Vitalie", County.BUCURESTI, "mariana@dcp", girlSSN, 1L));
-        registerService.registerUser(createDCP("Mihai", "Vitalie", County.CLUJ, "mihai@dcp", boySSN, 1L));
+        registerService.registerUser(createDCP("Mariana", "Vitalie", County.ALBA, "mariana@dcp", girlSSN, 1L));
+        registerService.registerUser(createDCP("Mihai", "Vitalie", County.ALBA, "mihai@dcp", boySSN, 1L));
     }
 
     private RegisterDTO createDCP(String fn, String ln, County county, String email, String ssn, Long locId) {
@@ -382,10 +382,10 @@ public class MockDataController {
         donationService.saveDonation(buildWaitingTestResultDonation(2L, 1L, 1L));
         donationService.saveDonation(buildWaitingTestResultDonation(3L, 1L, 1L));
         donationService.saveDonation(buildWaitingTestResultDonation(4L, 1L, -1L));
-        donationService.saveDonation(buildWaitingTestResultDonation(5L, 2L, -1L));
-        donationService.saveDonation(buildWaitingTestResultDonation(6L, 3L, -1L));
-        donationService.saveDonation(buildWaitingTestResultDonation(7L, 4L, -1L));
-        donationService.saveDonation(buildWaitingTestResultDonation(8L, 5L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(5L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(6L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(7L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(8L, 1L, -1L));
 
         DonationTestResultDTO donationTestResultDTO = new DonationTestResultDTO();
 

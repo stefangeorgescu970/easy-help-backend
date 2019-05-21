@@ -1,7 +1,10 @@
 package com.easyhelp.application.controller;
 
+import com.easyhelp.application.model.donations.Donation;
+import com.easyhelp.application.model.dto.donation.DonationDTO;
 import com.easyhelp.application.model.dto.donation.DonationSplitResultsDTO;
 import com.easyhelp.application.model.dto.donation.DonationTestResultDTO;
+import com.easyhelp.application.model.dto.misc.IdentifierDTO;
 import com.easyhelp.application.service.donation.DonationServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
@@ -15,9 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/donation")
 public class DonationController {
+
     @Autowired
     DonationServiceInterface donationService;
 
@@ -39,5 +46,19 @@ public class DonationController {
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
+    }
+
+    @PostMapping("/getWaitingForTestResults")
+    private ResponseEntity<Response> getWaitingForTestResults(@RequestBody IdentifierDTO identifierDTO) {
+        List<Donation> donations = donationService.getDonationsAwaitingTestResultForDonationCenter(identifierDTO.getId());
+        List<DonationDTO> donationDTOS = donations.stream().map(DonationDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, donationDTOS, 1, 1, 1);
+    }
+
+    @PostMapping("/getWaitingForSplitResults")
+    private ResponseEntity<Response> getWaitingForSplitResults(@RequestBody IdentifierDTO identifierDTO) {
+        List<Donation> donations = donationService.getDonationsAwaitingSplitResultForDonationCenter(identifierDTO.getId());
+        List<DonationDTO> donationDTOS = donations.stream().map(DonationDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, donationDTOS, 1, 1, 1);
     }
 }

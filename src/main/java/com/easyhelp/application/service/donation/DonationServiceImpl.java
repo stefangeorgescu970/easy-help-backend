@@ -74,7 +74,7 @@ public class DonationServiceImpl implements DonationServiceInterface {
         donationUnwrapped.setTestResults(donationTestResult);
         donationTestResult.setDonation(donationUnwrapped);
 
-        if (donationTestResultDTO.getHasFailed()) {
+        if (donationTestResultDTO.isFailed()) {
             donationUnwrapped.setStatus(DonationStatus.FAILED);
         } else {
             donationUnwrapped.setStatus(DonationStatus.AWAITING_SPLIT_RESULTS);
@@ -112,6 +112,16 @@ public class DonationServiceImpl implements DonationServiceInterface {
     @Override
     public List<Donation> getDonationsForDonor(Long donorId) {
         return donationRepository.findAll().stream().filter(donation -> donation.getDonor().getId().equals(donorId)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Donation> getDonationsAwaitingTestResultForDonationCenter(Long donationCenterId) {
+        return donationRepository.findAll().stream().filter(donation -> donation.getDonationCenter().getId().equals(donationCenterId) && donation.getStatus().equals(DonationStatus.AWAITING_CONTROL_TESTS)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Donation> getDonationsAwaitingSplitResultForDonationCenter(Long donationCenterId) {
+        return donationRepository.findAll().stream().filter(donation -> donation.getDonationCenter().getId().equals(donationCenterId) && donation.getStatus().equals(DonationStatus.AWAITING_SPLIT_RESULTS)).collect(Collectors.toList());
     }
 
     private void storeBlood(BloodComponent bloodComponent, Double quantity, Donor donor, DonationCenter donationCenter) {

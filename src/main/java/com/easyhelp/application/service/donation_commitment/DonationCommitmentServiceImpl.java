@@ -5,6 +5,7 @@ import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.requests.DonationCommitment;
 import com.easyhelp.application.model.requests.DonationCommitmentStatus;
 import com.easyhelp.application.model.requests.DonationRequest;
+import com.easyhelp.application.model.requests.RequestStatus;
 import com.easyhelp.application.repository.DonationCommitmentRepository;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.stored_blood.StoredBloodServiceInterface;
@@ -65,11 +66,22 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
                 .mapToDouble(dc -> dc.getStoredBlood().getAmount())
                 .sum();
 
-        if (currentCommittedTotal >= donationRequest.getQuantity())
+        if (currentCommittedTotal >= donationRequest.getQuantity()) {
             throw new EasyHelpException("This donation request already has enough commitments to be completed.");
+        }
 
         donationCommitment.setStatus(DonationCommitmentStatus.ACCEPTED_BY_DOCTOR);
         donationCommitmentRepository.save(donationCommitment);
+
+        currentCommittedTotal += donationCommitment.getStoredBlood().getAmount();
+
+        if (currentCommittedTotal >= donationRequest.getQuantity()) {
+            donationRequest.setStatus(RequestStatus.FULLY_COMMITTED_TO);
+        } else {
+            donationRequest.setStatus(RequestStatus.PARTIALLY_COMMITTED_TO);
+        }
+
+        donationRequestService.saveRequest(donationRequest);
     }
 
     @Override

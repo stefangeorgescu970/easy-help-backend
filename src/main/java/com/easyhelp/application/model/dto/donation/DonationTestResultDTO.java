@@ -24,8 +24,6 @@ public class DonationTestResultDTO extends BaseDTO {
         htlv = false;
         vdrl = false;
         alt = false;
-
-        hasFailed = false;
     }
 
     public DonationTestResultDTO(DonationTestResult donationTestResult) {
@@ -35,5 +33,12 @@ public class DonationTestResultDTO extends BaseDTO {
         htlv = donationTestResult.getHtlv();
         vdrl = donationTestResult.getVdrl();
         alt = donationTestResult.getAlt();
+    }
+
+    public Boolean isFailed() {
+        if (hasFailed != null)
+            return hasFailed;
+
+        else return hepatitisC || hepatitisB || hiv || htlv || vdrl || alt;
     }
 }
