@@ -10,7 +10,7 @@ import javax.persistence.*;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"donation"})
 @NoArgsConstructor
 @Table(name = "donation_test_results")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
