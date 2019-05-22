@@ -81,11 +81,12 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
             Set<DonationRequest> donationRequests = new HashSet<>();
             donationRequests.add(request);
             separatedBloodType.setDonationRequests(donationRequests);
+
+            bloodTypeInDb.getSeparatedBloodTypes().add(separatedBloodType);
+            bloodTypeService.saveBloodType(bloodTypeInDb);
         } else {
             separatedBloodType.getDonationRequests().add(request);
         }
-
-        separatedBloodTypeService.save(separatedBloodType);
 
         request.setDoctor(doctor);
         request.setPatient(patient);
@@ -93,7 +94,9 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
         request.setStatus(RequestStatus.PROCESSING);
         request.setQuantity(donationRequest.getQuantity());
         request.setSeparatedBloodType(separatedBloodType);
+
         donationRequestRepository.save(request);
+        separatedBloodTypeService.save(separatedBloodType);
     }
 
     @Override

@@ -45,7 +45,7 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
     }
 
     @Override
-    public void acceptCommitment(Long donationCommitmentId) throws EasyHelpException {
+    public RequestStatus acceptCommitment(Long donationCommitmentId) throws EasyHelpException {
         Optional<DonationCommitment> donationCommitmentOptional = donationCommitmentRepository.findById(donationCommitmentId);
 
         if (!donationCommitmentOptional.isPresent()) {
@@ -82,6 +82,28 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
         }
 
         donationRequestService.saveRequest(donationRequest);
+
+        return donationRequest.getStatus();
+    }
+
+    @Override
+    public void declineCommitment(Long donationCommitmentId) throws EasyHelpException {
+        Optional<DonationCommitment> donationCommitmentOptional = donationCommitmentRepository.findById(donationCommitmentId);
+
+        if (!donationCommitmentOptional.isPresent()) {
+            throw new EntityNotFoundException("Donation commitment with this id does not exist");
+        }
+
+        DonationCommitment donationCommitment = donationCommitmentOptional.get();
+
+        if (!donationCommitment.getStatus().equals(DonationCommitmentStatus.COMMITTED_BY_DONATION_CENTER))
+            throw new EasyHelpException("This donation commitment has been already accepted or declined by a doctor");
+
+        donationCommitment.setStatus(DonationCommitmentStatus.UNFUFILLED);
+        donationCommitment.getStoredBlood().setIsUsable(true);
+
+        storedBloodService.storeBlood(donationCommitment.getStoredBlood());
+        donationCommitmentRepository.save(donationCommitment);
     }
 
     @Override
@@ -117,7 +139,7 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
         // Set Quantity on Request or delete request
         DonationRequest donationRequest = donationCommitment.getDonationRequest();
         Double remainingNeededBlood = donationRequest.getQuantity() - donationCommitment.getStoredBlood().getAmount();
-        if (remainingNeededBlood.equals(0.0)) {
+        if (remainingNeededBlood <= 0) {
             donationRequestService.markRequestAsFinished(donationRequest, donationCommitment);
         } else {
             donationRequest.setQuantity(remainingNeededBlood);
@@ -135,10 +157,10 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
     }
 
     @Override
-    public List<DonationCommitment> getCommitmentsForDonationCenter(DonationCenter donationCenter, DonationCommitmentStatus withStatus) {
+    public List<DonationCommitment> getCommitmentsForDonationCenter(DonationCenter donationCenter) {
         return donationCommitmentRepository.findAll()
                 .stream()
-                .filter(donationCommitment -> donationCommitment.getStatus().equals(withStatus))
+                .filter(donationCommitment -> donationCommitment.getDonationCenter().getId().equals(donationCenter.getId()))
                 .collect(Collectors.toList());
     }
 }

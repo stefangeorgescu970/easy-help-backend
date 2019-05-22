@@ -154,18 +154,17 @@ public class DonationCenterController {
         }
     }
 
-    @PostMapping("/getCommitmentsForSending")
+    @PostMapping("/getCommitments")
     private ResponseEntity<Response> getCommitmentsForSending(@RequestBody IdentifierDTO identifierDTO) {
         try {
             DonationCenter donationCenter = donationCenterService.findById(identifierDTO.getId());
-            List<DonationCommitment> donationCommitments = donationCommitmentService.getCommitmentsForDonationCenter(donationCenter, DonationCommitmentStatus.ACCEPTED_BY_DOCTOR);
+            List<DonationCommitment> donationCommitments = donationCommitmentService.getCommitmentsForDonationCenter(donationCenter);
             List<DonationCommitmentDTO> dtoList = donationCommitments.stream().map(DonationCommitmentDTO::new).collect(Collectors.toList());
             return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }
-
 
     @PostMapping("/getAvailableBloodInDC")
     private ResponseEntity<Response> getAvailableBloodInDC(@RequestBody IdentifierDTO identifierDTO) {

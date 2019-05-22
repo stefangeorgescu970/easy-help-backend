@@ -148,7 +148,6 @@ public class DonationServiceImpl implements DonationServiceInterface {
         separatedBloodTypeService.save(separatedBloodType);
         donorService.save(donor);
         donationCenterService.save(donationCenter);
-
         storedBloodService.storeBlood(storedBlood);
     }
 }

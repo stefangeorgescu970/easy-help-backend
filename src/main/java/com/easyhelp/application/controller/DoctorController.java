@@ -8,6 +8,7 @@ import com.easyhelp.application.model.dto.requests.PatientDTO;
 import com.easyhelp.application.model.requests.DonationCommitment;
 import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.requests.Patient;
+import com.easyhelp.application.model.requests.RequestStatus;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
 import com.easyhelp.application.service.donation_commitment.DonationCommitmentServiceInterface;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
@@ -104,7 +105,18 @@ public class DoctorController {
     @PostMapping("/acceptCommitment")
     private ResponseEntity<Response> acceptCommitment(@RequestBody IdentifierDTO identifierDTO) {
         try {
-            donationCommitmentService.acceptCommitment(identifierDTO.getId());
+            RequestStatus status = donationCommitmentService.acceptCommitment(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK, status);
+        } catch (EasyHelpException e) {
+            e.printStackTrace();
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/declineCommitment")
+    private ResponseEntity<Response> declineCommitment(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            donationCommitmentService.declineCommitment(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
             e.printStackTrace();

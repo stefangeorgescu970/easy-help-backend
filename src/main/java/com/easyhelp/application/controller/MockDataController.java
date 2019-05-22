@@ -5,6 +5,7 @@ import com.easyhelp.application.model.blood.BloodComponent;
 import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationStatus;
 import com.easyhelp.application.model.dto.account.RegisterDTO;
+import com.easyhelp.application.model.dto.donation.DonationCommitmentCreateDTO;
 import com.easyhelp.application.model.dto.donation.DonationFormDTO;
 import com.easyhelp.application.model.dto.donation.DonationSplitResultsDTO;
 import com.easyhelp.application.model.dto.donation.DonationTestResultDTO;
@@ -22,6 +23,7 @@ import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
 import com.easyhelp.application.service.donation.DonationServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
+import com.easyhelp.application.service.donation_commitment.DonationCommitmentServiceInterface;
 import com.easyhelp.application.service.donation_form.DonationFormServiceInterface;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
@@ -33,6 +35,7 @@ import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.*;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +48,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/mocks")
@@ -91,6 +96,9 @@ public class MockDataController {
     @Autowired
     private DonationRequestServiceInterface donationRequestService;
 
+    @Autowired
+    private DonationCommitmentServiceInterface donationCommitmentService;
+
     public MockDataController(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -117,8 +125,20 @@ public class MockDataController {
         addDonationForm(3L);
 
         addDonations();
+        addSecondDonations();
+
+        return ResponseBuilder.encode(HttpStatus.OK);
+    }
+
+    @RequestMapping("/populateTables2")
+    private ResponseEntity<Response> populatePart2() throws UserAlreadyRegisteredException, EntityNotFoundException, SsnInvalidException {
 
         addDonationRequests();
+        try {
+            addDonationCommitment();
+        } catch (EasyHelpException e) {
+            e.printStackTrace();
+        }
 
         return ResponseBuilder.encode(HttpStatus.OK);
     }
@@ -292,13 +312,20 @@ public class MockDataController {
         registerService.registerUser(createDonor("Andrei", "Adan", County.BUCURESTI, "andrei@don", boySSN));
         registerService.registerUser(createDonor("Test", "Donor", County.CLUJ, "test@don", girlSSN));
         registerService.registerUser(createDonor("Adrian", "Moldovan", County.ALBA, "adetz@don", girlSSN));
-        registerService.registerUser(createDonor("Stefan", "Georgescu", County.ARGES, "stef@don", boySSN));
+        registerService.registerUser(createDonor("Stefan", "Georgescu", County.CLUJ, "stef@don", boySSN));
+        registerService.registerUser(createDonor("Nicu", "Fratila", County.ALBA, "nicu@don", boySSN));
+        registerService.registerUser(createDonor("Sebi", "Grigor", County.ALBA, "sebi@don", boySSN));
+        registerService.registerUser(createDonor("Cata", "Yellow", County.ALBA, "cata@don", boySSN));
+        registerService.registerUser(createDonor("Nichidel", "Rachidel", County.ALBA, "nichi@don", boySSN));
 
         donorService.updateBloodGroupOnDonor(1L, "A", false);
-        donorService.updateBloodGroupOnDonor(2L, "AB", false);
-        donorService.updateBloodGroupOnDonor(3L, "0", true);
+        donorService.updateBloodGroupOnDonor(2L, "A", true);
+        donorService.updateBloodGroupOnDonor(3L, "B", false);
         donorService.updateBloodGroupOnDonor(4L, "B", true);
-        donorService.updateBloodGroupOnDonor(5L, "A", false);
+        donorService.updateBloodGroupOnDonor(5L, "AB", false);
+        donorService.updateBloodGroupOnDonor(6L, "AB", true);
+        donorService.updateBloodGroupOnDonor(7L, "0", false);
+        donorService.updateBloodGroupOnDonor(8L, "0", true);
     }
 
     private RegisterDTO createDonor(String fn, String ln, County county, String email, String ssn) {
@@ -319,10 +346,14 @@ public class MockDataController {
 
     private void addPatients() {
         try {
-            patientService.addPatient(1L, "111111111", "A", false);
-            patientService.addPatient(1L, "1111111111", "B", true);
-            patientService.addPatient(1L, "21311111111", "AB", false);
-            patientService.addPatient(1L, "22111111111", "0", true);
+            patientService.addPatient(1L, "1", "A", true);
+            patientService.addPatient(1L, "2", "A", false);
+            patientService.addPatient(1L, "3", "B", true);
+            patientService.addPatient(1L, "4", "B", false);
+            patientService.addPatient(1L, "5", "AB", true);
+            patientService.addPatient(1L, "6", "AB", false);
+            patientService.addPatient(1L, "7", "0", true);
+            patientService.addPatient(1L, "8", "0", false);
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             e.printStackTrace();
         }
@@ -386,39 +417,65 @@ public class MockDataController {
         donationService.saveDonation(buildWaitingTestResultDonation(6L, 1L, -1L));
         donationService.saveDonation(buildWaitingTestResultDonation(7L, 1L, -1L));
         donationService.saveDonation(buildWaitingTestResultDonation(8L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(9L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(10L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(11L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(12L, 1L, -1L));
 
         DonationTestResultDTO donationTestResultDTO = new DonationTestResultDTO();
 
 
         try {
-            donationTestResultDTO.setDonationId(1L);
-            donationService.addTestResults(donationTestResultDTO);
-
-            donationTestResultDTO.setDonationId(2L);
-            donationService.addTestResults(donationTestResultDTO);
-
-            donationTestResultDTO.setHiv(true);
-            donationTestResultDTO.setHasFailed(true);
-
-            donationTestResultDTO.setDonationId(3L);
-            donationService.addTestResults(donationTestResultDTO);
-
-            donationTestResultDTO.setDonationId(4L);
-            donationService.addTestResults(donationTestResultDTO);
+            for(Long i = 1L; i <= 8L; i++) {
+                donationTestResultDTO.setDonationId(i);
+                donationService.addTestResults(donationTestResultDTO);
+            }
 
             DonationSplitResultsDTO donationSplitResultsDTO = new DonationSplitResultsDTO();
             donationSplitResultsDTO.setPlasmaUnits(1);
             donationSplitResultsDTO.setPlateletsUnits(2);
             donationSplitResultsDTO.setRedBloodCellsUnits(3);
-            donationSplitResultsDTO.setDonationId(1L);
-            donationService.separateBlood(donationSplitResultsDTO);
 
-            donationSplitResultsDTO.setDonationId(2L);
-            donationService.separateBlood(donationSplitResultsDTO);
+            for(Long i = 1L; i <= 4L; i++) {
+                donationSplitResultsDTO.setDonationId(i);
+                donationService.separateBlood(donationSplitResultsDTO);
+            }
         } catch (EasyHelpException e) {
             e.printStackTrace();
         }
 
+    }
+
+    private void addSecondDonations() {
+        donationService.saveDonation(buildWaitingTestResultDonation(1L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(2L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(3L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(4L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(5L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(6L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(7L, 1L, -1L));
+        donationService.saveDonation(buildWaitingTestResultDonation(8L, 1L, -1L));
+
+        DonationTestResultDTO donationTestResultDTO = new DonationTestResultDTO();
+
+        try {
+            for(Long i = 13L; i <= 20L; i++) {
+                donationTestResultDTO.setDonationId(i);
+                donationService.addTestResults(donationTestResultDTO);
+            }
+
+            DonationSplitResultsDTO donationSplitResultsDTO = new DonationSplitResultsDTO();
+            donationSplitResultsDTO.setPlasmaUnits(1);
+            donationSplitResultsDTO.setPlateletsUnits(2);
+            donationSplitResultsDTO.setRedBloodCellsUnits(3);
+
+            for(Long i = 13L; i <= 20L; i++) {
+                donationSplitResultsDTO.setDonationId(i);
+                donationService.separateBlood(donationSplitResultsDTO);
+            }
+        } catch (EasyHelpException e) {
+            e.printStackTrace();
+        }
     }
 
     private Donation buildWaitingTestResultDonation(Long donorId, Long donationCenterId, Long patientId) {
@@ -454,28 +511,31 @@ public class MockDataController {
     }
 
     private void addDonationRequests() {
+        Random rd = new Random();
+
         DonationRequestDTO donationRequestDTO = new DonationRequestDTO();
         donationRequestDTO.setDoctorId(1L);
-        donationRequestDTO.setPatientId(1L);
-        donationRequestDTO.setBloodComponent(BloodComponent.PLASMA);
-        donationRequestDTO.setQuantity(1.0);
         donationRequestDTO.setUrgency(RequestUrgency.MEDIUM);
+        donationRequestDTO.setBloodComponent(BloodComponent.PLATELETS);
         try {
-            donationRequestService.requestDonation(donationRequestDTO);
-
-            donationRequestDTO.setPatientId(2L);
-            donationRequestService.requestDonation(donationRequestDTO);
-
-            donationRequestDTO.setQuantity(3.0);
-            donationRequestDTO.setPatientId(3L);
-            donationRequestService.requestDonation(donationRequestDTO);
-
+            for(Long i = 1L; i<=8L; i++) {
+                donationRequestDTO.setPatientId(i);
+                donationRequestDTO.setQuantity(rd.nextDouble() % 2 + 1);
+                donationRequestService.requestDonation(donationRequestDTO);
+            }
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             e.printStackTrace();
         }
     }
 
-    private void addDonationCommitment() {
+    private void addDonationCommitment() throws EasyHelpException {
+        DonationCommitmentCreateDTO donationCommitmentCreateDTO = new DonationCommitmentCreateDTO();
+        donationCommitmentCreateDTO.setDonationCenterId(1L);
 
+        for(Long i = 1L; i<=4L; i++) {
+            donationCommitmentCreateDTO.setDonationRequestId(i);
+            donationCommitmentCreateDTO.setStoredBloodId(i * 3);
+            donationRequestService.commitToDonation(donationCommitmentCreateDTO);
+        }
     }
 }
