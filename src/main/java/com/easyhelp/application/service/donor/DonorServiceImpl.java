@@ -185,7 +185,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
             if (!donor.getDonations().isEmpty()) {
                 Optional<Donation> lastDonation = donor.getDonations().stream().max(Comparator.comparing(Donation::getDateAndTime));
-                donorSummary.setLastDonation(lastDonation.get());
+                lastDonation.ifPresent(donorSummary::setLastDonation);
             }
 
         } else {
