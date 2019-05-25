@@ -1,17 +1,23 @@
 package com.easyhelp.application.service.doctor;
 
-import com.easyhelp.application.model.dto.accountrequest.AccountRequestDTO;
-import com.easyhelp.application.model.dto.accountrequest.DoctorAccountRequestDTO;
+import com.easyhelp.application.model.dto.account.DoctorAccountDTO;
 import com.easyhelp.application.model.users.Doctor;
+import com.easyhelp.application.utils.exceptions.AccountNotReviewedException;
+import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 
 import java.util.List;
 
 public interface DoctorServiceInterface {
 
-    List<DoctorAccountRequestDTO> getAllPendingAccounts();
+    List<DoctorAccountDTO> getAllPendingAccounts();
 
-    List<Doctor> getAllActiveAccounts();
+    List<DoctorAccountDTO> getAllActiveAccounts();
 
-    List<Doctor> getAllBannedAccounts();
+    List<DoctorAccountDTO> getAllBannedAccounts();
 
+    void reviewAccount(Long doctorId, boolean shouldValidate) throws EntityNotFoundException;
+
+    void deactivateAccount(Long doctorId) throws AccountNotReviewedException, EntityNotFoundException;
+
+    Doctor findById(Long doctorId) throws EntityNotFoundException;
 }

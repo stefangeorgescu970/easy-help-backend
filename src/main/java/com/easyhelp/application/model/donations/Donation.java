@@ -16,10 +16,11 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(name = "donations")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Donation extends BaseEntity {
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "fk_doctor")
+    @JoinColumn(name = "fk_donor")
     private Donor donor;
 
     @ManyToOne(optional = false)
@@ -35,4 +36,5 @@ public class Donation extends BaseEntity {
 
     private DonationStatus status;
     private Date dateAndTime;
+    private Boolean withPatient;
 }

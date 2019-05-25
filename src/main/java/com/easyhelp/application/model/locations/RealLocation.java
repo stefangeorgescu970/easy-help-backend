@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
 
 @EqualsAndHashCode(callSuper = true)
@@ -18,4 +20,6 @@ public class RealLocation extends BaseEntity {
     private String name;
     private Double longitude;
     private Double latitude;
+    private String address;
+    private County county;
 }
