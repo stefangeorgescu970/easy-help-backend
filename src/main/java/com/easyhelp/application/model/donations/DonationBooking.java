@@ -2,6 +2,7 @@ package com.easyhelp.application.model.donations;
 
 import com.easyhelp.application.model.BaseEntity;
 import com.easyhelp.application.model.locations.DonationCenter;
+import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.users.Donor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,6 +16,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Table(name = "donation_bookings")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class DonationBooking extends BaseEntity {
 
     @OneToOne
@@ -26,4 +28,11 @@ public class DonationBooking extends BaseEntity {
     private DonationCenter donationCenter;
 
     private Date dateAndTime;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_patient")
+    private Patient patient;
+
+    private Boolean isForPatient;
+
 }

@@ -6,17 +6,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import java.util.Date;
+import javax.persistence.*;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"donor"})
 @NoArgsConstructor
 @Table(name = "donation_forms")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class DonationForm extends BaseEntity {
 
     @OneToOne(optional = false)
@@ -40,8 +37,8 @@ public class DonationForm extends BaseEntity {
     private Boolean tattoosOrPiercingsLast12Months;
     private Boolean transfusionLast12Months;
     private Boolean beenPregnant;
-    private Date birthDate;
-    private Date lastMenstruation;
+    private String birthDate;
+    private String lastMenstruation;
     private Boolean bornLivedTraveledAbroad;
     private String travelWhere;
     private String travelWhen;
@@ -55,9 +52,11 @@ public class DonationForm extends BaseEntity {
     private Boolean sufferFromSet6;
     private Boolean sufferFromSet7;
     private Boolean smoker;
-    private Date lastAlcoholUse;
+    private String lastAlcoholUse;
     private String alcoholDrank;
     private String alcoholQuantity;
     private Boolean beenRefused;
     private Boolean requireAttentionPostDonation;
 }
+
+

@@ -12,22 +12,14 @@ public class ResponseException extends Response {
 
     /**
      * Variable of type {@link String} representing the message of an
-     *      exception that occurred during the operation for which the response is given.
+     * exception that occurred during the operation for which the response is given.
      */
     protected String exception;
 
     /**
-     * Method for a response builder.
-     * @return An object of type {@link Response.Builder}
-     *      which in turn is used to build a {@link ResponseException} object.
-     */
-    static Builder builderException() {
-        return new Builder();
-    }
-
-    /**
      * All arguments constructor for a single object response.
-     * @param status The status of the operations.
+     *
+     * @param status  The status of the operations.
      * @param message The string representing the message of the exception.
      */
     ResponseException(boolean status, String message) {
@@ -35,6 +27,15 @@ public class ResponseException extends Response {
         this.exception = message;
     }
 
+    /**
+     * Method for a response builder.
+     *
+     * @return An object of type {@link Response.Builder}
+     * which in turn is used to build a {@link ResponseException} object.
+     */
+    static Builder builderException() {
+        return new Builder();
+    }
 
     /**
      * Response object builder class.

@@ -1,7 +1,7 @@
 package com.easyhelp.application.model.blood;
 
 public enum BloodComponent {
-    THROMBOCYTES,
+    PLATELETS,
     RED_BLOOD_CELLS,
     PLASMA
 }

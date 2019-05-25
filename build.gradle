@@ -36,9 +36,23 @@ dependencies {
     compile('org.postgresql:postgresql:9.4.1212')
     compile("com.auth0:java-jwt:3.4.0")
 
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.2'
+    compile 'javax.xml.bind:jaxb-api:2.3.0'
+
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
+
+
     //lombok
-    compile group: 'org.projectlombok', name: 'lombok', version: "1.16.12"
+    compileOnly 'org.projectlombok:lombok:1.18.6'
+    annotationProcessor 'org.projectlombok:lombok:1.18.6'
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("junit:junit")
+    
+    //apns
+    // https://mvnrepository.com/artifact/com.notnoop.apns/apns
+    compile group: 'com.notnoop.apns', name: 'apns', version: '0.1.6'
+
+    compile 'org.json:json:20171018'
 }

@@ -13,18 +13,19 @@ class ResponseList<T extends Serializable> extends Response {
 
     /**
      * Variable of type {@link ObjectsListWrapper} representing the actual wrapped model of the
-     *      operation for which the response is given.
+     * operation for which the response is given.
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private ObjectsListWrapper object;
 
     /**
      * All arguments constructor for a list object response.
-     * @param status The status of the operation.
+     *
+     * @param status  The status of the operation.
      * @param objects The actual list of objects representing the model.
-     * @param page The page where the objects was taken from.
-     * @param count The count of the objects.
-     * @param total The total amount of objects.
+     * @param page    The page where the objects was taken from.
+     * @param count   The count of the objects.
+     * @param total   The total amount of objects.
      */
     ResponseList(boolean status, List<T> objects, int page, int count, int total) {
         super(status);
@@ -33,8 +34,9 @@ class ResponseList<T extends Serializable> extends Response {
 
     /**
      * Method for a response builder.
+     *
      * @return An object of type {@link ResponseList.Builder}
-     *      which in turn is used to build a {@link Response} object.
+     * which in turn is used to build a {@link Response} object.
      */
     static <T extends Serializable> Builder<T> builderList() {
         return new Builder<T>();
@@ -98,7 +100,7 @@ class ResponseList<T extends Serializable> extends Response {
 
         /**
          * Variable of type {@link List} containing objects of type {@link T}
-         *      representing the actual model of the operation which the response is given to.
+         * representing the actual model of the operation which the response is given to.
          */
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private List<T> objects;

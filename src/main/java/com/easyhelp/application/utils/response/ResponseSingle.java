@@ -15,13 +15,14 @@ class ResponseSingle<T extends Serializable> extends Response {
 
     /**
      * Variable of type {@link T} representing the actual model of the
-     *      operation for which the response is given.
+     * operation for which the response is given.
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T object;
 
     /**
      * All arguments constructor for a single object response.
+     *
      * @param status The status of the operations.
      * @param object The object representing the model for the response.
      */
@@ -32,8 +33,9 @@ class ResponseSingle<T extends Serializable> extends Response {
 
     /**
      * Method for a response builder.
+     *
      * @return An object of type {@link ResponseSingle.Builder}
-     *      which in turn is used to build a {@link Response} object.
+     * which in turn is used to build a {@link Response} object.
      */
     static <T extends Serializable> Builder<T> builderSingle() {
         return new Builder<T>();
