@@ -186,6 +186,19 @@ public class DonorServiceImpl implements DonorServiceInterface {
             if (!donor.getDonations().isEmpty()) {
                 Optional<Donation> lastDonation = donor.getDonations().stream().max(Comparator.comparing(Donation::getDateAndTime));
                 lastDonation.ifPresent(donorSummary::setLastDonation);
+
+                Date today = new Date();
+                List<Donation> lastYearDonations = donor.getDonations().stream().filter(donation -> {
+                    int days = (int) ( (donation.getDateAndTime().getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    return days < 365;
+                }).collect(Collectors.toList());
+
+                int maxNumber = donor.getIsMale() ? 5 : 4;
+
+                if (lastYearDonations.size() >= maxNumber) {
+                    lastYearDonations = lastYearDonations.stream().sorted(Comparator.comparing(Donation::getDateAndTime)).limit(maxNumber).collect(Collectors.toList());
+                    donorSummary.setDonationStreakBegin(lastYearDonations.get(0).getDateAndTime());
+                }
             }
 
         } else {
