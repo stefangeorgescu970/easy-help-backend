@@ -12,7 +12,9 @@ import com.easyhelp.application.service.donationcenter.DonationCenterServiceInte
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
+import com.easyhelp.application.utils.PushNotificationUtils;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
+import com.easyhelp.application.utils.exceptions.PushTokenUnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -119,6 +121,12 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
 
         donor.setDonationBooking(null);
         donationCenter.getDonationBookings().remove(donationBooking);
+
+        try {
+            PushNotificationUtils.sendPushNotification(donor, "Your donation booking has been cancelled.");
+        } catch (PushTokenUnavailableException e) {
+            e.printStackTrace();
+        }
 
         donationCenterService.save(donationCenter);
         donorService.save(donor);

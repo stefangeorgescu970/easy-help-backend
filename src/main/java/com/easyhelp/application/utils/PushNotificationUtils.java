@@ -26,7 +26,7 @@ public class PushNotificationUtils {
             System.out.println("Sending an iOS push notification…");
 
             ApnsService service = APNS.newService()
-                    .withCert("src/main/resources/easyHelpLocalPush.p12", "pass")
+                    .withCert(System.getenv("ENV").equals("PROD") ? "src/main/resources/easyHelpDevPush.p12" : "src/main/resources/easyHelpLocalPush.p12", "pass")
                     .withSandboxDestination()
                     .build();
             // TODO - here check env and set correct certificate
