@@ -24,6 +24,7 @@ import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -125,6 +126,9 @@ public class DonationServiceImpl implements DonationServiceInterface {
     }
 
     private void storeBlood(BloodComponent bloodComponent, Double quantity, Donor donor, DonationCenter donationCenter) {
+        String pattern = "yyyy-MM-dd";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
         SeparatedBloodType separatedBloodType = separatedBloodTypeService.findSeparatedBloodTypeInDB(donor.getBloodType().getGroupLetter(), donor.getBloodType().getRh(), bloodComponent);
         if (separatedBloodType == null) {
             separatedBloodType = new SeparatedBloodType();
@@ -140,6 +144,14 @@ public class DonationServiceImpl implements DonationServiceInterface {
         storedBlood.setSeparatedBloodType(separatedBloodType);
         storedBlood.setStoredDate(new Date());
         storedBlood.setAmount(quantity);
+
+        String codeSeparator = ".";
+        storedBlood.setBagIdentifier(storedBlood.getSeparatedBloodType().getComponent().codeString() + codeSeparator +
+                storedBlood.getSeparatedBloodType().getBloodType().getGroupLetter() + codeSeparator +
+                (storedBlood.getSeparatedBloodType().getBloodType().getRh().equals(true) ? "+" : "-") + codeSeparator +
+                storedBlood.getDonor().getId() + codeSeparator +
+                storedBlood.getDonationCenter().getId() + codeSeparator +
+                simpleDateFormat.format(storedBlood.getStoredDate()));
 
         donor.getStoredBloodSet().add(storedBlood);
         donationCenter.getStoredBloodSet().add(storedBlood);

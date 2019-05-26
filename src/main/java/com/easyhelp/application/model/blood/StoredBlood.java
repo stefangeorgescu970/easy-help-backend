@@ -35,6 +35,7 @@ public class StoredBlood extends BaseEntity {
 
     private Double amount;
     private Date storedDate;
+    private String bagIdentifier;
 
     private Date usedDate;
     private Boolean isUsable = true;
