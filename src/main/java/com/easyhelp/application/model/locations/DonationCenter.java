@@ -50,8 +50,8 @@ public class DonationCenter extends RealLocation {
 
     private Integer numberOfConcurrentDonors = 3;
 
-    public DonationCenter(String name, double longitude, double latitude, String address, County county) {
-        super(name, longitude, latitude, address, county);
+    public DonationCenter(String name, double longitude, double latitude, String address, County county, String phone) {
+        super(name, longitude, latitude, address, county, phone);
     }
 
     public boolean canBeRemoved() {
