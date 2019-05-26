@@ -59,7 +59,7 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
     }
 
     @Override
-    public void requestDonation(Long doctorId, Long patientId, Double quantity, RequestUrgency urgency, BloodComponent bloodComponent) throws EntityNotFoundException, EntityAlreadyExistsException {
+    public DonationRequest requestDonation(Long doctorId, Long patientId, Double quantity, RequestUrgency urgency, BloodComponent bloodComponent) throws EntityNotFoundException, EntityAlreadyExistsException {
         DonationRequest request = new DonationRequest();
         Doctor doctor = doctorService.findById(doctorId);
         Patient patient = patientService.findById(patientId);
@@ -94,8 +94,8 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
         request.setQuantity(quantity);
         request.setSeparatedBloodType(separatedBloodType);
 
-        donationRequestRepository.save(request);
         separatedBloodTypeService.save(separatedBloodType);
+        return donationRequestRepository.save(request);
     }
 
     @Override
@@ -113,8 +113,8 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
     }
 
     @Override
-    public void saveRequest(DonationRequest donationRequest) {
-        donationRequestRepository.save(donationRequest);
+    public DonationRequest saveRequest(DonationRequest donationRequest) {
+        return donationRequestRepository.save(donationRequest);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
     }
 
     @Override
-    public void commitToDonation(DonationCommitmentCreateDTO donationCommitmentCreateDTO) throws EasyHelpException {
+    public DonationCommitment commitToDonation(DonationCommitmentCreateDTO donationCommitmentCreateDTO) throws EasyHelpException {
         DonationCenter donationCenter = donationCenterService.findById(donationCommitmentCreateDTO.getDonationCenterId());
         Optional<DonationRequest> donationRequestOpt = donationRequestRepository.findById(donationCommitmentCreateDTO.getDonationRequestId());
         StoredBlood storedBlood = storedBloodService.findById(donationCommitmentCreateDTO.getStoredBloodId());
@@ -160,10 +160,10 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
         storedBlood.setDonationCommitment(donationCommitment);
         storedBlood.setIsUsable(false);
 
-        donationCommitmentService.save(donationCommitment);
         donationCenterService.save(donationCenter);
         donationRequestRepository.save(donationRequest);
         storedBloodService.storeBlood(storedBlood);
+        return donationCommitmentService.save(donationCommitment);
     }
 
     @Override

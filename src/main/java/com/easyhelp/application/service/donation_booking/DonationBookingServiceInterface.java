@@ -1,6 +1,7 @@
 package com.easyhelp.application.service.donation_booking;
 
 import com.easyhelp.application.model.donations.AvailableDate;
+import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 public interface DonationBookingServiceInterface {
 
-    void save(DonationBooking donationBooking);
+    DonationBooking save(DonationBooking donationBooking);
 
     List<AvailableDate> getAvailableBookingSlots(Long donationCenterId) throws EntityNotFoundException;
 
@@ -21,5 +22,5 @@ public interface DonationBookingServiceInterface {
 
     void cancelBooking(Long bookingId) throws EntityNotFoundException;
 
-    void createDonationFromBooking(Long bookingId, String bloodGroup, Boolean rh) throws EntityNotFoundException;
+    Donation createDonationFromBooking(Long bookingId, String bloodGroup, Boolean rh) throws EntityNotFoundException;
 }

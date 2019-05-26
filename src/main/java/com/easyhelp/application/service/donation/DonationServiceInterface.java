@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface DonationServiceInterface {
 
-    void saveDonation(Donation donation);
+    Donation saveDonation(Donation donation);
 
     void addTestResults(DonationTestResultCreateDTO donationTestResultDTO) throws EntityNotFoundException;
 

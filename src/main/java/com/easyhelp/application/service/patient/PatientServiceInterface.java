@@ -12,7 +12,7 @@ public interface PatientServiceInterface {
 
     Patient findById(Long patientId) throws EntityNotFoundException;
 
-    void addPatient(Long doctorId, String ssn, String groupLetter, Boolean rh) throws EntityNotFoundException, EntityAlreadyExistsException;
+    Patient addPatient(Long doctorId, String ssn, String groupLetter, Boolean rh) throws EntityNotFoundException, EntityAlreadyExistsException;
 
     List<Patient> getPatientsForDoctor(Long doctorId);
 
@@ -20,5 +20,5 @@ public interface PatientServiceInterface {
 
     Patient findBySSN(String ssn) throws EntityNotFoundException;
 
-    void save(Patient patient);
+    Patient save(Patient patient);
 }

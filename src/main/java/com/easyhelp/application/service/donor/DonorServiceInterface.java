@@ -29,7 +29,7 @@ public interface DonorServiceInterface {
 
     void addDonationForm(DonationFormCreateDTO donationForm) throws EntityNotFoundException;
 
-    void save(Donor donor);
+    Donor save(Donor donor);
 
     Donor findByEmail(String email);
 

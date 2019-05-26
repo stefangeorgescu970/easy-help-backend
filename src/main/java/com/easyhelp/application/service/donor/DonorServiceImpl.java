@@ -265,8 +265,8 @@ public class DonorServiceImpl implements DonorServiceInterface {
     }
 
     @Override
-    public void save(Donor donor) {
-        donorRepository.save(donor);
+    public Donor save(Donor donor) {
+        return donorRepository.save(donor);
     }
 
     @Override

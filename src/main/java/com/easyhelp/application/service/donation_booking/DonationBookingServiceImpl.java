@@ -39,8 +39,8 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
     private PatientServiceInterface patientService;
 
     @Override
-    public void save(DonationBooking donationBooking) {
-        donationBookingRepository.save(donationBooking);
+    public DonationBooking save(DonationBooking donationBooking) {
+        return donationBookingRepository.save(donationBooking);
     }
 
     @Override
@@ -126,7 +126,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
     }
 
     @Override
-    public void createDonationFromBooking(Long bookingId, String bloodGroup, Boolean rh) throws EntityNotFoundException {
+    public Donation createDonationFromBooking(Long bookingId, String bloodGroup, Boolean rh) throws EntityNotFoundException {
         Optional<DonationBooking> donationBookingOptional = donationBookingRepository.findById(bookingId);
 
         if (!donationBookingOptional.isPresent())
@@ -151,7 +151,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
             patientService.save(donation.getPatient());
         }
 
-        donationService.saveDonation(donation);
         donationBookingRepository.delete(donationBooking);
+        return donationService.saveDonation(donation);
     }
 }

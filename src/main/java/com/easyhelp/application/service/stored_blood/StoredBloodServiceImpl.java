@@ -22,8 +22,8 @@ public class StoredBloodServiceImpl implements StoredBloodServiceInterface {
     private DonationCenterServiceInterface donationCenterService;
 
     @Override
-    public void storeBlood(StoredBlood storedBlood) {
-        storedBloodRepository.save(storedBlood);
+    public StoredBlood storeBlood(StoredBlood storedBlood) {
+        return storedBloodRepository.save(storedBlood);
     }
 
     @Override

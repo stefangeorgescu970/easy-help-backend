@@ -25,7 +25,7 @@ public class SeparatedBloodTypeServiceImpl implements SeparatedBloodTypeServiceI
     }
 
     @Override
-    public void save(SeparatedBloodType separatedBloodType) {
-        separatedBloodTypeRepository.save(separatedBloodType);
+    public SeparatedBloodType save(SeparatedBloodType separatedBloodType) {
+        return separatedBloodTypeRepository.save(separatedBloodType);
     }
 }

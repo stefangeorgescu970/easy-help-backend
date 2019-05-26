@@ -1,6 +1,7 @@
 package com.easyhelp.application.model.dto.dcp.outgoing;
 
 import com.easyhelp.application.model.dto.BaseOutgoingDTO;
+import com.easyhelp.application.model.dto.misc.incoming.BooleanDTO;
 import com.easyhelp.application.model.dto.misc.outgoing.ExtendedOutgoingLocationDTO;
 import com.easyhelp.application.model.dto.misc.outgoing.SeparatedBloodTypeDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
@@ -20,6 +21,7 @@ public class DCPDonationRequestDetailsDTO extends BaseOutgoingDTO {
     private RequestUrgency urgency;
     private RequestStatus status;
     private Integer distance;
+    private Boolean hasCommitted;
 
     public DCPDonationRequestDetailsDTO(DonationRequest donationRequest, DonationCenter donationCenter) {
         this.id = donationRequest.getId();
@@ -31,6 +33,11 @@ public class DCPDonationRequestDetailsDTO extends BaseOutgoingDTO {
         if (donationCenter != null) {
             this.distance = MiscUtils.computeDistance(donationCenter.getLatitude(), donationCenter.getLongitude(),
                     hospital.getLatitude(), hospital.getLongitude());
+
+            this.hasCommitted = donationRequest
+                    .getDonationCommitments()
+                    .stream()
+                    .anyMatch(internalCommitment -> internalCommitment.getDonationCenter().getId().equals(donationCenter.getId()));
         }
 
         this.separatedBloodType = new SeparatedBloodTypeDTO(donationRequest.getSeparatedBloodType());

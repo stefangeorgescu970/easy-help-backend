@@ -6,7 +6,7 @@ import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import java.util.List;
 
 public interface StoredBloodServiceInterface {
-    void storeBlood(StoredBlood storedBlood);
+    StoredBlood storeBlood(StoredBlood storedBlood);
 
     StoredBlood findById(Long storedBloodId) throws EntityNotFoundException;
 

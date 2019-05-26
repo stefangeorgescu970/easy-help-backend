@@ -6,6 +6,7 @@ import com.easyhelp.application.model.dto.doctor.outgoing.DoctorDonationCommitme
 import com.easyhelp.application.model.dto.doctor.outgoing.DoctorDonationRequestDetailsDTO;
 import com.easyhelp.application.model.dto.doctor.outgoing.DoctorPatientLevel2DTO;
 import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.OutgoingIdentifierDTO;
 import com.easyhelp.application.model.requests.DonationCommitment;
 import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.requests.Patient;
@@ -53,8 +54,8 @@ public class DoctorController {
     @PostMapping("/addPatient")
     private ResponseEntity<Response> addPatient(@RequestBody DoctorPatientCreateDTO patientDTO) {
         try {
-            patientService.addPatient(patientDTO.getDoctorId(), patientDTO.getSsn(), patientDTO.getBloodType().getGroupLetter(), patientDTO.getBloodType().getRh());
-            return ResponseBuilder.encode(HttpStatus.OK);
+            Patient patient = patientService.addPatient(patientDTO.getDoctorId(), patientDTO.getSsn(), patientDTO.getBloodType().getGroupLetter(), patientDTO.getBloodType().getRh());
+            return ResponseBuilder.encode(HttpStatus.OK,  new OutgoingIdentifierDTO(patient));
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
@@ -84,8 +85,8 @@ public class DoctorController {
     @PostMapping("/requestBlood")
     private ResponseEntity<Response> requestBlood(@RequestBody DonationRequestCreateDTO donationRequestDTO) {
         try {
-            donationRequestService.requestDonation(donationRequestDTO.getDoctorId(), donationRequestDTO.getPatientId(), donationRequestDTO.getQuantity(), donationRequestDTO.getUrgency(), donationRequestDTO.getBloodComponent());
-            return ResponseBuilder.encode(HttpStatus.OK);
+            DonationRequest donationRequest = donationRequestService.requestDonation(donationRequestDTO.getDoctorId(), donationRequestDTO.getPatientId(), donationRequestDTO.getQuantity(), donationRequestDTO.getUrgency(), donationRequestDTO.getBloodComponent());
+            return ResponseBuilder.encode(HttpStatus.OK, new OutgoingIdentifierDTO(donationRequest));
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }

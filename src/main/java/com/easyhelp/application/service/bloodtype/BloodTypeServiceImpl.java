@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class BloodTypeServiceImpl implements BloodTypeServiceInterface {
 
     @Autowired
-    BloodTypeRepository bloodTypeRepository;
+    private BloodTypeRepository bloodTypeRepository;
 
     @Override
     public BloodType findBloodTypeInDB(String groupLetter, Boolean rh) {

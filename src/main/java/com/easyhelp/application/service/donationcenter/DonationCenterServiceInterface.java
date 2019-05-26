@@ -10,7 +10,7 @@ import java.util.List;
 public interface DonationCenterServiceInterface {
     List<DonationCenter> getAll();
 
-    void save(DonationCenter donationCenter);
+    DonationCenter save(DonationCenter donationCenter);
 
     void removeDonationCenter(Long donationCenterId) throws EntityCannotBeRemovedException, EntityNotFoundException;
 

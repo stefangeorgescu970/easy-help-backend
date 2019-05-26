@@ -7,6 +7,7 @@ import com.easyhelp.application.model.dto.dcp.incoming.*;
 import com.easyhelp.application.model.dto.dcp.outgoing.*;
 import com.easyhelp.application.model.dto.misc.incoming.CountyDTO;
 import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.OutgoingIdentifierDTO;
 import com.easyhelp.application.model.dto.misc.outgoing.StoredBloodLevel2DTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.requests.DonationCommitment;
@@ -84,8 +85,8 @@ public class DonationCenterPersonnelController {
     @RequestMapping("/createDonation")
     private ResponseEntity<Response> createDonation(@RequestBody DonationCreationDTO donationCreationDTO) {
         try {
-            donationBookingService.createDonationFromBooking(donationCreationDTO.getBookingId(), donationCreationDTO.getGroupLetter(), donationCreationDTO.getRh());
-            return ResponseBuilder.encode(HttpStatus.OK);
+            Donation donation = donationBookingService.createDonationFromBooking(donationCreationDTO.getBookingId(), donationCreationDTO.getGroupLetter(), donationCreationDTO.getRh());
+            return ResponseBuilder.encode(HttpStatus.OK, new OutgoingIdentifierDTO(donation));
         } catch (EntityNotFoundException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
@@ -144,8 +145,8 @@ public class DonationCenterPersonnelController {
     @PostMapping("/commitToBloodRequest")
     private ResponseEntity<Response> commitToBloodRequest(@RequestBody DonationCommitmentCreateDTO donationCommitmentCreateDTO) {
         try {
-            donationRequestService.commitToDonation(donationCommitmentCreateDTO);
-            return ResponseBuilder.encode(HttpStatus.OK);
+            DonationCommitment donationCommitment = donationRequestService.commitToDonation(donationCommitmentCreateDTO);
+            return ResponseBuilder.encode(HttpStatus.OK, new OutgoingIdentifierDTO(donationCommitment));
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }

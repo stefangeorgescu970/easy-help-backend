@@ -52,8 +52,8 @@ public class DonationServiceImpl implements DonationServiceInterface {
     private DonationCenterServiceInterface donationCenterService;
 
     @Override
-    public void saveDonation(Donation donation) {
-        donationRepository.save(donation);
+    public Donation saveDonation(Donation donation) {
+        return donationRepository.save(donation);
     }
 
     @Override

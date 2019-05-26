@@ -25,8 +25,8 @@ public class HospitalServiceImpl implements HospitalServiceInterface {
     }
 
     @Override
-    public void save(Hospital hospital) {
-        hospitalRepository.save(hospital);
+    public Hospital save(Hospital hospital) {
+        return hospitalRepository.save(hospital);
     }
 
     @Override

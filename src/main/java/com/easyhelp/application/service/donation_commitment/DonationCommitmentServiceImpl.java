@@ -32,8 +32,8 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
     private DonationRequestServiceInterface donationRequestService;
 
     @Override
-    public void save(DonationCommitment donationCommitment) {
-        donationCommitmentRepository.save(donationCommitment);
+    public DonationCommitment save(DonationCommitment donationCommitment) {
+        return donationCommitmentRepository.save(donationCommitment);
     }
 
     @Override

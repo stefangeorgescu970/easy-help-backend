@@ -14,11 +14,11 @@ import java.util.List;
 public interface  DonationRequestServiceInterface  {
     List<DonationRequest> getAll();
 
-    void requestDonation(Long doctorId, Long patientId, Double quantity, RequestUrgency urgency, BloodComponent bloodComponent) throws EntityNotFoundException, EntityAlreadyExistsException;
+    DonationRequest requestDonation(Long doctorId, Long patientId, Double quantity, RequestUrgency urgency, BloodComponent bloodComponent) throws EntityNotFoundException, EntityAlreadyExistsException;
 
     void markRequestAsFinished(DonationRequest donationRequest, DonationCommitment finalCommitment);
 
-    void saveRequest(DonationRequest donationRequest);
+    DonationRequest saveRequest(DonationRequest donationRequest);
 
     List<DonationRequest> getAllRequestsForDoctor(Long doctorId);
 
@@ -26,7 +26,7 @@ public interface  DonationRequestServiceInterface  {
 
     List<DonationRequest> getAllRequestsForPatient(Long patientId);
 
-    void commitToDonation(DonationCommitmentCreateDTO donationCommitmentCreateDTO) throws EasyHelpException;
+    DonationCommitment commitToDonation(DonationCommitmentCreateDTO donationCommitmentCreateDTO) throws EasyHelpException;
 
     void cancelRequest(Long requestId) throws EasyHelpException;
 }

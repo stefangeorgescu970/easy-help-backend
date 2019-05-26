@@ -9,6 +9,7 @@ import com.easyhelp.application.model.dto.misc.incoming.BooleanDTO;
 import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
 import com.easyhelp.application.model.dto.misc.incoming.StringDTO;
 import com.easyhelp.application.model.dto.misc.outgoing.ExtendedOutgoingLocationDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.OutgoingIdentifierDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.model.users.Doctor;
@@ -169,8 +170,8 @@ public class AdminController {
     @PostMapping("/add")
     private ResponseEntity<Response> addHospital(@RequestBody AdminCreateHospitalDTO location) {
         Hospital hospital = new Hospital(location);
-        hospitalService.save(hospital);
-        return ResponseBuilder.encode(HttpStatus.OK, hospital);
+        hospital = hospitalService.save(hospital);
+        return ResponseBuilder.encode(HttpStatus.OK, new OutgoingIdentifierDTO(hospital));
     }
 
     @RequestMapping("/getAll")
@@ -197,8 +198,8 @@ public class AdminController {
     @PostMapping("/add")
     private ResponseEntity<Response> addDonationCenter(@RequestBody AdminCreateDonationCenterDTO location) {
         DonationCenter donationCenter = new DonationCenter(location);
-        donationCenterService.save(donationCenter);
-        return ResponseBuilder.encode(HttpStatus.OK, donationCenter);
+        donationCenter = donationCenterService.save(donationCenter);
+        return ResponseBuilder.encode(HttpStatus.OK, new OutgoingIdentifierDTO(donationCenter));
     }
 
     @RequestMapping("/getAll")
