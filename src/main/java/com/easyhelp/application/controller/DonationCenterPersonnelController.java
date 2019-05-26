@@ -75,6 +75,7 @@ public class DonationCenterPersonnelController {
     @PostMapping("/cancelBooking")
     private ResponseEntity<Response> cancelBooking(@RequestBody IdentifierDTO identifierDTO) {
         try {
+            // TODO - here add checks that the booking is indeed made for the donation center sending the request
             donationBookingService.cancelBooking(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
@@ -102,6 +103,7 @@ public class DonationCenterPersonnelController {
     @PostMapping("/addTestResult")
     private ResponseEntity<Response> addTestResults(@RequestBody DonationTestResultCreateDTO donationTestResultDTO) {
         try {
+            // TODO - here add checks that the donation is indeed made for the donation center sending the request
             donationService.addTestResults(donationTestResultDTO);
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
@@ -119,6 +121,7 @@ public class DonationCenterPersonnelController {
     @PostMapping("/addSplitResults")
     private ResponseEntity<Response> addSplitResults(@RequestBody DonationSplitResultCreateDTO donationSplitResultCreateDTO) {
         try {
+            // TODO - here add checks that the donation is indeed made for the donation center sending the request
             donationService.separateBlood(donationSplitResultCreateDTO);
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
@@ -145,6 +148,7 @@ public class DonationCenterPersonnelController {
     @PostMapping("/commitToBloodRequest")
     private ResponseEntity<Response> commitToBloodRequest(@RequestBody DonationCommitmentCreateDTO donationCommitmentCreateDTO) {
         try {
+            // TODO - here add checks that the stored blood is indeed owned by the donation center sending the request
             DonationCommitment donationCommitment = donationRequestService.commitToDonation(donationCommitmentCreateDTO);
             return ResponseBuilder.encode(HttpStatus.OK, new OutgoingIdentifierDTO(donationCommitment));
         } catch (EasyHelpException e) {
@@ -167,6 +171,7 @@ public class DonationCenterPersonnelController {
     @PostMapping("/shipCommitment")
     private ResponseEntity<Response> shipCommitment(@RequestBody IdentifierDTO identifierDTO) {
         try {
+            // TODO - here add checks that the commitment is indeed made for the donation center sending the request
             donationCommitmentService.shipCommitment(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {

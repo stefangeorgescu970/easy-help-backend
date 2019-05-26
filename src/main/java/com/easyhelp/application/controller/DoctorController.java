@@ -71,6 +71,7 @@ public class DoctorController {
     @PostMapping("/deletePatient")
     private ResponseEntity<Response> deletePatient(@RequestBody IdentifierDTO identifierDTO) {
         try {
+            // TODO - here add checks that patient is indeed owned by the doctor sending the request
             patientService.deletePatient(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
@@ -102,6 +103,7 @@ public class DoctorController {
     @PostMapping("/cancelBloodRequest")
     private ResponseEntity<Response> cancelBloodRequest(@RequestBody IdentifierDTO identifierDTO) {
         try {
+            // TODO - here add checks that blood request is indeed owned by the doctor sending the request
             donationRequestService.cancelRequest(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
@@ -128,6 +130,7 @@ public class DoctorController {
     @PostMapping("/acceptCommitment")
     private ResponseEntity<Response> acceptCommitment(@RequestBody IdentifierDTO identifierDTO) {
         try {
+            // TODO - here add checks that the commitment is indeed owned by the doctor sending the request
             RequestStatus status = donationCommitmentService.acceptCommitment(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK, status);
         } catch (EasyHelpException e) {
@@ -139,6 +142,7 @@ public class DoctorController {
     @PostMapping("/declineCommitment")
     private ResponseEntity<Response> declineCommitment(@RequestBody IdentifierDTO identifierDTO) {
         try {
+            // TODO - here add checks that the commitment is indeed owned by the doctor sending the request
             donationCommitmentService.declineCommitment(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
@@ -150,6 +154,7 @@ public class DoctorController {
     @PostMapping("/commitmentArrived")
     private ResponseEntity<Response> markCommitmentAsArrived(@RequestBody IdentifierDTO identifierDTO) {
         try {
+            // TODO - here add checks that the commitment is indeed owned by the doctor sending the request
             donationCommitmentService.markCommitmentAsArrived(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
