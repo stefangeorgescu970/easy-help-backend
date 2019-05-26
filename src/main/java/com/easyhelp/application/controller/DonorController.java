@@ -1,25 +1,22 @@
 package com.easyhelp.application.controller;
 
 
+import com.easyhelp.application.model.donations.AvailableDate;
 import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonorSummary;
-import com.easyhelp.application.model.dto.dcp.outgoing.DCPDonorAccountDTO;
-import com.easyhelp.application.model.dto.dcp.incoming.FilterDonorDTO;
-import com.easyhelp.application.model.dto.donor.incoming.DonationFormCreateDTO;
-import com.easyhelp.application.model.dto.donor.outgoing.DonorSummaryDTO;
-import com.easyhelp.application.model.dto.donor.incoming.BloodGroupRhDTO;
-import com.easyhelp.application.model.dto.donor.incoming.BookingRequestDTO;
-import com.easyhelp.application.model.dto.donor.incoming.CountySsnDTO;
-import com.easyhelp.application.model.dto.donor.incoming.PushNotificationDTO;
+import com.easyhelp.application.model.dto.donor.incoming.*;
+import com.easyhelp.application.model.dto.donor.outgoing.AvailableDateDTO;
 import com.easyhelp.application.model.dto.donor.outgoing.DonorDonationBookingDTO;
 import com.easyhelp.application.model.dto.donor.outgoing.DonorDonationDTO;
-import com.easyhelp.application.model.dto.misc.incoming.CountyDTO;
+import com.easyhelp.application.model.dto.donor.outgoing.DonorSummaryDTO;
 import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
 import com.easyhelp.application.model.dto.misc.incoming.StringDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.ExtendedOutgoingLocationDTO;
+import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.requests.Patient;
-import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.service.donation.DonationServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
+import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
@@ -55,23 +52,36 @@ public class DonorController {
     @Autowired
     private DonationServiceInterface donationService;
 
-    @PostMapping("/updateSsnCounty")
-    public ResponseEntity<Response> setCountyAndSSN(@RequestBody CountySsnDTO countySsnDTO) {
+    @Autowired
+    private DonationCenterServiceInterface donationCenterService;
+
+    //================================================================================
+    // Managing Donation Booking
+    //================================================================================
+
+    @PostMapping("/getDonationCenters")
+    private ResponseEntity<Response> getAllDonationCenters(@RequestBody LocalizationDTO localizationDTO) {
+        List<DonationCenter> donationCenters = donationCenterService.getAll();
+        List<ExtendedOutgoingLocationDTO> dtoList = donationCenters.stream().map(ExtendedOutgoingLocationDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+    }
+
+    @PostMapping("/getAvailableHours")
+    public ResponseEntity<Response> getAvailableHoursForDCNext7Days(@RequestBody IdentifierDTO identifierDTO) {
         try {
-            donorService.updateCountyOnDonor(countySsnDTO.getUserId(), countySsnDTO.getCounty());
-            donorService.updateSsnOnDonor(countySsnDTO.getUserId(), countySsnDTO.getSsn(), countySsnDTO.getSkipSsnCheck());
-            return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (EasyHelpException e) {
+            List<AvailableDate> hours = donationBookingService.getAvailableBookingSlots(identifierDTO.getId());
+            List<AvailableDateDTO> hoursDTO = hours.stream().map(AvailableDateDTO::new).collect(Collectors.toList());
+            return ResponseBuilder.encode(HttpStatus.OK, hoursDTO, 1, 1, 1);
+        } catch (EntityNotFoundException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }
 
-    @PostMapping("/updateBloodGroup")
-    public ResponseEntity<Response> setBloodGroup(@RequestBody BloodGroupRhDTO bloodGroupRhDTO) {
+    @PostMapping("/checkPatientSSN")
+    public ResponseEntity<Response> checkPatientSSN(@RequestBody StringDTO stringDTO) {
         try {
-            donorService.updateBloodGroupOnDonor(bloodGroupRhDTO.getUserId(),
-                    bloodGroupRhDTO.getGroupLetter(),
-                    bloodGroupRhDTO.getRh());
+//            MiscUtils.validateSsn(stringDTO.getParam());
+            Patient patient = patientService.findBySSN(stringDTO.getParam());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
@@ -99,26 +109,29 @@ public class DonorController {
         }
     }
 
-    @PostMapping("/getInCounty")
-    public ResponseEntity<Response> getDonorsInCounty(@RequestBody CountyDTO countyDTO) {
-        List<Donor> donors = donorService.getDonorsInCounty(countyDTO.getCounty());
-        List<DCPDonorAccountDTO> donorAccountDTOS = donors.stream().map(DCPDonorAccountDTO::new).collect(Collectors.toList());
-        return ResponseBuilder.encode(HttpStatus.OK, donorAccountDTOS, 1, 1, 1);
-    }
+    //================================================================================
+    // Managing Account Data
+    //================================================================================
 
-    @PostMapping("/filterDonors")
-    public ResponseEntity<Response> getDonorsInCounty(@RequestBody FilterDonorDTO filterDonorDTO) {
-        List<Donor> donors = donorService.filterDonors(filterDonorDTO.getCounty(), filterDonorDTO.getGroupLetter(), filterDonorDTO.getCanDonate());
-        List<DCPDonorAccountDTO> donorAccountDTOS = donors.stream().map(DCPDonorAccountDTO::new).collect(Collectors.toList());
-        return ResponseBuilder.encode(HttpStatus.OK, donorAccountDTOS, 1, 1, 1);
-    }
-
-    @PostMapping("/getDonorSummary")
-    public ResponseEntity<Response> getDonorSummary(@RequestBody IdentifierDTO identifierDTO) {
+    @PostMapping("/updateSsnCounty")
+    public ResponseEntity<Response> setCountyAndSSN(@RequestBody CountySsnDTO countySsnDTO) {
         try {
-            DonorSummary donorSummary = donorService.getDonorSummary(identifierDTO.getId());
-            return ResponseBuilder.encode(HttpStatus.OK, new DonorSummaryDTO(donorSummary));
-        } catch (EntityNotFoundException e) {
+            donorService.updateCountyOnDonor(countySsnDTO.getUserId(), countySsnDTO.getCounty());
+            donorService.updateSsnOnDonor(countySsnDTO.getUserId(), countySsnDTO.getSsn(), countySsnDTO.getSkipSsnCheck());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/updateBloodGroup")
+    public ResponseEntity<Response> setBloodGroup(@RequestBody BloodGroupRhDTO bloodGroupRhDTO) {
+        try {
+            donorService.updateBloodGroupOnDonor(bloodGroupRhDTO.getUserId(),
+                    bloodGroupRhDTO.getGroupLetter(),
+                    bloodGroupRhDTO.getRh());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }
@@ -133,13 +146,12 @@ public class DonorController {
         }
     }
 
-    @PostMapping("/checkPatientSSN")
-    public ResponseEntity<Response> checkPatientSSN(@RequestBody StringDTO stringDTO) {
+    @PostMapping("/getDonorSummary")
+    public ResponseEntity<Response> getDonorSummary(@RequestBody IdentifierDTO identifierDTO) {
         try {
-//            MiscUtils.validateSsn(stringDTO.getParam());
-            Patient patient = patientService.findBySSN(stringDTO.getParam());
-            return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (EasyHelpException e) {
+            DonorSummary donorSummary = donorService.getDonorSummary(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK, new DonorSummaryDTO(donorSummary));
+        } catch (EntityNotFoundException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }

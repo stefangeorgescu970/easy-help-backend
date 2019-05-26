@@ -1,11 +1,11 @@
 package com.easyhelp.application.controller;
 
 import com.easyhelp.application.model.dto.auth.AccountDTO;
-import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.dto.auth.LoginDTO;
+import com.easyhelp.application.model.dto.auth.LoginResponseDTO;
+import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
 import com.easyhelp.application.model.users.ApplicationUser;
-import com.easyhelp.application.model.dto.auth.LoginResponseDTO;
 import com.easyhelp.application.model.users.PartnerUser;
 import com.easyhelp.application.security.JwtTokenProvider;
 import com.easyhelp.application.service.RegisterService;
@@ -32,16 +32,16 @@ public class AuthenticationController {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    private RegisterService registerService;
+    private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private RegisterService registerService;
+    
     @Autowired
     private ApplicationUserService applicationUserService;
-
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    JwtTokenProvider jwtTokenProvider;
 
     public AuthenticationController(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;

@@ -46,22 +46,9 @@ public class DoctorController {
     @Autowired
     private DonationCommitmentServiceInterface donationCommitmentService;
 
-    @PostMapping("/requestBlood")
-    private ResponseEntity<Response> requestBlood(@RequestBody DonationRequestCreateDTO donationRequestDTO) {
-        try {
-            donationRequestService.requestDonation(donationRequestDTO.getDoctorId(), donationRequestDTO.getPatientId(), donationRequestDTO.getQuantity(), donationRequestDTO.getUrgency(), donationRequestDTO.getBloodComponent());
-            return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
-            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
-        }
-    }
-
-    @RequestMapping("/seeMyBloodRequests")
-    private ResponseEntity<Response> getMyRequests(@RequestBody IdentifierDTO identifierDTO) {
-        List<DonationRequest> donationRequests = donationRequestService.getAllRequestsForDoctor(identifierDTO.getId());
-        List<DoctorDonationRequestDetailsDTO> dtoList = donationRequests.stream().map(DoctorDonationRequestDetailsDTO::new).collect(Collectors.toList());
-        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
-    }
+    //================================================================================
+    // Managing Patients
+    //================================================================================
 
     @PostMapping("/addPatient")
     private ResponseEntity<Response> addPatient(@RequestBody DoctorPatientCreateDTO patientDTO) {
@@ -89,6 +76,41 @@ public class DoctorController {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }
+
+    //================================================================================
+    // Managing Blood Requests
+    //================================================================================
+
+    @PostMapping("/requestBlood")
+    private ResponseEntity<Response> requestBlood(@RequestBody DonationRequestCreateDTO donationRequestDTO) {
+        try {
+            donationRequestService.requestDonation(donationRequestDTO.getDoctorId(), donationRequestDTO.getPatientId(), donationRequestDTO.getQuantity(), donationRequestDTO.getUrgency(), donationRequestDTO.getBloodComponent());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @RequestMapping("/seeMyBloodRequests")
+    private ResponseEntity<Response> getMyRequests(@RequestBody IdentifierDTO identifierDTO) {
+        List<DonationRequest> donationRequests = donationRequestService.getAllRequestsForDoctor(identifierDTO.getId());
+        List<DoctorDonationRequestDetailsDTO> dtoList = donationRequests.stream().map(DoctorDonationRequestDetailsDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+    }
+
+    @PostMapping("/cancelBloodRequest")
+    private ResponseEntity<Response> cancelBloodRequest(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            donationRequestService.cancelRequest(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    //================================================================================
+    // Managing Donation Commitments
+    //================================================================================
 
     @PostMapping("/requestCommitments")
     private ResponseEntity<Response> getRequestCommitments(@RequestBody IdentifierDTO identifierDTO) {
@@ -131,16 +153,6 @@ public class DoctorController {
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
             e.printStackTrace();
-            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
-        }
-    }
-
-    @PostMapping("/cancelBloodRequest")
-    private ResponseEntity<Response> cancelBloodRequest(@RequestBody IdentifierDTO identifierDTO) {
-        try {
-            donationRequestService.cancelRequest(identifierDTO.getId());
-            return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }

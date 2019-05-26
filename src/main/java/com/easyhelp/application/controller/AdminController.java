@@ -1,17 +1,24 @@
 package com.easyhelp.application.controller;
 
 
+import com.easyhelp.application.model.dto.admin.incoming.AdminCreateDonationCenterDTO;
+import com.easyhelp.application.model.dto.admin.incoming.AdminCreateHospitalDTO;
 import com.easyhelp.application.model.dto.admin.outgoing.AdminDCPAccountDTO;
 import com.easyhelp.application.model.dto.admin.outgoing.AdminDoctorAccountDTO;
 import com.easyhelp.application.model.dto.misc.incoming.BooleanDTO;
 import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
 import com.easyhelp.application.model.dto.misc.incoming.StringDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.ExtendedOutgoingLocationDTO;
+import com.easyhelp.application.model.locations.DonationCenter;
+import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.model.users.Doctor;
 import com.easyhelp.application.model.users.DonationCenterPersonnel;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
+import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.donationcenterpersonnel.DonationCenterPersonnelServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
+import com.easyhelp.application.service.hospital.HospitalServiceInterface;
 import com.easyhelp.application.utils.PushNotificationUtils;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
@@ -41,17 +48,20 @@ public class AdminController {
     @Autowired
     private DonorServiceInterface donorService;
 
+    @Autowired
+    private HospitalServiceInterface hospitalService;
+
+    @Autowired
+    private DonationCenterServiceInterface donationCenterService;
+
+    //================================================================================
+    // Managing Doctor Accounts
+    //================================================================================
+
     @RequestMapping("/doctorAccountRequests")
     private ResponseEntity<Response> getDoctorAccountRequests() {
         List<Doctor> pendingAccounts = doctorService.getAllPendingAccounts();
         List<AdminDoctorAccountDTO> dtoList = pendingAccounts.stream().map(AdminDoctorAccountDTO::new).collect(Collectors.toList());
-        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
-    }
-
-    @RequestMapping("/dcpAccountRequests")
-    private ResponseEntity<Response> getDonationCenterPersonnelAccountRequests() {
-        List<DonationCenterPersonnel> pendingAccounts = donationCenterPersonnelService.getAllPendingAccounts();
-        List<AdminDCPAccountDTO> dtoList = pendingAccounts.stream().map(AdminDCPAccountDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
@@ -75,6 +85,40 @@ public class AdminController {
         }
     }
 
+    @PostMapping("/doctorAccounts")
+    private ResponseEntity<Response> getDoctorAccounts(@RequestBody BooleanDTO booleanDTO) {
+        List<AdminDoctorAccountDTO> dtoList;
+
+        if (booleanDTO.getParam()) {
+            dtoList = doctorService.getAllActiveAccounts().stream().map(AdminDoctorAccountDTO::new).collect(Collectors.toList());
+        } else {
+            dtoList = doctorService.getAllBannedAccounts().stream().map(AdminDoctorAccountDTO::new).collect(Collectors.toList());
+        }
+
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+    }
+
+    @PostMapping("/deactivateDoctorAccount")
+    private ResponseEntity<Response> deactivateDoctorAccount(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            this.doctorService.deactivateAccount(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException exp) {
+            return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
+        }
+    }
+
+    //================================================================================
+    // Managing Donation Center Personnel Accounts
+    //================================================================================
+
+    @RequestMapping("/dcpAccountRequests")
+    private ResponseEntity<Response> getDonationCenterPersonnelAccountRequests() {
+        List<DonationCenterPersonnel> pendingAccounts = donationCenterPersonnelService.getAllPendingAccounts();
+        List<AdminDCPAccountDTO> dtoList = pendingAccounts.stream().map(AdminDCPAccountDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+    }
+
     @PostMapping("/approveDcpAccount")
     private ResponseEntity<Response> approveDonationCenterPersonnelAccount(@RequestBody IdentifierDTO identifierDTO) {
         try {
@@ -95,19 +139,6 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/doctorAccounts")
-    private ResponseEntity<Response> getDoctorAccounts(@RequestBody BooleanDTO booleanDTO) {
-        List<AdminDoctorAccountDTO> dtoList;
-
-        if (booleanDTO.getParam()) {
-            dtoList = doctorService.getAllActiveAccounts().stream().map(AdminDoctorAccountDTO::new).collect(Collectors.toList());
-        } else {
-            dtoList = doctorService.getAllBannedAccounts().stream().map(AdminDoctorAccountDTO::new).collect(Collectors.toList());
-        }
-
-        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
-    }
-
     @PostMapping("/dcpAccounts")
     private ResponseEntity<Response> getDcpAccounts(@RequestBody BooleanDTO booleanDTO) {
         List<AdminDCPAccountDTO> dtoList;
@@ -121,16 +152,6 @@ public class AdminController {
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
-    @PostMapping("/deactivateDoctorAccount")
-    private ResponseEntity<Response> deactivateDoctorAccount(@RequestBody IdentifierDTO identifierDTO) {
-        try {
-            this.doctorService.deactivateAccount(identifierDTO.getId());
-            return ResponseBuilder.encode(HttpStatus.OK);
-        } catch (EasyHelpException exp) {
-            return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
-        }
-    }
-
     @PostMapping("/deactivateDcpAccount")
     private ResponseEntity<Response> deactivateDcpAccount(@RequestBody IdentifierDTO identifierDTO) {
         try {
@@ -140,6 +161,66 @@ public class AdminController {
             return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
         }
     }
+
+    //================================================================================
+    // Managing Hospitals
+    //================================================================================
+
+    @PostMapping("/add")
+    private ResponseEntity<Response> addHospital(@RequestBody AdminCreateHospitalDTO location) {
+        Hospital hospital = new Hospital(location);
+        hospitalService.save(hospital);
+        return ResponseBuilder.encode(HttpStatus.OK, hospital);
+    }
+
+    @RequestMapping("/getAll")
+    private ResponseEntity<Response> getAllHospitals() {
+        List<Hospital> hospitals = hospitalService.getAll();
+        List<ExtendedOutgoingLocationDTO> response = hospitals.stream().map(ExtendedOutgoingLocationDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, response, 1, 1, 1);
+    }
+
+    @PostMapping("/remove")
+    private ResponseEntity<Response> removeHospital(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            hospitalService.removeHospital(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException exp) {
+            return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
+        }
+    }
+
+    //================================================================================
+    // Managing Donation Centers
+    //================================================================================
+
+    @PostMapping("/add")
+    private ResponseEntity<Response> addDonationCenter(@RequestBody AdminCreateDonationCenterDTO location) {
+        DonationCenter donationCenter = new DonationCenter(location);
+        donationCenterService.save(donationCenter);
+        return ResponseBuilder.encode(HttpStatus.OK, donationCenter);
+    }
+
+    @RequestMapping("/getAll")
+    private ResponseEntity<Response> getAllDonationCenters() {
+        List<DonationCenter> donationCenters = donationCenterService.getAll();
+        List<ExtendedOutgoingLocationDTO> dtoList = donationCenters.stream().map(ExtendedOutgoingLocationDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+    }
+
+    @PostMapping("/remove")
+    private ResponseEntity<Response> removeDonationCenter(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            donationCenterService.removeDonationCenter(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EasyHelpException exp) {
+            return ResponseBuilder.encode(HttpStatus.OK, exp.getMessage());
+        }
+    }
+
+    //================================================================================
+    // Others
+    //================================================================================
 
     @PostMapping("/sendTestNotification")
     private ResponseEntity<Response> sendTestNotification(@RequestBody StringDTO stringDTO) {
