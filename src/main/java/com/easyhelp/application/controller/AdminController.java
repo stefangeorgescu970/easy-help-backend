@@ -167,21 +167,21 @@ public class AdminController {
     // Managing Hospitals
     //================================================================================
 
-    @PostMapping("/add")
+    @PostMapping("/addHospital")
     private ResponseEntity<Response> addHospital(@RequestBody AdminCreateHospitalDTO location) {
         Hospital hospital = new Hospital(location);
         hospital = hospitalService.save(hospital);
         return ResponseBuilder.encode(HttpStatus.OK, new OutgoingIdentifierDTO(hospital));
     }
 
-    @RequestMapping("/getAll")
+    @RequestMapping("/getAllHospitals")
     private ResponseEntity<Response> getAllHospitals() {
         List<Hospital> hospitals = hospitalService.getAll();
         List<ExtendedOutgoingLocationDTO> response = hospitals.stream().map(ExtendedOutgoingLocationDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, response, 1, 1, 1);
     }
 
-    @PostMapping("/remove")
+    @PostMapping("/removeHospital")
     private ResponseEntity<Response> removeHospital(@RequestBody IdentifierDTO identifierDTO) {
         try {
             hospitalService.removeHospital(identifierDTO.getId());
@@ -195,21 +195,21 @@ public class AdminController {
     // Managing Donation Centers
     //================================================================================
 
-    @PostMapping("/add")
+    @PostMapping("/addDonationCenter")
     private ResponseEntity<Response> addDonationCenter(@RequestBody AdminCreateDonationCenterDTO location) {
         DonationCenter donationCenter = new DonationCenter(location);
         donationCenter = donationCenterService.save(donationCenter);
         return ResponseBuilder.encode(HttpStatus.OK, new OutgoingIdentifierDTO(donationCenter));
     }
 
-    @RequestMapping("/getAll")
+    @RequestMapping("/getAllDonationCenters")
     private ResponseEntity<Response> getAllDonationCenters() {
         List<DonationCenter> donationCenters = donationCenterService.getAll();
         List<ExtendedOutgoingLocationDTO> dtoList = donationCenters.stream().map(ExtendedOutgoingLocationDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
-    @PostMapping("/remove")
+    @PostMapping("/removeDonationCenter")
     private ResponseEntity<Response> removeDonationCenter(@RequestBody IdentifierDTO identifierDTO) {
         try {
             donationCenterService.removeDonationCenter(identifierDTO.getId());

@@ -4,6 +4,7 @@ import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.users.UserType;
 import com.easyhelp.application.service.RegisterService;
+import com.easyhelp.application.service.applicationuser.ApplicationUserService;
 import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
@@ -19,10 +20,11 @@ public class EasyHelpStartup implements ApplicationListener<ApplicationReadyEven
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-
     @Autowired
     private RegisterService registerService;
 
+    @Autowired
+    private ApplicationUserService applicationUserService;
 
     public EasyHelpStartup(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -31,7 +33,9 @@ public class EasyHelpStartup implements ApplicationListener<ApplicationReadyEven
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         try {
-            addSysAdmin();
+            if (applicationUserService.findByEmailInAllUsers("admin") == null) {
+                addSysAdmin();
+            }
         } catch (UserAlreadyRegisteredException | SsnInvalidException | EntityNotFoundException e) {
             e.printStackTrace();
         }
