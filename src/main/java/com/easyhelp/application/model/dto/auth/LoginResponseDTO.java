@@ -1,16 +1,12 @@
-package com.easyhelp.application.model.users;
+package com.easyhelp.application.model.dto.auth;
 
-import com.easyhelp.application.model.dto.account.AccountDTO;
+import com.easyhelp.application.model.dto.BaseOutgoingDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponse implements Serializable {
+public class LoginResponseDTO extends BaseOutgoingDTO {
 
     private AccountDTO user;
     private String token;

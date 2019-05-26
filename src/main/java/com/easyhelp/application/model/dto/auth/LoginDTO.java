@@ -1,4 +1,4 @@
-package com.easyhelp.application.model.dto.misc;
+package com.easyhelp.application.model.dto.auth;
 
 import com.easyhelp.application.model.dto.BaseOutgoingDTO;
 import lombok.Data;

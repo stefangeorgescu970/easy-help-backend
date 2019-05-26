@@ -1,4 +1,4 @@
-package com.easyhelp.application.model.dto.admin;
+package com.easyhelp.application.model.dto.admin.outgoing;
 
 import com.easyhelp.application.model.dto.BaseOutgoingDTO;
 import com.easyhelp.application.model.locations.County;

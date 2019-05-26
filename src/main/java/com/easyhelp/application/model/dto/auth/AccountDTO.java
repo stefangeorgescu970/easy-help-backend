@@ -1,8 +1,9 @@
-package com.easyhelp.application.model.dto.account;
+package com.easyhelp.application.model.dto.auth;
 
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.dto.BaseOutgoingDTO;
-import com.easyhelp.application.model.dto.donation.DonationFormDTO;
+import com.easyhelp.application.model.dto.donor.incoming.DonationFormCreateDTO;
+import com.easyhelp.application.model.dto.donor.outgoing.DonationFormDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.users.*;
 import com.fasterxml.jackson.annotation.JsonFormat;

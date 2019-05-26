@@ -1,4 +1,4 @@
-package com.easyhelp.application.model.dto.account;
+package com.easyhelp.application.model.dto.auth;
 
 import lombok.Data;
 
