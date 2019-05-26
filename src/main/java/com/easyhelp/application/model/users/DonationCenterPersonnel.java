@@ -1,6 +1,6 @@
 package com.easyhelp.application.model.users;
 
-import com.easyhelp.application.model.dto.account.RegisterDTO;
+import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

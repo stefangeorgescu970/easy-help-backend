@@ -4,8 +4,8 @@ package com.easyhelp.application.model.locations;
 import com.easyhelp.application.model.blood.StoredBlood;
 import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationBooking;
+import com.easyhelp.application.model.dto.admin.incoming.AdminCreateDonationCenterDTO;
 import com.easyhelp.application.model.requests.DonationCommitment;
-import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.users.DonationCenterPersonnel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -52,6 +52,11 @@ public class DonationCenter extends RealLocation {
 
     public DonationCenter(String name, double longitude, double latitude, String address, County county, String phone) {
         super(name, longitude, latitude, address, county, phone);
+    }
+
+    public DonationCenter(AdminCreateDonationCenterDTO location) {
+        super(location.getName(), location.getLongitude(), location.getLatitude(),location.getAddress(), location.getCounty(), location.getPhone());
+        numberOfConcurrentDonors = location.getNumberOfConcurrentDonors();
     }
 
     public boolean canBeRemoved() {

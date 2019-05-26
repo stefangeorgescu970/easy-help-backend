@@ -1,6 +1,5 @@
 package com.easyhelp.application.service.donationcenterpersonnel;
 
-import com.easyhelp.application.model.dto.account.DonationCenterPersonnelAccountDTO;
 import com.easyhelp.application.model.users.DonationCenterPersonnel;
 import com.easyhelp.application.repository.DonationCenterPersonnelRepository;
 import com.easyhelp.application.utils.exceptions.AccountNotReviewedException;
@@ -19,31 +18,28 @@ public class DonationCenterPersonnelServiceImpl implements DonationCenterPersonn
     private DonationCenterPersonnelRepository donationCenterPersonnelRepository;
 
     @Override
-    public List<DonationCenterPersonnelAccountDTO> getAllPendingAccounts() {
+    public List<DonationCenterPersonnel> getAllPendingAccounts() {
         return donationCenterPersonnelRepository
                 .findAll()
                 .stream()
                 .filter(dcp -> !dcp.getIsReviewed())
-                .map(DonationCenterPersonnelAccountDTO::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<DonationCenterPersonnelAccountDTO> getAllActiveAccounts() {
+    public List<DonationCenterPersonnel> getAllActiveAccounts() {
         return donationCenterPersonnelRepository
                 .findAll().stream()
                 .filter(dcp -> dcp.getIsReviewed() && dcp.getIsValid())
-                .map(DonationCenterPersonnelAccountDTO::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<DonationCenterPersonnelAccountDTO> getAllBannedAccounts() {
+    public List<DonationCenterPersonnel> getAllBannedAccounts() {
         return donationCenterPersonnelRepository
                 .findAll()
                 .stream()
                 .filter(dcp -> dcp.getIsReviewed() && !dcp.getIsValid())
-                .map(DonationCenterPersonnelAccountDTO::new)
                 .collect(Collectors.toList());
     }
 

@@ -3,19 +3,21 @@ package com.easyhelp.application.controller;
 import com.easyhelp.application.model.blood.StoredBlood;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.AvailableDate;
-import com.easyhelp.application.model.dto.blood.StoredBloodDTO;
-import com.easyhelp.application.model.dto.booking.AvailableDateDTO;
-import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
-import com.easyhelp.application.model.dto.donation.DonationCommitmentCreateDTO;
-import com.easyhelp.application.model.dto.donation.DonationCommitmentDTO;
-import com.easyhelp.application.model.dto.donation.DonationCreationDTO;
-import com.easyhelp.application.model.dto.location.CountyDTO;
-import com.easyhelp.application.model.dto.location.LocationDTO;
-import com.easyhelp.application.model.dto.misc.IdentifierDTO;
-import com.easyhelp.application.model.dto.requests.DonationRequestDetailsDTO;
+import com.easyhelp.application.model.dto.admin.incoming.AdminCreateDonationCenterDTO;
+import com.easyhelp.application.model.dto.donor.incoming.LocalizationDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.BaseOutgoingLocationDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.ExtendedOutgoingLocationDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.StoredBloodLevel2DTO;
+import com.easyhelp.application.model.dto.donor.outgoing.AvailableDateDTO;
+import com.easyhelp.application.model.dto.dcp.outgoing.DCPDonationBookingDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationCommitmentCreateDTO;
+import com.easyhelp.application.model.dto.dcp.outgoing.DCPDonationCommitmentDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationCreationDTO;
+import com.easyhelp.application.model.dto.misc.incoming.CountyDTO;
+import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
+import com.easyhelp.application.model.dto.dcp.outgoing.DCPDonationRequestDetailsDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.requests.DonationCommitment;
-import com.easyhelp.application.model.requests.DonationCommitmentStatus;
 import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donation_commitment.DonationCommitmentServiceInterface;
@@ -57,15 +59,8 @@ public class DonationCenterController {
     private DonationCommitmentServiceInterface donationCommitmentService;
 
     @PostMapping("/add")
-    private ResponseEntity<Response> addDonationCenter(@RequestBody LocationDTO location) {
-        //TODO - create constructor to make this pretty
-
-        DonationCenter donationCenter = new DonationCenter();
-        donationCenter.setName(location.getName());
-        donationCenter.setLatitude(location.getLatitude());
-        donationCenter.setLongitude(location.getLongitude());
-        donationCenter.setAddress(location.getAddress());
-        donationCenter.setCounty(location.getCounty());
+    private ResponseEntity<Response> addDonationCenter(@RequestBody AdminCreateDonationCenterDTO location) {
+        DonationCenter donationCenter = new DonationCenter(location);
         donationCenterService.save(donationCenter);
         return ResponseBuilder.encode(HttpStatus.OK, donationCenter);
     }
@@ -73,7 +68,14 @@ public class DonationCenterController {
     @RequestMapping("/getAll")
     private ResponseEntity<Response> getAllDonationCenters() {
         List<DonationCenter> donationCenters = donationCenterService.getAll();
-        List<LocationDTO> dtoList = donationCenters.stream().map(LocationDTO::new).collect(Collectors.toList());
+        List<ExtendedOutgoingLocationDTO> dtoList = donationCenters.stream().map(ExtendedOutgoingLocationDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+    }
+
+    @PostMapping("/getAll")
+    private ResponseEntity<Response> getAllDonationCenters(@RequestBody LocalizationDTO localizationDTO) {
+        List<DonationCenter> donationCenters = donationCenterService.getAll();
+        List<ExtendedOutgoingLocationDTO> dtoList = donationCenters.stream().map(ExtendedOutgoingLocationDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
@@ -90,14 +92,14 @@ public class DonationCenterController {
     @PostMapping("/getInCounty")
     private ResponseEntity<Response> getDonationCentersInCounty(@RequestBody CountyDTO countyDTO) {
         List<DonationCenter> donationCenters = donationCenterService.getDonationCentersInCounty(countyDTO.getCounty());
-        List<LocationDTO> dtoList = donationCenters.stream().map(LocationDTO::new).collect(Collectors.toList());
+        List<BaseOutgoingLocationDTO> dtoList = donationCenters.stream().map(BaseOutgoingLocationDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
     @PostMapping("/getDCBookings")
     private ResponseEntity<Response> getDCBookings(@RequestBody IdentifierDTO identifierDTO) {
         List<DonationBooking> bookings = donationBookingService.getDCBookings(identifierDTO.getId());
-        List<DonationBookingDTO> dtoList = bookings.stream().map(DonationBookingDTO::new).collect(Collectors.toList());
+        List<DCPDonationBookingDTO> dtoList = bookings.stream().map(DCPDonationBookingDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
@@ -127,7 +129,7 @@ public class DonationCenterController {
         try {
             DonationCenter donationCenter = donationCenterService.findById(identifierDTO.getId());
             List<DonationRequest> donationRequests = donationRequestService.getAllRequestsForDC(identifierDTO.getId());
-            List<DonationRequestDetailsDTO> dtoList = donationRequests.stream().map(dc -> new DonationRequestDetailsDTO(dc, donationCenter)).collect(Collectors.toList());
+            List<DCPDonationRequestDetailsDTO> dtoList = donationRequests.stream().map(dc -> new DCPDonationRequestDetailsDTO(dc, donationCenter)).collect(Collectors.toList());
             return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
         } catch (EntityNotFoundException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
@@ -159,7 +161,7 @@ public class DonationCenterController {
         try {
             DonationCenter donationCenter = donationCenterService.findById(identifierDTO.getId());
             List<DonationCommitment> donationCommitments = donationCommitmentService.getCommitmentsForDonationCenter(donationCenter);
-            List<DonationCommitmentDTO> dtoList = donationCommitments.stream().map(DonationCommitmentDTO::new).collect(Collectors.toList());
+            List<DCPDonationCommitmentDTO> dtoList = donationCommitments.stream().map(DCPDonationCommitmentDTO::new).collect(Collectors.toList());
             return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
@@ -170,7 +172,7 @@ public class DonationCenterController {
     private ResponseEntity<Response> getAvailableBloodInDC(@RequestBody IdentifierDTO identifierDTO) {
         try {
             List<StoredBlood> storedBloods = storedBloodService.getAvailableBloodInDC(identifierDTO.getId());
-            List<StoredBloodDTO> storedBloodDTOS = storedBloods.stream().map(StoredBloodDTO::new).collect(Collectors.toList());;
+            List<StoredBloodLevel2DTO> storedBloodDTOS = storedBloods.stream().map(StoredBloodLevel2DTO::new).collect(Collectors.toList());;
             return ResponseBuilder.encode(HttpStatus.OK, storedBloodDTOS, 1, 1, 1);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());

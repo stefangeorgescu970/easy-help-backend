@@ -1,6 +1,6 @@
 package com.easyhelp.application.service;
 
-import com.easyhelp.application.model.dto.account.RegisterDTO;
+import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.model.users.Doctor;

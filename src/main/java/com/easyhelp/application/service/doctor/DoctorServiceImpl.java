@@ -1,6 +1,5 @@
 package com.easyhelp.application.service.doctor;
 
-import com.easyhelp.application.model.dto.account.DoctorAccountDTO;
 import com.easyhelp.application.model.users.Doctor;
 import com.easyhelp.application.repository.DoctorRepository;
 import com.easyhelp.application.utils.exceptions.AccountNotReviewedException;
@@ -19,32 +18,29 @@ public class DoctorServiceImpl implements DoctorServiceInterface {
     private DoctorRepository doctorRepository;
 
     @Override
-    public List<DoctorAccountDTO> getAllPendingAccounts() {
+    public List<Doctor> getAllPendingAccounts() {
         return doctorRepository
                 .findAll()
                 .stream()
                 .filter(doctor -> !doctor.getIsReviewed())
-                .map(DoctorAccountDTO::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<DoctorAccountDTO> getAllActiveAccounts() {
+    public List<Doctor> getAllActiveAccounts() {
         return doctorRepository
                 .findAll()
                 .stream()
                 .filter(doctor -> doctor.getIsReviewed() && doctor.getIsValid())
-                .map(DoctorAccountDTO::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<DoctorAccountDTO> getAllBannedAccounts() {
+    public List<Doctor> getAllBannedAccounts() {
         return doctorRepository
                 .findAll()
                 .stream()
                 .filter(doctor -> doctor.getIsReviewed() && !doctor.getIsValid())
-                .map(DoctorAccountDTO::new)
                 .collect(Collectors.toList());
     }
 

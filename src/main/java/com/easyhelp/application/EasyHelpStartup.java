@@ -1,6 +1,6 @@
 package com.easyhelp.application;
 
-import com.easyhelp.application.model.dto.account.RegisterDTO;
+import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.users.UserType;
 import com.easyhelp.application.service.RegisterService;

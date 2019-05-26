@@ -1,11 +1,11 @@
 package com.easyhelp.application.controller;
 
-import com.easyhelp.application.model.dto.account.AccountDTO;
-import com.easyhelp.application.model.dto.account.RegisterDTO;
-import com.easyhelp.application.model.dto.misc.IdentifierDTO;
+import com.easyhelp.application.model.dto.auth.AccountDTO;
+import com.easyhelp.application.model.dto.auth.RegisterDTO;
+import com.easyhelp.application.model.dto.auth.LoginDTO;
+import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
 import com.easyhelp.application.model.users.ApplicationUser;
-import com.easyhelp.application.model.users.Doctor;
-import com.easyhelp.application.model.users.LoginResponse;
+import com.easyhelp.application.model.dto.auth.LoginResponseDTO;
 import com.easyhelp.application.model.users.PartnerUser;
 import com.easyhelp.application.security.JwtTokenProvider;
 import com.easyhelp.application.service.RegisterService;
@@ -60,7 +60,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity signin(@RequestBody ApplicationUser data) {
+    public ResponseEntity signin(@RequestBody LoginDTO data) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword()));
 
@@ -78,7 +78,7 @@ public class AuthenticationController {
             AccountDTO accountDTO = new AccountDTO(user);
 
             String token = jwtTokenProvider.createToken(data.getEmail(), user.getRoles());
-            return ResponseBuilder.encode(HttpStatus.OK, new LoginResponse(accountDTO, token));
+            return ResponseBuilder.encode(HttpStatus.OK, new LoginResponseDTO(accountDTO, token));
 
         } catch (AuthenticationException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());

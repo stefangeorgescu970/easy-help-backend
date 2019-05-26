@@ -1,6 +1,5 @@
 package com.easyhelp.application.service.hospital;
 
-import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.repository.HospitalRepository;

@@ -7,10 +7,9 @@ import com.easyhelp.application.model.blood.StoredBlood;
 import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationStatus;
 import com.easyhelp.application.model.donations.DonationTestResult;
-import com.easyhelp.application.model.dto.donation.DonationSplitResultsDTO;
-import com.easyhelp.application.model.dto.donation.DonationTestResultDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationTestResultCreateDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationSplitResultCreateDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
-import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.DonationRepository;
 import com.easyhelp.application.repository.DonationTestResultRepository;
@@ -58,7 +57,7 @@ public class DonationServiceImpl implements DonationServiceInterface {
     }
 
     @Override
-    public void addTestResults(DonationTestResultDTO donationTestResultDTO) throws EntityNotFoundException {
+    public void addTestResults(DonationTestResultCreateDTO donationTestResultDTO) throws EntityNotFoundException {
         Optional<Donation> donation = donationRepository.findById(donationTestResultDTO.getDonationId());
 
         if (!donation.isPresent())
@@ -86,8 +85,8 @@ public class DonationServiceImpl implements DonationServiceInterface {
     }
 
     @Override
-    public void separateBlood(DonationSplitResultsDTO donationSplitResultsDTO) throws EasyHelpException {
-        Optional<Donation> donation = donationRepository.findById(donationSplitResultsDTO.getDonationId());
+    public void separateBlood(DonationSplitResultCreateDTO donationSplitResultCreateDTO) throws EasyHelpException {
+        Optional<Donation> donation = donationRepository.findById(donationSplitResultCreateDTO.getDonationId());
 
         if (!donation.isPresent())
             throw new EntityNotFoundException("Donation with that id does not exist");
@@ -102,9 +101,9 @@ public class DonationServiceImpl implements DonationServiceInterface {
         DonationCenter donationCenter = donationUnwrapped.getDonationCenter();
 
 
-        storeBlood(BloodComponent.RED_BLOOD_CELLS, donationSplitResultsDTO.getRedBloodCellsUnits(), donor, donationCenter);
-        storeBlood(BloodComponent.PLASMA, donationSplitResultsDTO.getPlasmaUnits(), donor, donationCenter);
-        storeBlood(BloodComponent.PLATELETS, donationSplitResultsDTO.getPlateletsUnits(), donor, donationCenter);
+        storeBlood(BloodComponent.RED_BLOOD_CELLS, donationSplitResultCreateDTO.getRedBloodCellsUnits(), donor, donationCenter);
+        storeBlood(BloodComponent.PLASMA, donationSplitResultCreateDTO.getPlasmaUnits(), donor, donationCenter);
+        storeBlood(BloodComponent.PLATELETS, donationSplitResultCreateDTO.getPlateletsUnits(), donor, donationCenter);
 
         donationUnwrapped.setStatus(DonationStatus.COMPLETED);
         donationRepository.save(donationUnwrapped);

@@ -1,11 +1,13 @@
 package com.easyhelp.application.controller;
 
 
-import com.easyhelp.application.model.dto.account.ActiveAccountDTO;
-import com.easyhelp.application.model.dto.account.DoctorAccountDTO;
-import com.easyhelp.application.model.dto.account.DonationCenterPersonnelAccountDTO;
-import com.easyhelp.application.model.dto.misc.IdentifierDTO;
-import com.easyhelp.application.model.dto.misc.StringDTO;
+import com.easyhelp.application.model.dto.admin.outgoing.AdminDCPAccountDTO;
+import com.easyhelp.application.model.dto.admin.outgoing.AdminDoctorAccountDTO;
+import com.easyhelp.application.model.dto.misc.incoming.BooleanDTO;
+import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
+import com.easyhelp.application.model.dto.misc.incoming.StringDTO;
+import com.easyhelp.application.model.users.Doctor;
+import com.easyhelp.application.model.users.DonationCenterPersonnel;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
 import com.easyhelp.application.service.donationcenterpersonnel.DonationCenterPersonnelServiceInterface;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin")
@@ -40,12 +43,16 @@ public class AdminController {
 
     @RequestMapping("/doctorAccountRequests")
     private ResponseEntity<Response> getDoctorAccountRequests() {
-        return ResponseBuilder.encode(HttpStatus.OK, doctorService.getAllPendingAccounts(), 1, 1, 1);
+        List<Doctor> pendingAccounts = doctorService.getAllPendingAccounts();
+        List<AdminDoctorAccountDTO> dtoList = pendingAccounts.stream().map(AdminDoctorAccountDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
     @RequestMapping("/dcpAccountRequests")
     private ResponseEntity<Response> getDonationCenterPersonnelAccountRequests() {
-        return ResponseBuilder.encode(HttpStatus.OK, donationCenterPersonnelService.getAllPendingAccounts(), 1, 1, 1);
+        List<DonationCenterPersonnel> pendingAccounts = donationCenterPersonnelService.getAllPendingAccounts();
+        List<AdminDCPAccountDTO> dtoList = pendingAccounts.stream().map(AdminDCPAccountDTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
     @PostMapping("/approveDoctorAccount")
@@ -89,26 +96,26 @@ public class AdminController {
     }
 
     @PostMapping("/doctorAccounts")
-    private ResponseEntity<Response> getDoctorAccounts(@RequestBody ActiveAccountDTO activeAccountDTO) {
-        List<DoctorAccountDTO> dtoList;
+    private ResponseEntity<Response> getDoctorAccounts(@RequestBody BooleanDTO booleanDTO) {
+        List<AdminDoctorAccountDTO> dtoList;
 
-        if (activeAccountDTO.isActive()) {
-            dtoList = doctorService.getAllActiveAccounts();
+        if (booleanDTO.getParam()) {
+            dtoList = doctorService.getAllActiveAccounts().stream().map(AdminDoctorAccountDTO::new).collect(Collectors.toList());
         } else {
-            dtoList = doctorService.getAllBannedAccounts();
+            dtoList = doctorService.getAllBannedAccounts().stream().map(AdminDoctorAccountDTO::new).collect(Collectors.toList());
         }
 
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
     @PostMapping("/dcpAccounts")
-    private ResponseEntity<Response> getDcpAccounts(@RequestBody ActiveAccountDTO activeAccountDTO) {
-        List<DonationCenterPersonnelAccountDTO> dtoList;
+    private ResponseEntity<Response> getDcpAccounts(@RequestBody BooleanDTO booleanDTO) {
+        List<AdminDCPAccountDTO> dtoList;
 
-        if (activeAccountDTO.isActive()) {
-            dtoList = donationCenterPersonnelService.getAllActiveAccounts();
+        if (booleanDTO.getParam()) {
+            dtoList = donationCenterPersonnelService.getAllActiveAccounts().stream().map(AdminDCPAccountDTO::new).collect(Collectors.toList());
         } else {
-            dtoList = donationCenterPersonnelService.getAllBannedAccounts();
+            dtoList = donationCenterPersonnelService.getAllBannedAccounts().stream().map(AdminDCPAccountDTO::new).collect(Collectors.toList());
         }
 
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);

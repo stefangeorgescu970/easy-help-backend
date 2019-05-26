@@ -1,5 +1,6 @@
 package com.easyhelp.application.model.locations;
 
+import com.easyhelp.application.model.dto.admin.incoming.AdminCreateHospitalDTO;
 import com.easyhelp.application.model.users.Doctor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -26,6 +27,10 @@ public class Hospital extends RealLocation {
 
     public Hospital(String name, double longitude, double latitude, String address, County county, String phone) {
         super(name, longitude, latitude, address, county, phone);
+    }
+
+    public Hospital(AdminCreateHospitalDTO location) {
+        super(location.getName(), location.getLongitude(), location.getLatitude(), location.getAddress(), location.getCounty(), location.getPhone());
     }
 
     public boolean canBeRemoved() {

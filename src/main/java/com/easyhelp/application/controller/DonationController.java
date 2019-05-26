@@ -1,10 +1,10 @@
 package com.easyhelp.application.controller;
 
 import com.easyhelp.application.model.donations.Donation;
-import com.easyhelp.application.model.dto.donation.DonationDTO;
-import com.easyhelp.application.model.dto.donation.DonationSplitResultsDTO;
-import com.easyhelp.application.model.dto.donation.DonationTestResultDTO;
-import com.easyhelp.application.model.dto.misc.IdentifierDTO;
+import com.easyhelp.application.model.dto.dcp.outgoing.DCPDonationDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationSplitResultCreateDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationTestResultCreateDTO;
+import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
 import com.easyhelp.application.service.donation.DonationServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
@@ -29,7 +29,7 @@ public class DonationController {
     DonationServiceInterface donationService;
 
     @PostMapping("/addTestResult")
-    private ResponseEntity<Response> addTestResults(@RequestBody DonationTestResultDTO donationTestResultDTO) {
+    private ResponseEntity<Response> addTestResults(@RequestBody DonationTestResultCreateDTO donationTestResultDTO) {
         try {
             donationService.addTestResults(donationTestResultDTO);
             return ResponseBuilder.encode(HttpStatus.OK);
@@ -39,9 +39,9 @@ public class DonationController {
     }
 
     @PostMapping("/addSplitResults")
-    private ResponseEntity<Response> addSplitResults(@RequestBody DonationSplitResultsDTO donationSplitResultsDTO) {
+    private ResponseEntity<Response> addSplitResults(@RequestBody DonationSplitResultCreateDTO donationSplitResultCreateDTO) {
         try {
-            donationService.separateBlood(donationSplitResultsDTO);
+            donationService.separateBlood(donationSplitResultCreateDTO);
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
@@ -51,14 +51,14 @@ public class DonationController {
     @PostMapping("/getWaitingForTestResults")
     private ResponseEntity<Response> getWaitingForTestResults(@RequestBody IdentifierDTO identifierDTO) {
         List<Donation> donations = donationService.getDonationsAwaitingTestResultForDonationCenter(identifierDTO.getId());
-        List<DonationDTO> donationDTOS = donations.stream().map(DonationDTO::new).collect(Collectors.toList());
+        List<DCPDonationDTO> donationDTOS = donations.stream().map(DCPDonationDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, donationDTOS, 1, 1, 1);
     }
 
     @PostMapping("/getWaitingForSplitResults")
     private ResponseEntity<Response> getWaitingForSplitResults(@RequestBody IdentifierDTO identifierDTO) {
         List<Donation> donations = donationService.getDonationsAwaitingSplitResultForDonationCenter(identifierDTO.getId());
-        List<DonationDTO> donationDTOS = donations.stream().map(DonationDTO::new).collect(Collectors.toList());
+        List<DCPDonationDTO> donationDTOS = donations.stream().map(DCPDonationDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, donationDTOS, 1, 1, 1);
     }
 }

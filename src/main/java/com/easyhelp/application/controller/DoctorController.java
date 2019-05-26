@@ -1,10 +1,11 @@
 package com.easyhelp.application.controller;
 
-import com.easyhelp.application.model.dto.donation.DonationCommitmentDTO;
-import com.easyhelp.application.model.dto.misc.IdentifierDTO;
-import com.easyhelp.application.model.dto.requests.DonationRequestDTO;
-import com.easyhelp.application.model.dto.requests.DonationRequestDetailsDTO;
-import com.easyhelp.application.model.dto.requests.PatientDTO;
+import com.easyhelp.application.model.dto.doctor.incoming.DoctorPatientCreateDTO;
+import com.easyhelp.application.model.dto.doctor.incoming.DonationRequestCreateDTO;
+import com.easyhelp.application.model.dto.doctor.outgoing.DoctorDonationCommitmentDTO;
+import com.easyhelp.application.model.dto.doctor.outgoing.DoctorDonationRequestDetailsDTO;
+import com.easyhelp.application.model.dto.doctor.outgoing.DoctorPatientLevel2DTO;
+import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
 import com.easyhelp.application.model.requests.DonationCommitment;
 import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.requests.Patient;
@@ -46,9 +47,9 @@ public class DoctorController {
     private DonationCommitmentServiceInterface donationCommitmentService;
 
     @PostMapping("/requestBlood")
-    private ResponseEntity<Response> requestBlood(@RequestBody DonationRequestDTO donationRequestDTO) {
+    private ResponseEntity<Response> requestBlood(@RequestBody DonationRequestCreateDTO donationRequestDTO) {
         try {
-            donationRequestService.requestDonation(donationRequestDTO);
+            donationRequestService.requestDonation(donationRequestDTO.getDoctorId(), donationRequestDTO.getPatientId(), donationRequestDTO.getQuantity(), donationRequestDTO.getUrgency(), donationRequestDTO.getBloodComponent());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
@@ -58,15 +59,14 @@ public class DoctorController {
     @RequestMapping("/seeMyBloodRequests")
     private ResponseEntity<Response> getMyRequests(@RequestBody IdentifierDTO identifierDTO) {
         List<DonationRequest> donationRequests = donationRequestService.getAllRequestsForDoctor(identifierDTO.getId());
-        List<DonationRequestDetailsDTO> dtoList = donationRequests.stream().map(DonationRequestDetailsDTO::new).collect(Collectors.toList());
+        List<DoctorDonationRequestDetailsDTO> dtoList = donationRequests.stream().map(DoctorDonationRequestDetailsDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
     @PostMapping("/addPatient")
-    private ResponseEntity<Response> addPatient(@RequestBody PatientDTO patientDTO) {
+    private ResponseEntity<Response> addPatient(@RequestBody DoctorPatientCreateDTO patientDTO) {
         try {
-            patientService.addPatient(patientDTO.getDoctorId(), patientDTO.getSsn(), patientDTO.getBloodType().getGroupLetter(),
-                    patientDTO.getBloodType().getRh());
+            patientService.addPatient(patientDTO.getDoctorId(), patientDTO.getSsn(), patientDTO.getBloodType().getGroupLetter(), patientDTO.getBloodType().getRh());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
@@ -76,7 +76,7 @@ public class DoctorController {
     @PostMapping("/seeMyPatients")
     private ResponseEntity<Response> getMyPatients(@RequestBody IdentifierDTO identifierDTO) {
         List<Patient> patients = patientService.getPatientsForDoctor(identifierDTO.getId());
-        List<PatientDTO> dtoList = patients.stream().map(PatientDTO::new).collect(Collectors.toList());
+        List<DoctorPatientLevel2DTO> dtoList = patients.stream().map(DoctorPatientLevel2DTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
@@ -94,7 +94,7 @@ public class DoctorController {
     private ResponseEntity<Response> getRequestCommitments(@RequestBody IdentifierDTO identifierDTO) {
         try {
             List<DonationCommitment> donationCommitments = donationCommitmentService.getDonationCommitments(identifierDTO.getId());
-            List<DonationCommitmentDTO> dtoList = donationCommitments.stream().map(DonationCommitmentDTO::new).collect(Collectors.toList());
+            List<DoctorDonationCommitmentDTO> dtoList = donationCommitments.stream().map(DoctorDonationCommitmentDTO::new).collect(Collectors.toList());
             return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
         } catch (EntityNotFoundException e) {
             e.printStackTrace();

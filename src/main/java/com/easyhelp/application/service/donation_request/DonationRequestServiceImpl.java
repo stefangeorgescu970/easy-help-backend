@@ -1,11 +1,10 @@
 package com.easyhelp.application.service.donation_request;
 
+import com.easyhelp.application.model.blood.BloodComponent;
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.blood.SeparatedBloodType;
 import com.easyhelp.application.model.blood.StoredBlood;
-import com.easyhelp.application.model.donations.DonationStatus;
-import com.easyhelp.application.model.dto.donation.DonationCommitmentCreateDTO;
-import com.easyhelp.application.model.dto.requests.DonationRequestDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationCommitmentCreateDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.requests.*;
 import com.easyhelp.application.model.users.Doctor;
@@ -60,10 +59,10 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
     }
 
     @Override
-    public void requestDonation(DonationRequestDTO donationRequest) throws EntityNotFoundException, EntityAlreadyExistsException {
+    public void requestDonation(Long doctorId, Long patientId, Double quantity, RequestUrgency urgency, BloodComponent bloodComponent) throws EntityNotFoundException, EntityAlreadyExistsException {
         DonationRequest request = new DonationRequest();
-        Doctor doctor = doctorService.findById(donationRequest.getDoctorId());
-        Patient patient = patientService.findById(donationRequest.getPatientId());
+        Doctor doctor = doctorService.findById(doctorId);
+        Patient patient = patientService.findById(patientId);
 
         if (getAllRequestsForDoctor(doctor.getId()).stream().anyMatch(r -> r.getPatient() == patient))
             throw new EntityAlreadyExistsException("You have already made a request for this patient");
@@ -72,10 +71,10 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
             throw new EntityAlreadyExistsException("There is already a request made for this patient");
 
 
-        SeparatedBloodType separatedBloodType = separatedBloodTypeService.findSeparatedBloodTypeInDB(patient.getBloodType().getGroupLetter(), patient.getBloodType().getRh(), donationRequest.getBloodComponent());
+        SeparatedBloodType separatedBloodType = separatedBloodTypeService.findSeparatedBloodTypeInDB(patient.getBloodType().getGroupLetter(), patient.getBloodType().getRh(), bloodComponent);
         if (separatedBloodType == null) {
             separatedBloodType = new SeparatedBloodType();
-            separatedBloodType.setComponent(donationRequest.getBloodComponent());
+            separatedBloodType.setComponent(bloodComponent);
             BloodType bloodTypeInDb = bloodTypeService.findBloodTypeInDB(patient.getBloodType().getGroupLetter(), patient.getBloodType().getRh());
             separatedBloodType.setBloodType(bloodTypeInDb);
             Set<DonationRequest> donationRequests = new HashSet<>();
@@ -90,9 +89,9 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
 
         request.setDoctor(doctor);
         request.setPatient(patient);
-        request.setUrgency(donationRequest.getUrgency());
+        request.setUrgency(urgency);
         request.setStatus(RequestStatus.PROCESSING);
-        request.setQuantity(donationRequest.getQuantity());
+        request.setQuantity(quantity);
         request.setSeparatedBloodType(separatedBloodType);
 
         donationRequestRepository.save(request);

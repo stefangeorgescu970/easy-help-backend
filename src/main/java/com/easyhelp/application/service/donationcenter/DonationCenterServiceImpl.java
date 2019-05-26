@@ -1,6 +1,5 @@
 package com.easyhelp.application.service.donationcenter;
 
-import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.repository.DonationCenterRepository;

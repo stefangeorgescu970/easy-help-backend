@@ -1,7 +1,7 @@
 package com.easyhelp.application.model.donations;
 
 import com.easyhelp.application.model.BaseEntity;
-import com.easyhelp.application.model.dto.donation.DonationTestResultDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationTestResultCreateDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -27,12 +27,12 @@ public class DonationTestResult extends BaseEntity {
     private Boolean vdrl;
     private Boolean alt;
 
-    public DonationTestResult(DonationTestResultDTO donationTestResultDTO) {
-        hepatitisB = donationTestResultDTO.getHepatitisB();
-        hepatitisC = donationTestResultDTO.getHepatitisC();
-        hiv = donationTestResultDTO.getHiv();
-        htlv = donationTestResultDTO.getHtlv();
-        vdrl = donationTestResultDTO.getVdrl();
-        alt = donationTestResultDTO.getAlt();
+    public DonationTestResult(DonationTestResultCreateDTO donationTestResultCreateDTO) {
+        hepatitisB = donationTestResultCreateDTO.getHepatitisB();
+        hepatitisC = donationTestResultCreateDTO.getHepatitisC();
+        hiv = donationTestResultCreateDTO.getHiv();
+        htlv = donationTestResultCreateDTO.getHtlv();
+        vdrl = donationTestResultCreateDTO.getVdrl();
+        alt = donationTestResultCreateDTO.getAlt();
     }
 }

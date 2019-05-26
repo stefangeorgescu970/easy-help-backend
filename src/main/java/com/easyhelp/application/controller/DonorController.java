@@ -3,26 +3,25 @@ package com.easyhelp.application.controller;
 
 import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonorSummary;
-import com.easyhelp.application.model.dto.account.BloodGroupRhDTO;
-import com.easyhelp.application.model.dto.account.CountySsnDTO;
-import com.easyhelp.application.model.dto.account.DonorAccountDTO;
-import com.easyhelp.application.model.dto.account.PushNotificationDTO;
-import com.easyhelp.application.model.dto.booking.BookingRequestDTO;
-import com.easyhelp.application.model.dto.booking.DonationBookingDTO;
-import com.easyhelp.application.model.dto.donation.DonationDTO;
-import com.easyhelp.application.model.dto.donation.DonationFormDTO;
-import com.easyhelp.application.model.dto.donation.DonorSummaryDTO;
-import com.easyhelp.application.model.dto.filter.FilterDonorDTO;
-import com.easyhelp.application.model.dto.location.CountyDTO;
-import com.easyhelp.application.model.dto.misc.IdentifierDTO;
-import com.easyhelp.application.model.dto.misc.StringDTO;
+import com.easyhelp.application.model.dto.dcp.outgoing.DCPDonorAccountDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.FilterDonorDTO;
+import com.easyhelp.application.model.dto.donor.incoming.DonationFormCreateDTO;
+import com.easyhelp.application.model.dto.donor.outgoing.DonorSummaryDTO;
+import com.easyhelp.application.model.dto.donor.incoming.BloodGroupRhDTO;
+import com.easyhelp.application.model.dto.donor.incoming.BookingRequestDTO;
+import com.easyhelp.application.model.dto.donor.incoming.CountySsnDTO;
+import com.easyhelp.application.model.dto.donor.incoming.PushNotificationDTO;
+import com.easyhelp.application.model.dto.donor.outgoing.DonorDonationBookingDTO;
+import com.easyhelp.application.model.dto.donor.outgoing.DonorDonationDTO;
+import com.easyhelp.application.model.dto.misc.incoming.CountyDTO;
+import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
+import com.easyhelp.application.model.dto.misc.incoming.StringDTO;
 import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.service.donation.DonationServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
-import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
@@ -36,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,8 +58,8 @@ public class DonorController {
     @PostMapping("/updateSsnCounty")
     public ResponseEntity<Response> setCountyAndSSN(@RequestBody CountySsnDTO countySsnDTO) {
         try {
-            donorService.updateCountyOnDonor(countySsnDTO.getDonorId(), countySsnDTO.getCounty());
-            donorService.updateSsnOnDonor(countySsnDTO.getDonorId(), countySsnDTO.getSsn(), countySsnDTO.getSkipSsnCheck());
+            donorService.updateCountyOnDonor(countySsnDTO.getUserId(), countySsnDTO.getCounty());
+            donorService.updateSsnOnDonor(countySsnDTO.getUserId(), countySsnDTO.getSsn(), countySsnDTO.getSkipSsnCheck());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
@@ -71,7 +69,7 @@ public class DonorController {
     @PostMapping("/updateBloodGroup")
     public ResponseEntity<Response> setBloodGroup(@RequestBody BloodGroupRhDTO bloodGroupRhDTO) {
         try {
-            donorService.updateBloodGroupOnDonor(bloodGroupRhDTO.getDonorId(),
+            donorService.updateBloodGroupOnDonor(bloodGroupRhDTO.getUserId(),
                     bloodGroupRhDTO.getGroupLetter(),
                     bloodGroupRhDTO.getRh());
             return ResponseBuilder.encode(HttpStatus.OK);
@@ -84,7 +82,7 @@ public class DonorController {
     public ResponseEntity<Response> bookDonation(@RequestBody BookingRequestDTO bookingRequestDTO) {
         try {
             Date calendar = bookingRequestDTO.getSelectedDate();
-            donorService.bookDonationHour(bookingRequestDTO.getId(), calendar, bookingRequestDTO.getDonationCenterId(), bookingRequestDTO.getPatientSSN());
+            donorService.bookDonationHour(bookingRequestDTO.getUserId(), calendar, bookingRequestDTO.getDonationCenterId(), bookingRequestDTO.getPatientSSN());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
@@ -94,7 +92,7 @@ public class DonorController {
     @PostMapping("/getCurrentBooking")
     public ResponseEntity<Response> getCurrentBooking(@RequestBody IdentifierDTO identifierDTO) {
         try {
-            DonationBookingDTO booking = new DonationBookingDTO(donationBookingService.getDonorBooking(identifierDTO.getId()));
+            DonorDonationBookingDTO booking = new DonorDonationBookingDTO(donationBookingService.getDonorBooking(identifierDTO.getId()));
             return ResponseBuilder.encode(HttpStatus.OK, booking);
         } catch (EntityNotFoundException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
@@ -104,14 +102,14 @@ public class DonorController {
     @PostMapping("/getInCounty")
     public ResponseEntity<Response> getDonorsInCounty(@RequestBody CountyDTO countyDTO) {
         List<Donor> donors = donorService.getDonorsInCounty(countyDTO.getCounty());
-        List<DonorAccountDTO> donorAccountDTOS = donors.stream().map(DonorAccountDTO::new).collect(Collectors.toList());
+        List<DCPDonorAccountDTO> donorAccountDTOS = donors.stream().map(DCPDonorAccountDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, donorAccountDTOS, 1, 1, 1);
     }
 
     @PostMapping("/filterDonors")
     public ResponseEntity<Response> getDonorsInCounty(@RequestBody FilterDonorDTO filterDonorDTO) {
         List<Donor> donors = donorService.filterDonors(filterDonorDTO.getCounty(), filterDonorDTO.getGroupLetter(), filterDonorDTO.getCanDonate());
-        List<DonorAccountDTO> donorAccountDTOS = donors.stream().map(DonorAccountDTO::new).collect(Collectors.toList());
+        List<DCPDonorAccountDTO> donorAccountDTOS = donors.stream().map(DCPDonorAccountDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, donorAccountDTOS, 1, 1, 1);
     }
 
@@ -126,9 +124,9 @@ public class DonorController {
     }
 
     @PostMapping("/addDonationForm")
-    public ResponseEntity<Response> addDonationForm(@RequestBody DonationFormDTO donationFormDTO) {
+    public ResponseEntity<Response> addDonationForm(@RequestBody DonationFormCreateDTO donationFormCreateDTO) {
         try {
-            donorService.addDonationForm(donationFormDTO);
+            donorService.addDonationForm(donationFormCreateDTO);
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
@@ -149,7 +147,7 @@ public class DonorController {
     @PostMapping("/registerPushToken")
     public ResponseEntity<Response> registerPushToken(@RequestBody PushNotificationDTO pushNotificationDTO) {
         try {
-            donorService.registerPushToken(pushNotificationDTO.getId(), pushNotificationDTO.getToken(), pushNotificationDTO.getAppPlatform());
+            donorService.registerPushToken(pushNotificationDTO.getUserId(), pushNotificationDTO.getToken(), pushNotificationDTO.getAppPlatform());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
@@ -159,7 +157,7 @@ public class DonorController {
     @PostMapping("/history")
     public ResponseEntity<Response> getDonorHistory(@RequestBody IdentifierDTO identifierDTO) {
         List<Donation> donations = donationService.getDonationsForDonor(identifierDTO.getId());
-        List<DonationDTO> dtos = donations.stream().map(DonationDTO::new).collect(Collectors.toList());
+        List<DonorDonationDTO> dtos = donations.stream().map(DonorDonationDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtos, 1, 1, 1);
     }
 }

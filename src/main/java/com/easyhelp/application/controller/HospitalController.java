@@ -1,8 +1,10 @@
 package com.easyhelp.application.controller;
 
-import com.easyhelp.application.model.dto.location.CountyDTO;
-import com.easyhelp.application.model.dto.location.LocationDTO;
-import com.easyhelp.application.model.dto.misc.IdentifierDTO;
+import com.easyhelp.application.model.dto.admin.incoming.AdminCreateHospitalDTO;
+import com.easyhelp.application.model.dto.misc.incoming.CountyDTO;
+import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.BaseOutgoingLocationDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.ExtendedOutgoingLocationDTO;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.service.hospital.HospitalServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
@@ -27,17 +29,9 @@ public class HospitalController {
     @Autowired
     private HospitalServiceInterface hospitalService;
 
-
     @PostMapping("/add")
-    private ResponseEntity<Response> addHospital(@RequestBody LocationDTO location) {
-        //TODO - create constructor to make this pretty
-
-        Hospital hospital = new Hospital();
-        hospital.setName(location.getName());
-        hospital.setCounty(location.getCounty());
-        hospital.setAddress(location.getAddress());
-        hospital.setLatitude(location.getLatitude());
-        hospital.setLongitude(location.getLongitude());
+    private ResponseEntity<Response> addHospital(@RequestBody AdminCreateHospitalDTO location) {
+        Hospital hospital = new Hospital(location);
         hospitalService.save(hospital);
         return ResponseBuilder.encode(HttpStatus.OK, hospital);
     }
@@ -45,7 +39,7 @@ public class HospitalController {
     @RequestMapping("/getAll")
     private ResponseEntity<Response> getAllHospitals() {
         List<Hospital> hospitals = hospitalService.getAll();
-        List<LocationDTO> response = hospitals.stream().map(LocationDTO::new).collect(Collectors.toList());
+        List<ExtendedOutgoingLocationDTO> response = hospitals.stream().map(ExtendedOutgoingLocationDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, response, 1, 1, 1);
     }
 
@@ -59,10 +53,10 @@ public class HospitalController {
         }
     }
 
-    @PostMapping("getInCounty")
+    @PostMapping("/getInCounty")
     private ResponseEntity<Response> getHosptialsInCounty(@RequestBody CountyDTO countyDTO) {
         List<Hospital> hospitals = hospitalService.getHospitalsInCounty(countyDTO.getCounty());
-        List<LocationDTO> response = hospitals.stream().map(LocationDTO::new).collect(Collectors.toList());
+        List<BaseOutgoingLocationDTO> response = hospitals.stream().map(BaseOutgoingLocationDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, response, 1, 1, 1);
     }
 }
