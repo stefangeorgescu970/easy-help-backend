@@ -423,7 +423,12 @@ public class MockDataController {
         donationService.saveDonation(buildWaitingTestResultDonation(12L, 1L, -1L));
 
         DonationTestResultCreateDTO donationTestResultDTO = new DonationTestResultCreateDTO();
-
+        donationTestResultDTO.setAlt(false);
+        donationTestResultDTO.setHepatitisB(false);
+        donationTestResultDTO.setHepatitisC(false);
+        donationTestResultDTO.setHiv(false);
+        donationTestResultDTO.setHtlv(false);
+        donationTestResultDTO.setVdrl(false);
 
         try {
             for (Long i = 1L; i <= 8L; i++) {
@@ -457,6 +462,12 @@ public class MockDataController {
         donationService.saveDonation(buildWaitingTestResultDonation(8L, 1L, -1L));
 
         DonationTestResultCreateDTO donationTestResultDTO = new DonationTestResultCreateDTO();
+        donationTestResultDTO.setAlt(false);
+        donationTestResultDTO.setHepatitisB(false);
+        donationTestResultDTO.setHepatitisC(false);
+        donationTestResultDTO.setHiv(false);
+        donationTestResultDTO.setHtlv(false);
+        donationTestResultDTO.setVdrl(false);
 
         try {
             for (Long i = 13L; i <= 20L; i++) {

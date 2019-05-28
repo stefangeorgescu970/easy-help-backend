@@ -160,10 +160,11 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
         storedBlood.setDonationCommitment(donationCommitment);
         storedBlood.setIsUsable(false);
 
+        DonationCommitment donationCommitment1 = donationCommitmentService.save(donationCommitment);
         donationCenterService.save(donationCenter);
         donationRequestRepository.save(donationRequest);
         storedBloodService.storeBlood(storedBlood);
-        return donationCommitmentService.save(donationCommitment);
+        return donationCommitment1;
     }
 
     @Override

@@ -183,7 +183,7 @@ public class DonationCenterPersonnelController {
     // Managing Donors
     //================================================================================
 
-    @PostMapping("/getInCounty")
+    @PostMapping("/getDonorsInCounty")
     public ResponseEntity<Response> getDonorsInCounty(@RequestBody CountyDTO countyDTO) {
         List<Donor> donors = donorService.getDonorsInCounty(countyDTO.getCounty());
         List<DCPDonorAccountDTO> donorAccountDTOS = donors.stream().map(DCPDonorAccountDTO::new).collect(Collectors.toList());
