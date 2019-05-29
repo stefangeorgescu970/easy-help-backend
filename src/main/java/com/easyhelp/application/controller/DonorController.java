@@ -61,7 +61,12 @@ public class DonorController {
 
     @PostMapping("/getDonationCenters")
     private ResponseEntity<Response> getAllDonationCenters(@RequestBody LocalizationDTO localizationDTO) {
-        List<DonationCenter> donationCenters = donationCenterService.getAll();
+        List<DonationCenter> donationCenters;
+        if (localizationDTO.getLatitude() == null) {
+            donationCenters = donationCenterService.getAll();
+        } else {
+            donationCenters = donationCenterService.getOrderedDonationCenters(localizationDTO.getLongitude(), localizationDTO.getLatitude());
+        }
         List<ExtendedOutgoingLocationDTO> dtoList = donationCenters.stream().map(ExtendedOutgoingLocationDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }

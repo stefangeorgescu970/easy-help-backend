@@ -17,4 +17,6 @@ public interface DonationCenterServiceInterface {
     DonationCenter findById(Long donationCenterId) throws EntityNotFoundException;
 
     List<DonationCenter> getDonationCentersInCounty(County county);
+
+    List<DonationCenter> getOrderedDonationCenters(Double longitude, Double latitude);
 }

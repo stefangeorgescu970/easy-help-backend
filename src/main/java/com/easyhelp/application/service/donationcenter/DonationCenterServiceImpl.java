@@ -3,12 +3,14 @@ package com.easyhelp.application.service.donationcenter;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.repository.DonationCenterRepository;
+import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityCannotBeRemovedException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,6 +65,15 @@ public class DonationCenterServiceImpl implements DonationCenterServiceInterface
                 .findAll()
                 .stream()
                 .filter(donationCenter -> donationCenter.getCounty() == county)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DonationCenter> getOrderedDonationCenters(Double longitude, Double latitude) {
+        return donationCenterRepository
+                .findAll()
+                .stream()
+                .sorted(Comparator.comparingInt(dc -> MiscUtils.computeDistance(latitude, longitude, dc.getLatitude(), dc.getLongitude())))
                 .collect(Collectors.toList());
     }
 }
