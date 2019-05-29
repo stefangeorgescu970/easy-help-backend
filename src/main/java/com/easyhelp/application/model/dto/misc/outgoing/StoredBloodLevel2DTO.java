@@ -6,10 +6,10 @@ import lombok.Data;
 
 @Data
 public class StoredBloodLevel2DTO extends StoredBloodLevel1DTO {
-    private DCPDonorAccountDTO donorAccountDTO;
+    private DCPDonorAccountDTO donor;
 
     public StoredBloodLevel2DTO(StoredBlood storedBlood) {
         super(storedBlood);
-        donorAccountDTO = new DCPDonorAccountDTO(storedBlood.getDonor());
+        donor = new DCPDonorAccountDTO(storedBlood.getDonor());
     }
 }

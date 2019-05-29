@@ -55,7 +55,7 @@ public class DoctorController {
     private ResponseEntity<Response> addPatient(@RequestBody DoctorPatientCreateDTO patientDTO) {
         try {
             Patient patient = patientService.addPatient(patientDTO.getDoctorId(), patientDTO.getSsn(), patientDTO.getBloodType().getGroupLetter(), patientDTO.getBloodType().getRh());
-            return ResponseBuilder.encode(HttpStatus.OK,  new OutgoingIdentifierDTO(patient));
+            return ResponseBuilder.encode(HttpStatus.OK, new OutgoingIdentifierDTO(patient));
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }

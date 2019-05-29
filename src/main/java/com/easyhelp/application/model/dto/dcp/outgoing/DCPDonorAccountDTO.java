@@ -2,6 +2,7 @@ package com.easyhelp.application.model.dto.dcp.outgoing;
 
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.dto.BaseOutgoingDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.BloodTypeDTO;
 import com.easyhelp.application.model.users.Donor;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -15,8 +16,7 @@ public class DCPDonorAccountDTO extends BaseOutgoingDTO {
     private String email;
     private Long id;
     private Boolean canDonate;
-    private Boolean rh;
-    private String group;
+    private BloodTypeDTO bloodType;
     private Boolean isMale;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dateOfBirth;
@@ -29,10 +29,9 @@ public class DCPDonorAccountDTO extends BaseOutgoingDTO {
         id = donor.getId();
         isMale = donor.getIsMale();
 
-        BloodType bloodType = donor.getBloodType();
-        if (bloodType != null) {
-            rh = bloodType.getRh();
-            group = bloodType.getGroupLetter();
+        BloodType bloodTypeExt = donor.getBloodType();
+        if (bloodTypeExt != null) {
+           this.bloodType = new BloodTypeDTO(bloodTypeExt);
         }
 
         canDonate = donor.canDonate();

@@ -144,6 +144,8 @@ public class DonorServiceImpl implements DonorServiceInterface {
                 } else {
                     patient.getDonationBookings().add(booking);
                 }
+            } else {
+                booking.setIsForPatient(false);
             }
 
             booking.setDateAndTime(date);

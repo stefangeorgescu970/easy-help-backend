@@ -8,7 +8,7 @@ import com.easyhelp.application.model.dto.dcp.outgoing.*;
 import com.easyhelp.application.model.dto.misc.incoming.CountyDTO;
 import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
 import com.easyhelp.application.model.dto.misc.outgoing.OutgoingIdentifierDTO;
-import com.easyhelp.application.model.dto.misc.outgoing.StoredBloodLevel2DTO;
+import com.easyhelp.application.model.dto.misc.outgoing.StoredBloodLevel1DTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.requests.DonationCommitment;
 import com.easyhelp.application.model.requests.DonationRequest;
@@ -205,7 +205,7 @@ public class DonationCenterPersonnelController {
     private ResponseEntity<Response> getAvailableBloodInDC(@RequestBody IdentifierDTO identifierDTO) {
         try {
             List<StoredBlood> storedBloods = storedBloodService.getAvailableBloodInDC(identifierDTO.getId());
-            List<StoredBloodLevel2DTO> storedBloodDTOS = storedBloods.stream().map(StoredBloodLevel2DTO::new).collect(Collectors.toList());
+            List<StoredBloodLevel1DTO> storedBloodDTOS = storedBloods.stream().map(StoredBloodLevel1DTO::new).collect(Collectors.toList());
             return ResponseBuilder.encode(HttpStatus.OK, storedBloodDTOS, 1, 1, 1);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
