@@ -18,8 +18,10 @@ import com.easyhelp.application.service.donationcenter.DonationCenterServiceInte
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.separated_bloodtype.SeparatedBloodTypeServiceInterface;
 import com.easyhelp.application.service.stored_blood.StoredBloodServiceInterface;
+import com.easyhelp.application.utils.PushNotificationUtils;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
+import com.easyhelp.application.utils.exceptions.PushTokenUnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,6 +80,12 @@ public class DonationServiceImpl implements DonationServiceInterface {
             donationUnwrapped.setStatus(DonationStatus.FAILED);
         } else {
             donationUnwrapped.setStatus(DonationStatus.AWAITING_SPLIT_RESULTS);
+        }
+
+        try {
+            PushNotificationUtils.sendPushNotification(donationUnwrapped.getDonor(), "Test Results available for your last donation.");
+        } catch (PushTokenUnavailableException e) {
+            e.printStackTrace();
         }
 
         donationTestResultRepository.save(donationTestResult);
