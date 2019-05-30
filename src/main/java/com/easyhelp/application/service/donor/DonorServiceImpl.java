@@ -191,7 +191,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
                 Date today = new Date();
                 List<Donation> lastYearDonations = donor.getDonations().stream().filter(donation -> {
-                    int days = (int) ( (donation.getDateAndTime().getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    int days = (int) ( (today.getTime() - donation.getDateAndTime().getTime()) / (1000 * 60 * 60 * 24));
                     return days < 365;
                 }).collect(Collectors.toList());
 

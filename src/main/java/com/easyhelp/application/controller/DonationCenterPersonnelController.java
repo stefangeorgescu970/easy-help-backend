@@ -7,6 +7,7 @@ import com.easyhelp.application.model.dto.dcp.incoming.*;
 import com.easyhelp.application.model.dto.dcp.outgoing.*;
 import com.easyhelp.application.model.dto.misc.incoming.CountyDTO;
 import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.BloodStockDTO;
 import com.easyhelp.application.model.dto.misc.outgoing.OutgoingIdentifierDTO;
 import com.easyhelp.application.model.dto.misc.outgoing.StoredBloodLevel1DTO;
 import com.easyhelp.application.model.locations.DonationCenter;
@@ -20,7 +21,6 @@ import com.easyhelp.application.service.donation_request.DonationRequestServiceI
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.stored_blood.StoredBloodServiceInterface;
-import com.easyhelp.application.utils.PushNotificationUtils;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.response.Response;
@@ -199,7 +199,7 @@ public class DonationCenterPersonnelController {
     }
 
     //================================================================================
-    // Others
+    // Managing Blood
     //================================================================================
 
     @PostMapping("/getAvailableBloodInDC")
@@ -209,6 +209,35 @@ public class DonationCenterPersonnelController {
             List<StoredBloodLevel1DTO> storedBloodDTOS = storedBloods.stream().map(StoredBloodLevel1DTO::new).collect(Collectors.toList());
             return ResponseBuilder.encode(HttpStatus.OK, storedBloodDTOS, 1, 1, 1);
         } catch (EasyHelpException e) {
+            return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
+        }
+    }
+
+    @PostMapping("/expiredBloodInDC")
+    private ResponseEntity<Response> getExpiredBloodInDC(@RequestBody IdentifierDTO identifierDTO) {
+        List<StoredBlood> storedBloods = storedBloodService.getExpiredBloodInDC(identifierDTO.getId());
+        List<StoredBloodLevel1DTO> dtos = storedBloods.stream().map(StoredBloodLevel1DTO::new).collect(Collectors.toList());
+        return ResponseBuilder.encode(HttpStatus.OK, dtos, 1, 1, 1);
+    }
+
+    @RequestMapping("/countryBloodStock")
+    private ResponseEntity<Response> getCountryBloodStock() {
+        List<BloodStockDTO> bloodStockDTOS = storedBloodService.getBloodStocksInCountry();
+        return ResponseBuilder.encode(HttpStatus.OK, bloodStockDTOS, 1, 1, 1);
+    }
+
+    @PostMapping("/dcBloodStock")
+    private ResponseEntity<Response> getDonatioNCenterBloodStock(@RequestBody IdentifierDTO identifierDTO) {
+        List<BloodStockDTO> bloodStockDTOS = storedBloodService.getBloodStocksInDC(identifierDTO.getId());
+        return ResponseBuilder.encode(HttpStatus.OK, bloodStockDTOS, 1, 1, 1);
+    }
+
+    @PostMapping("/discardBlood")
+    private ResponseEntity<Response> discardBlood(@RequestBody IdentifierDTO identifierDTO) {
+        try {
+            storedBloodService.removeBlood(identifierDTO.getId());
+            return ResponseBuilder.encode(HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }

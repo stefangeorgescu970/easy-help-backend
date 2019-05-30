@@ -5,6 +5,19 @@ public enum BloodComponent {
     RED_BLOOD_CELLS,
     PLASMA;
 
+    static public BloodComponent getFromDBValue(int value) {
+        switch (value) {
+            case 0:
+                return PLATELETS;
+            case 1:
+                return RED_BLOOD_CELLS;
+            case 2:
+                return PLASMA;
+            default:
+                return null;
+        }
+    }
+
     public String codeString() {
         switch (this) {
             case PLASMA:
@@ -13,8 +26,8 @@ public enum BloodComponent {
                 return "PLT";
             case RED_BLOOD_CELLS:
                 return "RBC";
-                default:
-                    return "N/A";
+            default:
+                return "N/A";
         }
     }
 }

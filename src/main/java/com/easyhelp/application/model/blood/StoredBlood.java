@@ -39,4 +39,19 @@ public class StoredBlood extends BaseEntity {
 
     private Date usedDate;
     private Boolean isUsable = true;
+
+    public Boolean isExpired() {
+        Date today = new Date();
+        int days = (int) ((today.getTime() - storedDate.getTime()) / (1000 * 60 * 60 * 24));
+        switch (separatedBloodType.getComponent()) {
+            case RED_BLOOD_CELLS:
+                return days > 42;
+            case PLATELETS:
+                return days > 5;
+            case PLASMA:
+                return days > 365;
+            default:
+                return true;
+        }
+    }
 }
