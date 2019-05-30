@@ -14,6 +14,7 @@ public class DonorSummaryDTO extends BaseOutgoingDTO {
     private DonorDonationDTO lastDonation;
     private DonorDonationBookingDTO nextBooking;
     private Date streakBegin;
+    private Integer numberOfPatientsYouCouldHelp;
 
     public DonorSummaryDTO(DonorSummary donorSummary) {
         donationsNumber = donorSummary.getDonationsNumber();
@@ -23,5 +24,8 @@ public class DonorSummaryDTO extends BaseOutgoingDTO {
             lastDonation = new DonorDonationDTO(donorSummary.getLastDonation());
         if (donorSummary.getDonationStreakBegin() != null)
             streakBegin = donorSummary.getDonationStreakBegin();
+        if (donorSummary.getNumberOfPatientsYouCouldHelp() != null) {
+            numberOfPatientsYouCouldHelp = donorSummary.getNumberOfPatientsYouCouldHelp();
+        }
     }
 }

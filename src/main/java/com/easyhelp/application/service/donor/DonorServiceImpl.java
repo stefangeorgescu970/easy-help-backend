@@ -16,6 +16,7 @@ import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donation_form.DonationFormServiceInterface;
+import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
@@ -48,6 +49,9 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
     @Autowired
     private PatientServiceInterface patientService;
+
+    @Autowired
+    private DonationRequestServiceInterface donationRequestService;
 
     @Override
     public void updateCountyOnDonor(Long donorId, County newCounty) throws EntityNotFoundException {
@@ -203,6 +207,9 @@ public class DonorServiceImpl implements DonorServiceInterface {
                 }
             }
 
+            if (donor.getBloodType() != null) {
+                donorSummary.setNumberOfPatientsYouCouldHelp(donationRequestService.getDonationRequestsDonorCouldDonateFor(donor).size());
+            }
         } else {
             throw new EntityNotFoundException("No donor was found with provided id.");
         }

@@ -8,6 +8,7 @@ import com.easyhelp.application.model.dto.dcp.incoming.DonationCommitmentCreateD
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.requests.*;
 import com.easyhelp.application.model.users.Doctor;
+import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.DonationRequestRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
@@ -16,6 +17,7 @@ import com.easyhelp.application.service.donationcenter.DonationCenterServiceInte
 import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.service.separated_bloodtype.SeparatedBloodTypeServiceInterface;
 import com.easyhelp.application.service.stored_blood.StoredBloodServiceInterface;
+import com.easyhelp.application.utils.BloodUtils;
 import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
@@ -182,6 +184,15 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
         }
 
         donationRequestRepository.delete(donationRequest);
+    }
+
+    @Override
+    public List<DonationRequest> getDonationRequestsDonorCouldDonateFor(Donor donor) {
+        return donationRequestRepository
+                .findAll()
+                .stream()
+                .filter(donationRequest -> BloodUtils.checkBloodCompatibility(donor, donationRequest.getPatient(), donationRequest.getSeparatedBloodType().getComponent()))
+                .collect(Collectors.toList());
     }
 
     @Override

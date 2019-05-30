@@ -5,6 +5,7 @@ import com.easyhelp.application.model.dto.dcp.incoming.DonationCommitmentCreateD
 import com.easyhelp.application.model.requests.DonationCommitment;
 import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.requests.RequestUrgency;
+import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
@@ -29,4 +30,6 @@ public interface  DonationRequestServiceInterface  {
     DonationCommitment commitToDonation(DonationCommitmentCreateDTO donationCommitmentCreateDTO) throws EasyHelpException;
 
     void cancelRequest(Long requestId) throws EasyHelpException;
+
+    List<DonationRequest> getDonationRequestsDonorCouldDonateFor(Donor donor);
 }

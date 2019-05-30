@@ -15,4 +15,5 @@ public class DonorSummary extends BaseEntity {
     private Donation lastDonation;
     private DonationBooking nextBooking;
     private Date donationStreakBegin;
+    private Integer numberOfPatientsYouCouldHelp;
 }
