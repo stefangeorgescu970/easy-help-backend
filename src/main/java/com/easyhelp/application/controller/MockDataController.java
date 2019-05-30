@@ -317,6 +317,7 @@ public class MockDataController {
         registerService.registerUser(createDonor("Sebi", "Grigor", County.ALBA, "sebi@don", boySSN));
         registerService.registerUser(createDonor("Cata", "Yellow", County.ALBA, "cata@don", boySSN));
         registerService.registerUser(createDonor("Nichidel", "Rachidel", County.ALBA, "nichi@don", boySSN));
+        registerService.registerUser(createDonor("Never", "Donate", County.ALBA, "nede@don", boySSN));
 
         donorService.updateBloodGroupOnDonor(1L, "A", false);
         donorService.updateBloodGroupOnDonor(2L, "A", true);

@@ -70,6 +70,9 @@ public class DonationCenterServiceImpl implements DonationCenterServiceInterface
 
     @Override
     public List<DonationCenter> getOrderedDonationCenters(Double longitude, Double latitude) {
+        if (longitude == null || latitude == null) {
+            return donationCenterRepository.findAll();
+        }
         return donationCenterRepository
                 .findAll()
                 .stream()
