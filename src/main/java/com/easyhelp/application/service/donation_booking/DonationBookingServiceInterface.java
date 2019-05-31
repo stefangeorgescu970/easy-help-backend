@@ -12,6 +12,8 @@ public interface DonationBookingServiceInterface {
 
     DonationBooking save(DonationBooking donationBooking);
 
+    DonationBooking findById(Long donationBookingId) throws EntityNotFoundException;
+
     List<AvailableDate> getAvailableBookingSlots(Long donationCenterId) throws EntityNotFoundException;
 
     List<DonationBooking> getDCBookings(Long donationCenterId);

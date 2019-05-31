@@ -13,12 +13,14 @@ import com.easyhelp.application.model.dto.misc.outgoing.StoredBloodLevel1DTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.requests.DonationCommitment;
 import com.easyhelp.application.model.requests.DonationRequest;
+import com.easyhelp.application.model.users.DonationCenterPersonnel;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.service.donation.DonationServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donation_commitment.DonationCommitmentServiceInterface;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
+import com.easyhelp.application.service.donationcenterpersonnel.DonationCenterPersonnelServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.stored_blood.StoredBloodServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
@@ -61,6 +63,9 @@ public class DonationCenterPersonnelController {
     @Autowired
     private DonorServiceInterface donorService;
 
+    @Autowired
+    private DonationCenterPersonnelServiceInterface donationCenterPersonnelService;
+
     //================================================================================
     // Managing Donations
     //================================================================================
@@ -76,7 +81,9 @@ public class DonationCenterPersonnelController {
     @PostMapping("/cancelBooking")
     private ResponseEntity<Response> cancelBooking(@RequestBody IdentifierDTO identifierDTO) {
         try {
-            // TODO - here add checks that the booking is indeed made for the donation center sending the request
+            if (!bookingOwnedByDCP(identifierDTO.getUserId(), identifierDTO.getId())) {
+                return ResponseBuilder.encode(HttpStatus.OK, "You do not have ownership of this booking.");
+            }
             donationBookingService.cancelBooking(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
@@ -104,7 +111,9 @@ public class DonationCenterPersonnelController {
     @PostMapping("/addTestResult")
     private ResponseEntity<Response> addTestResults(@RequestBody DonationTestResultCreateDTO donationTestResultDTO) {
         try {
-            // TODO - here add checks that the donation is indeed made for the donation center sending the request
+            if (!donationOwnedByDCP(donationTestResultDTO.getUserId(), donationTestResultDTO.getDonationId())) {
+                return ResponseBuilder.encode(HttpStatus.OK, "You do not have ownership of this donation.");
+            }
             donationService.addTestResults(donationTestResultDTO);
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
@@ -122,7 +131,9 @@ public class DonationCenterPersonnelController {
     @PostMapping("/addSplitResults")
     private ResponseEntity<Response> addSplitResults(@RequestBody DonationSplitResultCreateDTO donationSplitResultCreateDTO) {
         try {
-            // TODO - here add checks that the donation is indeed made for the donation center sending the request
+            if (!donationOwnedByDCP(donationSplitResultCreateDTO.getUserId(), donationSplitResultCreateDTO.getDonationId())) {
+                return ResponseBuilder.encode(HttpStatus.OK, "You do not have ownership of this donation.");
+            }
             donationService.separateBlood(donationSplitResultCreateDTO);
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
@@ -149,7 +160,6 @@ public class DonationCenterPersonnelController {
     @PostMapping("/commitToBloodRequest")
     private ResponseEntity<Response> commitToBloodRequest(@RequestBody DonationCommitmentCreateDTO donationCommitmentCreateDTO) {
         try {
-            // TODO - here add checks that the stored blood is indeed owned by the donation center sending the request
             DonationCommitment donationCommitment = donationRequestService.commitToDonation(donationCommitmentCreateDTO);
             return ResponseBuilder.encode(HttpStatus.OK, new OutgoingIdentifierDTO(donationCommitment));
         } catch (EasyHelpException e) {
@@ -172,7 +182,9 @@ public class DonationCenterPersonnelController {
     @PostMapping("/shipCommitment")
     private ResponseEntity<Response> shipCommitment(@RequestBody IdentifierDTO identifierDTO) {
         try {
-            // TODO - here add checks that the commitment is indeed made for the donation center sending the request
+            if (!donationOwnedByDCP(identifierDTO.getUserId(), identifierDTO.getId())) {
+                return ResponseBuilder.encode(HttpStatus.OK, "You do not have ownership of this commitment.");
+            }
             donationCommitmentService.shipCommitment(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
@@ -240,5 +252,30 @@ public class DonationCenterPersonnelController {
         } catch (EntityNotFoundException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
+    }
+
+    //================================================================================
+    // Private Helpers
+    //================================================================================
+
+    private Boolean bookingOwnedByDCP(Long dcpId, Long bookingId) throws EntityNotFoundException {
+        DonationCenterPersonnel dcp = donationCenterPersonnelService.findById(dcpId);
+        DonationBooking donationBooking = donationBookingService.findById(bookingId);
+
+        return donationBooking.getDonationCenter().getId().equals(dcp.getDonationCenter().getId());
+    }
+
+    private Boolean donationOwnedByDCP(Long dcpId, Long donationid) throws EntityNotFoundException {
+        DonationCenterPersonnel dcp = donationCenterPersonnelService.findById(dcpId);
+        Donation donation = donationService.findById(donationid);
+
+        return donation.getDonationCenter().getId().equals(dcp.getDonationCenter().getId());
+    }
+
+    private Boolean commitmentOwnedByDCP(Long dcpId, Long commitmentId) throws EntityNotFoundException {
+        DonationCenterPersonnel dcp = donationCenterPersonnelService.findById(dcpId);
+        DonationCommitment donationCommitment = donationCommitmentService.findById(commitmentId);
+
+        return donationCommitment.getDonationCenter().getId().equals(dcp.getDonationCenter().getId());
     }
 }

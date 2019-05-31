@@ -59,6 +59,16 @@ public class DonationServiceImpl implements DonationServiceInterface {
     }
 
     @Override
+    public Donation findById(Long donationId) throws EntityNotFoundException {
+        Optional<Donation> donation = donationRepository.findById(donationId);
+
+        if (!donation.isPresent())
+            throw new EntityNotFoundException("Donation with that id does not exist");
+
+        return donation.get();
+    }
+
+    @Override
     public void addTestResults(DonationTestResultCreateDTO donationTestResultDTO) throws EntityNotFoundException {
         Optional<Donation> donation = donationRepository.findById(donationTestResultDTO.getDonationId());
 
@@ -84,9 +94,7 @@ public class DonationServiceImpl implements DonationServiceInterface {
 
         try {
             PushNotificationUtils.sendPushNotification(donationUnwrapped.getDonor(), "Test Results available for your last donation.");
-        } catch (PushTokenUnavailableException e) {
-            e.printStackTrace();
-        }
+        } catch (PushTokenUnavailableException ignored) {}
 
         donationTestResultRepository.save(donationTestResult);
         donationRepository.save(donationUnwrapped);

@@ -44,6 +44,16 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
     }
 
     @Override
+    public DonationBooking findById(Long donationBookingId) throws EntityNotFoundException {
+        Optional<DonationBooking> donationBookingOptional = donationBookingRepository.findById(donationBookingId);
+        if (!donationBookingOptional.isPresent()) {
+            throw new EntityNotFoundException("Donation Booking with that id does not exist");
+        }
+
+        return donationBookingOptional.get();
+    }
+
+    @Override
     public List<AvailableDate> getAvailableBookingSlots(Long donationCenterId) throws EntityNotFoundException {
         Date currentDate = new Date();
         List<AvailableDate> allHours = MiscUtils.getAllHoursForWeek(currentDate);

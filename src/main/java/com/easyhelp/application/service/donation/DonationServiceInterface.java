@@ -12,6 +12,8 @@ public interface DonationServiceInterface {
 
     Donation saveDonation(Donation donation);
 
+    Donation findById(Long donationId) throws EntityNotFoundException;
+
     void addTestResults(DonationTestResultCreateDTO donationTestResultDTO) throws EntityNotFoundException;
 
     void separateBlood(DonationSplitResultCreateDTO donationSplitResultCreateDTO) throws EasyHelpException;

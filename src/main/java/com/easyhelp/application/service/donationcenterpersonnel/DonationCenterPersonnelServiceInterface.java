@@ -17,4 +17,6 @@ public interface DonationCenterPersonnelServiceInterface {
     void reviewAccount(Long dcpId, boolean shouldValidate) throws EntityNotFoundException;
 
     void deactivateAccount(Long dcpId) throws AccountNotReviewedException, EntityNotFoundException;
+
+    DonationCenterPersonnel findById(Long dcpId) throws EntityNotFoundException;
 }

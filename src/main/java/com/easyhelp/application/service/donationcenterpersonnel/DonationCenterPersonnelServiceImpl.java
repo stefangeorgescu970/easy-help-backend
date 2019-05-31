@@ -68,4 +68,15 @@ public class DonationCenterPersonnelServiceImpl implements DonationCenterPersonn
             throw new EntityNotFoundException("user not found");
         }
     }
+
+    @Override
+    public DonationCenterPersonnel findById(Long dcpId) throws EntityNotFoundException {
+        Optional<DonationCenterPersonnel> donationCenterPersonnel = donationCenterPersonnelRepository.findById(dcpId);
+
+        if (donationCenterPersonnel.isPresent()) {
+            return donationCenterPersonnel.get();
+        } else {
+            throw new EntityNotFoundException("user not found");
+        }
+    }
 }
