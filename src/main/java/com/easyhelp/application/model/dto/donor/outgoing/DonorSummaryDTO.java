@@ -24,7 +24,7 @@ public class DonorSummaryDTO extends BaseOutgoingDTO {
             lastDonation = new DonorDonationDTO(donorSummary.getLastDonation());
         if (donorSummary.getDonationStreakBegin() != null)
             streakBegin = donorSummary.getDonationStreakBegin();
-        if (donorSummary.getNumberOfPatientsYouCouldHelp() != null) {
+        if (donorSummary.getNumberOfPatientsYouCouldHelp() != null && donorSummary.getNumberOfPatientsYouCouldHelp() > 0) {
             numberOfPatientsYouCouldHelp = donorSummary.getNumberOfPatientsYouCouldHelp();
         }
     }

@@ -327,6 +327,8 @@ public class MockDataController {
         donorService.updateBloodGroupOnDonor(6L, "AB", true);
         donorService.updateBloodGroupOnDonor(7L, "0", false);
         donorService.updateBloodGroupOnDonor(8L, "0", true);
+
+        donorService.updateBloodGroupOnDonor(16L, "0", true);
     }
 
     private RegisterDTO createDonor(String fn, String ln, County county, String email, String ssn) {
