@@ -11,6 +11,7 @@ import com.easyhelp.application.model.requests.DonationCommitment;
 import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.requests.RequestStatus;
+import com.easyhelp.application.model.users.Doctor;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
 import com.easyhelp.application.service.donation_commitment.DonationCommitmentServiceInterface;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
@@ -20,9 +21,11 @@ import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,7 +74,9 @@ public class DoctorController {
     @PostMapping("/deletePatient")
     private ResponseEntity<Response> deletePatient(@RequestBody IdentifierDTO identifierDTO) {
         try {
-            // TODO - here add checks that patient is indeed owned by the doctor sending the request
+            if (!patientOwnedByDoctor(identifierDTO.getUserId(), identifierDTO.getId())) {
+                return ResponseBuilder.encode(HttpStatus.OK, "You do not have ownership of this patient.");
+            }
             patientService.deletePatient(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
@@ -103,7 +108,9 @@ public class DoctorController {
     @PostMapping("/cancelBloodRequest")
     private ResponseEntity<Response> cancelBloodRequest(@RequestBody IdentifierDTO identifierDTO) {
         try {
-            // TODO - here add checks that blood request is indeed owned by the doctor sending the request
+            if (!requestOwnedByDoctor(identifierDTO.getUserId(), identifierDTO.getId())) {
+                return ResponseBuilder.encode(HttpStatus.OK, "You do not have ownership of this request.");
+            }
             donationRequestService.cancelRequest(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
@@ -130,7 +137,9 @@ public class DoctorController {
     @PostMapping("/acceptCommitment")
     private ResponseEntity<Response> acceptCommitment(@RequestBody IdentifierDTO identifierDTO) {
         try {
-            // TODO - here add checks that the commitment is indeed owned by the doctor sending the request
+            if (!commitmentOwnedByDoctor(identifierDTO.getUserId(), identifierDTO.getId())) {
+                return ResponseBuilder.encode(HttpStatus.OK, "You do not have ownership of this commitment");
+            }
             RequestStatus status = donationCommitmentService.acceptCommitment(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK, status);
         } catch (EasyHelpException e) {
@@ -142,7 +151,9 @@ public class DoctorController {
     @PostMapping("/declineCommitment")
     private ResponseEntity<Response> declineCommitment(@RequestBody IdentifierDTO identifierDTO) {
         try {
-            // TODO - here add checks that the commitment is indeed owned by the doctor sending the request
+            if (!commitmentOwnedByDoctor(identifierDTO.getUserId(), identifierDTO.getId())) {
+                return ResponseBuilder.encode(HttpStatus.OK, "You do not have ownership of this commitment");
+            }
             donationCommitmentService.declineCommitment(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
@@ -154,13 +165,50 @@ public class DoctorController {
     @PostMapping("/commitmentArrived")
     private ResponseEntity<Response> markCommitmentAsArrived(@RequestBody IdentifierDTO identifierDTO) {
         try {
-            // TODO - here add checks that the commitment is indeed owned by the doctor sending the request
+            if (!commitmentOwnedByDoctor(identifierDTO.getUserId(), identifierDTO.getId())) {
+                return ResponseBuilder.encode(HttpStatus.OK, "You do not have ownership of this commitment");
+            }
             donationCommitmentService.markCommitmentAsArrived(identifierDTO.getId());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
             e.printStackTrace();
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
+    }
+
+    //================================================================================
+    // Private Helpers
+    //================================================================================
+
+    private Boolean patientOwnedByDoctor(Long doctorId, Long patientId) throws EntityNotFoundException {
+        Doctor doctor = doctorService.findById(doctorId);
+        Patient patient = patientService.findById(patientId);
+
+        return doctor.getPatients().stream().anyMatch(patient1 -> patient1.getId().equals(patient.getId()));
+    }
+
+
+    private Boolean requestOwnedByDoctor(Long doctorId, Long donationRequestId) throws EntityNotFoundException {
+        Doctor doctor = doctorService.findById(doctorId);
+        DonationRequest donationRequest = donationRequestService.findById(donationRequestId);
+
+        return doctor.getDonationRequests().stream().anyMatch(donationRequest1 -> donationRequest1.getId().equals(donationRequest.getId()));
+    }
+
+    private Boolean commitmentOwnedByDoctor(Long doctorId, Long donationCommitmentId) throws EntityNotFoundException {
+        Doctor doctor = doctorService.findById(doctorId);
+        DonationCommitment donationCommitment = donationCommitmentService.findById(donationCommitmentId);
+        boolean returnValue = false;
+
+        for(DonationRequest donationRequest : doctor.getDonationRequests()) {
+            for(DonationCommitment donationCommitment1 : donationRequest.getDonationCommitments()) {
+                if (donationCommitment1.getId().equals(donationCommitment.getId())) {
+                    returnValue = true;
+                }
+            }
+        }
+
+        return returnValue;
     }
 }
 

@@ -32,4 +32,6 @@ public interface  DonationRequestServiceInterface  {
     void cancelRequest(Long requestId) throws EasyHelpException;
 
     List<DonationRequest> getDonationRequestsDonorCouldDonateFor(Donor donor);
+
+    DonationRequest findById(Long donationRequestId) throws EntityNotFoundException;
 }

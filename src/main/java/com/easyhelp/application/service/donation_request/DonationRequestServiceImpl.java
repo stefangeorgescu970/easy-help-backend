@@ -196,6 +196,17 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
     }
 
     @Override
+    public DonationRequest findById(Long donationRequestId) throws EntityNotFoundException {
+        Optional<DonationRequest> donationRequest = donationRequestRepository.findById(donationRequestId);
+
+        if (!donationRequest.isPresent()) {
+            throw new EntityNotFoundException("Donation request with that id does not exist");
+        }
+
+        return donationRequest.get();
+    }
+
+    @Override
     public List<DonationRequest> getAllRequestsForDC(Long donationCenterId) throws EntityNotFoundException {
 
         DonationCenter donationCenter = donationCenterService.findById(donationCenterId);

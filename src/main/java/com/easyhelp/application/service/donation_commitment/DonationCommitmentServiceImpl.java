@@ -163,4 +163,15 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
                 .filter(donationCommitment -> donationCommitment.getDonationCenter().getId().equals(donationCenter.getId()))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public DonationCommitment findById(Long donationCommitmentId) throws EntityNotFoundException {
+        Optional<DonationCommitment> donationCommitment = donationCommitmentRepository.findById(donationCommitmentId);
+
+        if (!donationCommitment.isPresent()) {
+            throw new EntityNotFoundException("Donation commitment request with that id does not exist");
+        }
+
+        return donationCommitment.get();
+    }
 }

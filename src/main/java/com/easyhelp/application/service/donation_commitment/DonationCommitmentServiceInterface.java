@@ -25,4 +25,6 @@ public interface DonationCommitmentServiceInterface {
     void markCommitmentAsArrived(Long donationCommitmentId) throws EasyHelpException;
 
     List<DonationCommitment> getCommitmentsForDonationCenter(DonationCenter donationCenter);
+
+    DonationCommitment findById(Long donationCommitmentId) throws EntityNotFoundException;
 }
