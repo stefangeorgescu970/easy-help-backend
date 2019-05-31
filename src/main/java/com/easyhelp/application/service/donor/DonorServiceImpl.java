@@ -246,6 +246,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
             donationForm.setTravelWhere(donationFormCreateDTO.getTravelWhere());
             donationForm.setTravelWhen(donationFormCreateDTO.getTravelWhen());
             donationForm.setPrisonLastYear(donationFormCreateDTO.getPrisonLastYear());
+            donationForm.setExposedHepatitis(donationFormCreateDTO.getExposedHepatitis());
             donationForm.setSufferFromSet1(donationFormCreateDTO.getSufferFromSet1());
             donationForm.setSufferFromSet2(donationFormCreateDTO.getSufferFromSet2());
             donationForm.setSufferFromSet3(donationFormCreateDTO.getSufferFromSet3());
