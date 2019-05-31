@@ -327,6 +327,10 @@ public class MockDataController {
         donorService.updateBloodGroupOnDonor(6L, "AB", true);
         donorService.updateBloodGroupOnDonor(7L, "0", false);
         donorService.updateBloodGroupOnDonor(8L, "0", true);
+        donorService.updateBloodGroupOnDonor(9L, "0", true);
+        donorService.updateBloodGroupOnDonor(10L, "0", true);
+        donorService.updateBloodGroupOnDonor(11L, "0", true);
+        donorService.updateBloodGroupOnDonor(12L, "0", true);
 
         donorService.updateBloodGroupOnDonor(16L, "0", true);
     }
@@ -444,7 +448,7 @@ public class MockDataController {
             donationSplitResultCreateDTO.setPlateletsUnits(2);
             donationSplitResultCreateDTO.setRedBloodCellsUnits(3);
 
-            for (Long i = 1L; i <= 4L; i++) {
+            for (Long i = 1L; i <= 8L; i++) {
                 donationSplitResultCreateDTO.setDonationId(i);
                 donationService.separateBlood(donationSplitResultCreateDTO);
             }
@@ -473,7 +477,7 @@ public class MockDataController {
         donationTestResultDTO.setVdrl(false);
 
         try {
-            for (Long i = 13L; i <= 20L; i++) {
+            for (Long i = 13L; i <= 16L; i++) {
                 donationTestResultDTO.setDonationId(i);
                 donationService.addTestResults(donationTestResultDTO);
             }
@@ -483,10 +487,36 @@ public class MockDataController {
             donationSplitResultCreateDTO.setPlateletsUnits(2);
             donationSplitResultCreateDTO.setRedBloodCellsUnits(3);
 
-            for (Long i = 13L; i <= 20L; i++) {
+            for (Long i = 13L; i <= 16L; i++) {
                 donationSplitResultCreateDTO.setDonationId(i);
                 donationService.separateBlood(donationSplitResultCreateDTO);
             }
+
+            long lastDonId = 20L;
+
+            for(int i = 1; i <= 4; i++) {
+                donationService.saveDonation(buildWaitingTestResultDonation(1L, 1L, -1L));
+                DonationTestResultCreateDTO donationTestResultDTOInner = new DonationTestResultCreateDTO();
+                donationTestResultDTOInner.setAlt(false);
+                donationTestResultDTOInner.setHepatitisB(false);
+                donationTestResultDTOInner.setHepatitisC(false);
+                donationTestResultDTOInner.setHiv(false);
+                donationTestResultDTOInner.setHtlv(false);
+                donationTestResultDTOInner.setVdrl(false);
+
+                donationTestResultDTOInner.setDonationId(lastDonId + i);
+                donationService.addTestResults(donationTestResultDTOInner);
+
+                DonationSplitResultCreateDTO donationSplitResultCreateDTOInner = new DonationSplitResultCreateDTO();
+                donationSplitResultCreateDTOInner.setPlasmaUnits(1);
+                donationSplitResultCreateDTOInner.setPlateletsUnits(2);
+                donationSplitResultCreateDTOInner.setRedBloodCellsUnits(3);
+
+                donationSplitResultCreateDTOInner.setDonationId(lastDonId + i);
+                donationService.separateBlood(donationSplitResultCreateDTOInner);
+            }
+
+
         } catch (EasyHelpException e) {
             e.printStackTrace();
         }
