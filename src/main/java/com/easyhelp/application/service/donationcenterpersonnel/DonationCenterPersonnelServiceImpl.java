@@ -2,7 +2,9 @@ package com.easyhelp.application.service.donationcenterpersonnel;
 
 import com.easyhelp.application.model.users.DonationCenterPersonnel;
 import com.easyhelp.application.repository.DonationCenterPersonnelRepository;
+import com.easyhelp.application.utils.EmailUtils;
 import com.easyhelp.application.utils.exceptions.AccountNotReviewedException;
+import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +53,11 @@ public class DonationCenterPersonnelServiceImpl implements DonationCenterPersonn
             DonationCenterPersonnel dcpUnwrapped = donationCenterPersonnel.get();
             dcpUnwrapped.reviewAccount(shouldValidate);
             donationCenterPersonnelRepository.save(dcpUnwrapped);
+            new Thread(() -> {
+                try {
+                    EmailUtils.sendAccountReviewedEmail(dcpUnwrapped, shouldValidate);
+                } catch (EasyHelpException ignored) {}
+            }).start();
         } else {
             throw new EntityNotFoundException("user not found");
         }
