@@ -1,5 +1,6 @@
 package com.easyhelp.application.service.donor;
 
+import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.DonorSummary;
 import com.easyhelp.application.model.dto.donor.incoming.DonationFormCreateDTO;
 import com.easyhelp.application.model.locations.County;
@@ -19,7 +20,7 @@ public interface DonorServiceInterface {
 
     void updateBloodGroupOnDonor(Long donorId, String groupLetter, Boolean rh) throws EntityNotFoundException;
 
-    void bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException;
+    DonationBooking bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException;
 
     List<Donor> getDonorsInCounty(County county);
 

@@ -111,7 +111,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
 
     @Override
-    public void bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException {
+    public DonationBooking bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException {
         Date date = selectedHour;
         date.setHours(date.getHours() + date.getTimezoneOffset() / 60);
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
@@ -160,6 +160,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
                 patientService.save(patient);
             }
 
+            return booking;
         } else {
             throw new EntityNotFoundException("No donor was found with provided id.");
         }

@@ -22,7 +22,7 @@ public interface DonationBookingServiceInterface {
 
     Long getDonorsNumberForSlot(Long donationCenterId, Date slotSelected);
 
-    void cancelBooking(Long bookingId) throws EntityNotFoundException;
+    void cancelBooking(Long bookingId, Boolean shouldNotifyDonor) throws EntityNotFoundException;
 
     Donation createDonationFromBooking(Long bookingId, String bloodGroup, Boolean rh) throws EntityNotFoundException;
 }

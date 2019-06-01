@@ -84,7 +84,7 @@ public class DonationCenterPersonnelController {
             if (!bookingOwnedByDCP(identifierDTO.getUserId(), identifierDTO.getId())) {
                 return ResponseBuilder.encode(HttpStatus.OK, "You do not have ownership of this booking.");
             }
-            donationBookingService.cancelBooking(identifierDTO.getId());
+            donationBookingService.cancelBooking(identifierDTO.getId(), true);
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());

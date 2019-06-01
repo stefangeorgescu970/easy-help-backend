@@ -119,7 +119,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
     }
 
     @Override
-    public void cancelBooking(Long bookingId) throws EntityNotFoundException {
+    public void cancelBooking(Long bookingId, Boolean shouldNotifyDonor) throws EntityNotFoundException {
         Optional<DonationBooking> donationBookingOptional = donationBookingRepository.findById(bookingId);
 
         if (!donationBookingOptional.isPresent())
@@ -132,9 +132,11 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
         donor.setDonationBooking(null);
         donationCenter.getDonationBookings().remove(donationBooking);
 
-        try {
-            PushNotificationUtils.sendPushNotification(donor, "Your recent booking was cancelled the donation center.");
-        } catch (PushTokenUnavailableException ignored) { }
+        if (shouldNotifyDonor) {
+            try {
+                PushNotificationUtils.sendPushNotification(donor, "Your recent booking was cancelled the donation center.");
+            } catch (PushTokenUnavailableException ignored) { }
+        }
 
         donationCenterService.save(donationCenter);
         donorService.save(donor);
