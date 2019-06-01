@@ -32,9 +32,7 @@ public class JwtTokenFilter extends GenericFilterBean {
                     Authentication auth = jwtTokenProvider.getAuthentication(token);
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
-            } catch (JwtException e) {
-
-                throw new ServletException("Expired token");
+            } catch (JwtException ignored) {
             }
         filterChain.doFilter(req, res);
     }
