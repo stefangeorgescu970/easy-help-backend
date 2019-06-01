@@ -125,21 +125,21 @@ public class MockDataController {
         addDonationForm(2L);
         addDonationForm(3L);
 
-//        addDonations();
-//        addSecondDonations();
+        addDonations();
+        addSecondDonations();
 
         return ResponseBuilder.encode(HttpStatus.OK);
     }
 
     @RequestMapping("/populateTables2")
     private ResponseEntity<Response> populatePart2() throws UserAlreadyRegisteredException, EntityNotFoundException, SsnInvalidException {
-//
-//        addDonationRequests();
-//        try {
-//            addDonationCommitment();
-//        } catch (EasyHelpException e) {
-//            e.printStackTrace();
-//        }
+
+        addDonationRequests();
+        try {
+            addDonationCommitment();
+        } catch (EasyHelpException e) {
+            e.printStackTrace();
+        }
 
         return ResponseBuilder.encode(HttpStatus.OK);
     }
