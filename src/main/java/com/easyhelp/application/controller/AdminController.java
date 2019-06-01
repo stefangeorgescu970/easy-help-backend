@@ -5,6 +5,7 @@ import com.easyhelp.application.model.dto.admin.incoming.AdminCreateDonationCent
 import com.easyhelp.application.model.dto.admin.incoming.AdminCreateHospitalDTO;
 import com.easyhelp.application.model.dto.admin.outgoing.AdminDCPAccountDTO;
 import com.easyhelp.application.model.dto.admin.outgoing.AdminDoctorAccountDTO;
+import com.easyhelp.application.model.dto.admin.outgoing.AdminDonationCenterDTO;
 import com.easyhelp.application.model.dto.misc.incoming.BooleanDTO;
 import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
 import com.easyhelp.application.model.dto.misc.incoming.StringDTO;
@@ -205,7 +206,7 @@ public class AdminController {
     @RequestMapping("/getAllDonationCenters")
     private ResponseEntity<Response> getAllDonationCenters() {
         List<DonationCenter> donationCenters = donationCenterService.getAll();
-        List<ExtendedOutgoingLocationDTO> dtoList = donationCenters.stream().map(ExtendedOutgoingLocationDTO::new).collect(Collectors.toList());
+        List<AdminDonationCenterDTO> dtoList = donationCenters.stream().map(AdminDonationCenterDTO::new).collect(Collectors.toList());
         return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
     }
 
