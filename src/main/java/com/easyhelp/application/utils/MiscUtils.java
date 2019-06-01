@@ -17,30 +17,41 @@ public class MiscUtils {
     }
 
     public static void validateSsn(String ssn) throws SsnInvalidException {
-        String testKey = "279146358279";
+        if (System.getenv("ENV").equals("LOCAL")) {
+            if (ssn.length() < 7)
+                throw new SsnInvalidException("Incorrect length.");
 
-        if (ssn.length() != 13)
-            throw new SsnInvalidException("Incorrect length.");
+            int year = getDigitFromString(ssn, 1) * 10 + getDigitFromString(ssn, 2);
+            int month = getDigitFromString(ssn, 3) * 10 + getDigitFromString(ssn, 4);
+            int day = getDigitFromString(ssn, 5) * 10 + getDigitFromString(ssn, 6);
+            if (month > 12 || day > 31)
+                throw new SsnInvalidException("Incorrect date of birth in ssn.");
+        } else {
+            String testKey = "279146358279";
 
-        int firstDigit = getDigitFromString(ssn, 0);
-        if (firstDigit < 0 || firstDigit > 6)
-            throw new SsnInvalidException("Incorrect first digit.");
+            if (ssn.length() != 13)
+                throw new SsnInvalidException("Incorrect length.");
 
-        int year = getDigitFromString(ssn, 1) * 10 + getDigitFromString(ssn, 2);
-        int month = getDigitFromString(ssn, 3) * 10 + getDigitFromString(ssn, 4);
-        int day = getDigitFromString(ssn, 5) * 10 + getDigitFromString(ssn, 6);
-        if (month > 12 || day > 31)
-            throw new SsnInvalidException("Incorrect date of birth in ssn.");
+            int firstDigit = getDigitFromString(ssn, 0);
+            if (firstDigit < 0 || firstDigit > 6)
+                throw new SsnInvalidException("Incorrect first digit.");
 
-        int sum = 0;
-        for (int i = 0; i < testKey.length(); i++) {
-            sum += getDigitFromString(ssn, i) * getDigitFromString(testKey, i);
+            int year = getDigitFromString(ssn, 1) * 10 + getDigitFromString(ssn, 2);
+            int month = getDigitFromString(ssn, 3) * 10 + getDigitFromString(ssn, 4);
+            int day = getDigitFromString(ssn, 5) * 10 + getDigitFromString(ssn, 6);
+            if (month > 12 || day > 31)
+                throw new SsnInvalidException("Incorrect date of birth in ssn.");
+
+            int sum = 0;
+            for (int i = 0; i < testKey.length(); i++) {
+                sum += getDigitFromString(ssn, i) * getDigitFromString(testKey, i);
+            }
+
+            sum %= 11;
+            int control = sum > 10 ? 1 : sum;
+            if (control != getDigitFromString(ssn, 12))
+                throw new SsnInvalidException("Invalid ssn.");
         }
-
-        sum %= 11;
-        int control = sum > 10 ? 1 : sum;
-        if (control != getDigitFromString(ssn, 12))
-            throw new SsnInvalidException("Invalid ssn.");
     }
 
     public static SsnData getDataFromSsn(String ssn) {

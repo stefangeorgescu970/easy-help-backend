@@ -2,8 +2,10 @@ package com.easyhelp.application.model.users;
 
 import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.locations.Hospital;
+import com.easyhelp.application.model.misc.SsnData;
 import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.requests.Patient;
+import com.easyhelp.application.utils.MiscUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -40,12 +42,14 @@ public class Doctor extends PartnerUser {
 
     public Doctor(RegisterDTO applicationUser) {
         setCounty(applicationUser.getCounty());
-        setDateOfBirth(applicationUser.getDateOfBirth());
         setEmail(applicationUser.getEmail());
         setFirstName(applicationUser.getFirstName());
         setLastName(applicationUser.getLastName());
         setPassword(applicationUser.getPassword());
         setSsn(applicationUser.getSsn());
+        String ssn = applicationUser.getSsn();
+        SsnData ssnData = MiscUtils.getDataFromSsn(ssn);
+        setDateOfBirth(ssnData.getDateOfBirth());
         setUserType(applicationUser.getUserType());
         setIsReviewed(false);
         setIsValid(false);

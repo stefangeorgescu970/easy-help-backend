@@ -353,15 +353,15 @@ public class MockDataController {
 
     private void addPatients() {
         try {
-            patientService.addPatient(1L, "1", "A", true);
-            patientService.addPatient(1L, "2", "A", false);
-            patientService.addPatient(1L, "3", "B", true);
-            patientService.addPatient(1L, "4", "B", false);
-            patientService.addPatient(1L, "5", "AB", true);
-            patientService.addPatient(1L, "6", "AB", false);
-            patientService.addPatient(1L, "7", "0", true);
-            patientService.addPatient(1L, "8", "0", false);
-        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
+            patientService.addPatient(1L, "1970701", "A", true);
+            patientService.addPatient(1L, "2970702", "A", false);
+            patientService.addPatient(1L, "1970703", "B", true);
+            patientService.addPatient(1L, "2970704", "B", false);
+            patientService.addPatient(1L, "1970705", "AB", true);
+            patientService.addPatient(1L, "2970706", "AB", false);
+            patientService.addPatient(1L, "1970707", "0", true);
+            patientService.addPatient(1L, "2970708", "0", false);
+        } catch (EntityNotFoundException | EntityAlreadyExistsException | SsnInvalidException e) {
             e.printStackTrace();
         }
     }

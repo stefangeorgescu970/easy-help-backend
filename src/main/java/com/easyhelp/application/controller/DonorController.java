@@ -19,6 +19,7 @@ import com.easyhelp.application.service.donation_booking.DonationBookingServiceI
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
+import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
@@ -80,7 +81,7 @@ public class DonorController {
     @PostMapping("/checkPatientSSN")
     public ResponseEntity<Response> checkPatientSSN(@RequestBody StringDTO stringDTO) {
         try {
-//            MiscUtils.validateSsn(stringDTO.getParam());
+            MiscUtils.validateSsn(stringDTO.getParam());
             Patient patient = patientService.findBySSN(stringDTO.getParam());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
@@ -117,7 +118,7 @@ public class DonorController {
     public ResponseEntity<Response> setCountyAndSSN(@RequestBody CountySsnDTO countySsnDTO) {
         try {
             donorService.updateCountyOnDonor(countySsnDTO.getUserId(), countySsnDTO.getCounty());
-            donorService.updateSsnOnDonor(countySsnDTO.getUserId(), countySsnDTO.getSsn(), countySsnDTO.getSkipSsnCheck());
+            donorService.updateSsnOnDonor(countySsnDTO.getUserId(), countySsnDTO.getSsn());
             return ResponseBuilder.encode(HttpStatus.OK);
         } catch (EasyHelpException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());

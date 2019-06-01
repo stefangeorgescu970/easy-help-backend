@@ -67,14 +67,9 @@ public class DonorServiceImpl implements DonorServiceInterface {
     }
 
     @Override
-    public void updateSsnOnDonor(Long donorId, String newSsn, Boolean skipCheck) throws EntityNotFoundException, SsnInvalidException {
+    public void updateSsnOnDonor(Long donorId, String newSsn) throws EntityNotFoundException, SsnInvalidException {
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
-        if (!skipCheck) {
-            // Possibility to skip check for ssn. Make sure at least the first 7 digits are ok, since these
-            // tell the parser the dob and sex of a donor.
-
-            MiscUtils.validateSsn(newSsn);
-        }
+        MiscUtils.validateSsn(newSsn);
 
         if (donorOptional.isPresent()) {
             Donor donor = donorOptional.get();

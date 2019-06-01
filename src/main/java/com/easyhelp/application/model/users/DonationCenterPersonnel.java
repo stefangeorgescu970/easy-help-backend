@@ -2,6 +2,8 @@ package com.easyhelp.application.model.users;
 
 import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
+import com.easyhelp.application.model.misc.SsnData;
+import com.easyhelp.application.utils.MiscUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,12 +28,14 @@ public class DonationCenterPersonnel extends PartnerUser {
 
     public DonationCenterPersonnel(RegisterDTO applicationUser) {
         setCounty(applicationUser.getCounty());
-        setDateOfBirth(applicationUser.getDateOfBirth());
         setEmail(applicationUser.getEmail());
         setFirstName(applicationUser.getFirstName());
         setLastName(applicationUser.getLastName());
         setPassword(applicationUser.getPassword());
         setSsn(applicationUser.getSsn());
+        String ssn = applicationUser.getSsn();
+        SsnData ssnData = MiscUtils.getDataFromSsn(ssn);
+        setDateOfBirth(ssnData.getDateOfBirth());
         setUserType(applicationUser.getUserType());
         setIsReviewed(false);
         setIsValid(false);

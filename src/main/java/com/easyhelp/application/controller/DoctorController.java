@@ -19,6 +19,7 @@ import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
+import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class DoctorController {
         try {
             Patient patient = patientService.addPatient(patientDTO.getDoctorId(), patientDTO.getSsn(), patientDTO.getBloodType().getGroupLetter(), patientDTO.getBloodType().getRh());
             return ResponseBuilder.encode(HttpStatus.OK, new OutgoingIdentifierDTO(patient));
-        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
+        } catch (EntityNotFoundException | EntityAlreadyExistsException | SsnInvalidException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());
         }
     }

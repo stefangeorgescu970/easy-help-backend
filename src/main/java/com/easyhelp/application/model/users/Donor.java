@@ -60,7 +60,6 @@ public class Donor extends ApplicationUser {
 
     public Donor(RegisterDTO applicationUser) {
         setCounty(applicationUser.getCounty());
-        setDateOfBirth(applicationUser.getDateOfBirth());
         setEmail(applicationUser.getEmail());
         setFirstName(applicationUser.getFirstName());
         setLastName(applicationUser.getLastName());
@@ -68,11 +67,10 @@ public class Donor extends ApplicationUser {
         setSsn(applicationUser.getSsn());
 
         String ssn = applicationUser.getSsn();
-        if (ssn != null) {
-            SsnData ssnData = MiscUtils.getDataFromSsn(ssn);
-            setDateOfBirth(ssnData.getDateOfBirth());
-            setIsMale(ssnData.getIsMale());
-        }
+        SsnData ssnData = MiscUtils.getDataFromSsn(ssn);
+        setDateOfBirth(ssnData.getDateOfBirth());
+        setIsMale(ssnData.getIsMale());
+
 
         setUserType(applicationUser.getUserType());
     }

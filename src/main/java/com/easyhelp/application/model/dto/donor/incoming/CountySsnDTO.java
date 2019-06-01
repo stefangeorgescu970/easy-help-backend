@@ -9,5 +9,4 @@ import lombok.Data;
 public class CountySsnDTO extends BaseIncomingDTO {
     private String ssn;
     private County county;
-    private Boolean skipSsnCheck;
 }

@@ -2,6 +2,8 @@ package com.easyhelp.application.model.users;
 
 
 import com.easyhelp.application.model.dto.auth.RegisterDTO;
+import com.easyhelp.application.model.misc.SsnData;
+import com.easyhelp.application.utils.MiscUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -21,12 +23,14 @@ public class SystemAdmin extends ApplicationUser {
 
     public SystemAdmin(RegisterDTO applicationUser) {
         setCounty(applicationUser.getCounty());
-        setDateOfBirth(applicationUser.getDateOfBirth());
         setEmail(applicationUser.getEmail());
         setFirstName(applicationUser.getFirstName());
         setLastName(applicationUser.getLastName());
         setPassword(applicationUser.getPassword());
         setSsn(applicationUser.getSsn());
+        String ssn = applicationUser.getSsn();
+        SsnData ssnData = MiscUtils.getDataFromSsn(ssn);
+        setDateOfBirth(ssnData.getDateOfBirth());
         setUserType(applicationUser.getUserType());
     }
 }

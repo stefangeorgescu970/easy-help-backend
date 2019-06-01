@@ -61,9 +61,11 @@ public class RegisterService {
             applicationUserService.findByEmailInAllUsers(user.getEmail());
             throw new UserAlreadyRegisteredException("A user with the email " + user.getEmail() + " already exists!");
         } catch (UsernameNotFoundException exception) {
-            if (user.getSsn() != null && !user.getSkipSsnValidation()) {
+            if (user.getSsn() != null) {
                 String ssn = user.getSsn();
                 MiscUtils.validateSsn(ssn);
+            } else {
+                throw new SsnInvalidException("No ssn was provided");
             }
 
             switch (user.getUserType()) {
