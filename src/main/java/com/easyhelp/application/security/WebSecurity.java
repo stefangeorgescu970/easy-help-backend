@@ -33,44 +33,20 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/**").permitAll()
-//                // all users
-//                .antMatchers( "/users/**").permitAll()
-//                .antMatchers( "/enums").permitAll()
-//
-//                // sys admin
-//                .antMatchers("/admin/**").hasRole("SYS_ADMIN")
-//                .antMatchers("/hospital/add").hasRole("SYS_ADMIN")
-//                .antMatchers("/hospital/remove").hasRole("SYS_ADMIN")
-//                .antMatchers("/hospital/getAllHospitals").hasRole("SYS_ADMIN")
-//                .antMatchers("/donationCenter/add").hasRole("SYS_ADMIN")
-//                .antMatchers("/donationCenter/remove").hasRole("SYS_ADMIN")
-//                .antMatchers("/donationCenter/getAll").hasRole("SYS_ADMIN")
-//
-//                // doctor
-//                .antMatchers("/doctor/**").hasRole("DOCTOR")
-//                .antMatchers("/donor/checkPatientSSN").hasAnyRole( "DOCTOR, DONOR")
-//
-//                // dcp
-//                .antMatchers("/donationCenter/getDCBookings").hasRole("DCP")
-//                .antMatchers("/donationCenter/getInCounty").hasRole("DCP")
-//                .antMatchers("/donationCenter/seeAllBloodRequests").hasRole("DCP")
-//                .antMatchers("/donation/addTestResult").hasRole("DCP")
-//                .antMatchers("/donation/addSplitResults").hasRole("DCP")
-//                .antMatchers("/donor/filterDonors").hasRole("DCP")
-//                .antMatchers("/donor/getInCounty").hasRole("DCP")
-//
-//
-//                //donor
-//                .antMatchers("/donor/**").hasAnyRole("DONOR")
-//                .antMatchers("/donationCenter/createDonation").hasRole("DONOR")
-//                .antMatchers("/donationCenter/getAvailableHours").hasRole("DONOR")
-//                .antMatchers("/donationCenter/cancelBooking").hasRole("DONOR")
-//                .antMatchers("/donationCenter/getAll").hasRole("DONOR")
-//
-//                .antMatchers("/**").hasRole("SYS_ADMIN")
 
+                .antMatchers( "/users/**").permitAll()
+                .antMatchers( "/locations/**").permitAll()
+                .antMatchers( "/mocks/**").permitAll()
+                .antMatchers( "/enums").permitAll()
 
+                .antMatchers("/admin/**").hasRole("SYS_ADMIN")
+
+                .antMatchers("/doctor/**").hasRole("DOCTOR")
+
+                .antMatchers("/dcp/**").hasRole("DCP")
+
+                .antMatchers("/donor/**").hasRole("DONOR")
+                
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider))

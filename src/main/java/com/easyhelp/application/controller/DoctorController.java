@@ -21,11 +21,9 @@ import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -200,8 +198,8 @@ public class DoctorController {
         DonationCommitment donationCommitment = donationCommitmentService.findById(donationCommitmentId);
         boolean returnValue = false;
 
-        for(DonationRequest donationRequest : doctor.getDonationRequests()) {
-            for(DonationCommitment donationCommitment1 : donationRequest.getDonationCommitments()) {
+        for (DonationRequest donationRequest : doctor.getDonationRequests()) {
+            for (DonationCommitment donationCommitment1 : donationRequest.getDonationCommitments()) {
                 if (donationCommitment1.getId().equals(donationCommitment.getId())) {
                     returnValue = true;
                 }
