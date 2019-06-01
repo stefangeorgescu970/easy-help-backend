@@ -1,5 +1,6 @@
 package com.easyhelp.application.service.donationcenter;
 
+import com.easyhelp.application.model.dto.donor.outgoing.DonorDonationCenterDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.repository.DonationCenterRepository;
@@ -69,14 +70,15 @@ public class DonationCenterServiceImpl implements DonationCenterServiceInterface
     }
 
     @Override
-    public List<DonationCenter> getOrderedDonationCenters(Double longitude, Double latitude) {
+    public List<DonorDonationCenterDTO> getOrderedDonationCenters(Double longitude, Double latitude) {
         if (longitude == null || latitude == null) {
-            return donationCenterRepository.findAll();
+            return donationCenterRepository.findAll().stream().map(dc -> new DonorDonationCenterDTO(dc, -1D)).collect(Collectors.toList());
         }
         return donationCenterRepository
                 .findAll()
                 .stream()
-                .sorted(Comparator.comparingInt(dc -> MiscUtils.computeDistance(latitude, longitude, dc.getLatitude(), dc.getLongitude())))
+                .map(dc -> new DonorDonationCenterDTO(dc, MiscUtils.computeDistance(latitude, longitude, dc.getLatitude(), dc.getLongitude())))
+                .sorted(Comparator.comparingDouble(DonorDonationCenterDTO::getDistance))
                 .collect(Collectors.toList());
     }
 }

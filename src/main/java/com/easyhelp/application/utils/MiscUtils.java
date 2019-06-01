@@ -112,9 +112,9 @@ public class MiscUtils {
         return dates;
     }
 
-    public static Integer computeDistance(double lat1, double lon1, double lat2, double lon2) {
+    public static Double computeDistance(double lat1, double lon1, double lat2, double lon2) {
         if ((lat1 == lat2) && (lon1 == lon2)) {
-            return 0;
+            return 0D;
         } else {
             double theta = lon1 - lon2;
             double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(Math.toRadians(theta));
@@ -122,7 +122,7 @@ public class MiscUtils {
             dist = Math.toDegrees(dist);
             dist = dist * 60 * 1.1515;
             dist = dist * 1.609344;
-            return (int) dist;
+            return dist;
         }
     }
 

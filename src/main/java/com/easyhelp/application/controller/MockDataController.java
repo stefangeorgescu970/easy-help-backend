@@ -176,7 +176,7 @@ public class MockDataController {
         donationCenterService.save(new DonationCenter("CTS Braila", 27.969876, 45.269725, "Str. Radu S. Campiniu nr.25", County.BRAILA, mockPhone));
         donationCenterService.save(new DonationCenter("CTS Buzau", 26.83333, 45.15, "Str. G-ral Grigore Baştan nr.2", County.BUZAU, mockPhone));
         donationCenterService.save(new DonationCenter("CTS Calarasi", 27.3193336, 44.2063168, "Str. Bărăganului nr.1", County.CALARASI, mockPhone));
-        donationCenterService.save(new DonationCenter("CTS Cluj", 0, 0, "Str. N. Bălcescu nr.18", County.CLUJ, mockPhone));
+        donationCenterService.save(new DonationCenter("CTS Cluj", 23.597477, 46.775936, "Str. N. Bălcescu nr.18", County.CLUJ, mockPhone));
         donationCenterService.save(new DonationCenter("CTS Constanta", 0, 0, "Str. N. Iorga nr.85", County.CONSTANTA, mockPhone));
         donationCenterService.save(new DonationCenter("CTS Craiova", 0, 0, "Str. Tabaci nr.1", County.DOLJ, mockPhone));
         donationCenterService.save(new DonationCenter("CTS Targoviste", 0, 0, "Str. I.C.Brătianu nr.4", County.DAMBOVITA, mockPhone));

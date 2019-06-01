@@ -6,15 +6,10 @@ import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.DonorSummary;
 import com.easyhelp.application.model.dto.donor.incoming.*;
-import com.easyhelp.application.model.dto.donor.outgoing.AvailableDateDTO;
-import com.easyhelp.application.model.dto.donor.outgoing.DonorDonationBookingDTO;
-import com.easyhelp.application.model.dto.donor.outgoing.DonorDonationDTO;
-import com.easyhelp.application.model.dto.donor.outgoing.DonorSummaryDTO;
+import com.easyhelp.application.model.dto.donor.outgoing.*;
 import com.easyhelp.application.model.dto.misc.incoming.IdentifierDTO;
 import com.easyhelp.application.model.dto.misc.incoming.StringDTO;
-import com.easyhelp.application.model.dto.misc.outgoing.ExtendedOutgoingLocationDTO;
 import com.easyhelp.application.model.dto.misc.outgoing.OutgoingIdentifierDTO;
-import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.service.donation.DonationServiceInterface;
@@ -28,7 +23,6 @@ import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,9 +60,8 @@ public class DonorController {
 
     @PostMapping("/getDonationCenters")
     private ResponseEntity<Response> getAllDonationCenters(@RequestBody LocalizationDTO localizationDTO) {
-        List<DonationCenter> donationCenters = donationCenterService.getOrderedDonationCenters(localizationDTO.getLongitude(), localizationDTO.getLatitude());
-        List<ExtendedOutgoingLocationDTO> dtoList = donationCenters.stream().map(ExtendedOutgoingLocationDTO::new).collect(Collectors.toList());
-        return ResponseBuilder.encode(HttpStatus.OK, dtoList, 1, 1, 1);
+        List<DonorDonationCenterDTO> donationCenters = donationCenterService.getOrderedDonationCenters(localizationDTO.getLongitude(), localizationDTO.getLatitude());
+        return ResponseBuilder.encode(HttpStatus.OK, donationCenters, 1, 1, 1);
     }
 
     @PostMapping("/getAvailableHours")

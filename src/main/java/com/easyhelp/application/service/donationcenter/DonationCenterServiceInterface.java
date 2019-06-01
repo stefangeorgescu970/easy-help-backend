@@ -1,5 +1,6 @@
 package com.easyhelp.application.service.donationcenter;
 
+import com.easyhelp.application.model.dto.donor.outgoing.DonorDonationCenterDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.utils.exceptions.EntityCannotBeRemovedException;
@@ -18,5 +19,5 @@ public interface DonationCenterServiceInterface {
 
     List<DonationCenter> getDonationCentersInCounty(County county);
 
-    List<DonationCenter> getOrderedDonationCenters(Double longitude, Double latitude);
+    List<DonorDonationCenterDTO> getOrderedDonationCenters(Double longitude, Double latitude);
 }

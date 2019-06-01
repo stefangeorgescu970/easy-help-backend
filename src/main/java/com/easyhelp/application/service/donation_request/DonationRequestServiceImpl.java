@@ -218,7 +218,7 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
         return donationRequestRepository.findAll()
                 .stream()
                 .filter(donationRequest -> !(donationRequest.getStatus().equals(RequestStatus.FULLY_COMMITTED_TO) || donationRequest.getStatus().equals(RequestStatus.COMPLETED) || donationRequest.getStatus().equals(RequestStatus.FAILED)))
-                .sorted(Comparator.comparingInt(e -> MiscUtils.computeDistance(donationCenter.getLatitude(), donationCenter.getLongitude(),
+                .sorted(Comparator.comparingDouble(e -> MiscUtils.computeDistance(donationCenter.getLatitude(), donationCenter.getLongitude(),
                         e.getDoctor().getHospital().getLatitude(), e.getDoctor().getHospital().getLongitude())))
                 .collect(Collectors.toList());
 

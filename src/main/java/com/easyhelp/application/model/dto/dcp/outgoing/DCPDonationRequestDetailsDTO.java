@@ -20,7 +20,7 @@ public class DCPDonationRequestDetailsDTO extends BaseOutgoingDTO {
     private Double quantity;
     private RequestUrgency urgency;
     private RequestStatus status;
-    private Integer distance;
+    private Double distance;
     private Boolean hasCommitted;
 
     public DCPDonationRequestDetailsDTO(DonationRequest donationRequest, DonationCenter donationCenter) {
