@@ -183,6 +183,10 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
             throw new EasyHelpException("This donation has pending commitments. Please handle these first");
         }
 
+        donationRequest.getDoctor().getDonationRequests().remove(donationRequest);
+        donationRequest.getSeparatedBloodType().getDonationRequests().remove(donationRequest);
+        donationRequest.getPatient().getDonationRequests().remove(donationRequest);
+
         donationRequestRepository.delete(donationRequest);
     }
 
