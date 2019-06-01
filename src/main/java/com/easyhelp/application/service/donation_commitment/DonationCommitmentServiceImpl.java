@@ -14,6 +14,7 @@ import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -152,7 +153,7 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
 
         // Mark Stored Blood as Arrived
         StoredBlood storedBlood = donationCommitment.getStoredBlood();
-        storedBlood.setUsedDate(new Date());
+        storedBlood.setUsedDate(LocalDate.now());
         storedBloodService.storeBlood(storedBlood);
     }
 

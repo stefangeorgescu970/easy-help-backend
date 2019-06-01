@@ -26,6 +26,7 @@ import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -111,9 +112,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
 
     @Override
-    public DonationBooking bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException {
-        Date date = selectedHour;
-        date.setHours(date.getHours() + date.getTimezoneOffset() / 60);
+    public DonationBooking bookDonationHour(Long donorId, LocalDateTime selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException {
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
         if (donorOptional.isPresent()) {
             Donor donor = donorOptional.get();
@@ -121,7 +120,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
                 throw new EntityAlreadyExistsException("The donor has already made a booking");
 
             DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
-            if (donationBookingService.getDonorsNumberForSlot(donationCenterId, date) >= donationCenter.getNumberOfConcurrentDonors())
+            if (donationBookingService.getDonorsNumberForSlot(donationCenterId, selectedHour) >= donationCenter.getNumberOfConcurrentDonors())
                 throw new EntityAlreadyExistsException("There are too many booking requests for this slot");
 
             DonationBooking booking = new DonationBooking();
@@ -147,7 +146,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
                 booking.setIsForPatient(false);
             }
 
-            booking.setDateAndTime(date);
+            booking.setDateAndTime(selectedHour);
             booking.setDonor(donor);
             booking.setDonationCenter(donationCenter);
             donor.setDonationBooking(booking);
@@ -182,7 +181,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
             donorSummary.setDonationsNumber(donor.getDonations().size());
 
             if (donor.getDonationBooking() != null &&
-                    donor.getDonationBooking().getDateAndTime().after(new Date()))
+                    donor.getDonationBooking().getDateAndTime().isAfter(LocalDateTime.now()))
                 donorSummary.setNextBooking(donor.getDonationBooking());
 
             if (!donor.getDonations().isEmpty()) {

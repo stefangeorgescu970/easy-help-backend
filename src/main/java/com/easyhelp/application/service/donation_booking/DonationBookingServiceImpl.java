@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,22 +58,22 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
 
     @Override
     public List<AvailableDate> getAvailableBookingSlots(Long donationCenterId) throws EntityNotFoundException {
-        Date currentDate = new Date();
-        List<AvailableDate> allHours = MiscUtils.getAllHoursForWeek(currentDate);
+        LocalDateTime currentDate = LocalDateTime.now();
+        List<AvailableDate> allHours = MiscUtils.getAllHoursForWeek();
 
         DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
 
-        List<Date> bookedDates = donationBookingRepository
+        List<LocalDateTime> bookedDates = donationBookingRepository
                 .findAll()
                 .stream()
                 .filter(b -> b.getDonationCenter().getId().equals(donationCenterId))
-                .filter(b -> b.getDateAndTime().after(currentDate))
+                .filter(b -> b.getDateAndTime().isAfter(currentDate))
                 .map(DonationBooking::getDateAndTime)
                 .collect(Collectors.toList());
 
         for (AvailableDate date : allHours) {
-            Map<Date, Long> counterMap = bookedDates.stream().collect(Collectors.groupingBy(d -> d, Collectors.counting()));
-            Set<Date> unavailableSlots = bookedDates
+            Map<LocalDateTime, Long> counterMap = bookedDates.stream().collect(Collectors.groupingBy(d -> d, Collectors.counting()));
+            Set<LocalDateTime> unavailableSlots = bookedDates
                     .stream()
                     .filter(b -> counterMap.get(b) >= donationCenter.getNumberOfConcurrentDonors())
                     .collect(Collectors.toSet());
@@ -105,16 +106,13 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
     }
 
     @Override
-    public Long getDonorsNumberForSlot(Long donationCenterId, Date slotSelected) {
-        String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+    public Long getDonorsNumberForSlot(Long donationCenterId, LocalDateTime slotSelected) {
 
-        String s = dateFormat.format(slotSelected);
         return donationBookingRepository
                 .findAll()
                 .stream()
                 .filter(b -> b.getDonationCenter().getId().equals(donationCenterId))
-                .filter(b -> dateFormat.format(b.getDateAndTime()).equals(s))
+                .filter(b -> b.getDateAndTime().equals(slotSelected))
                 .count();
     }
 
@@ -135,7 +133,8 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
         if (shouldNotifyDonor) {
             try {
                 PushNotificationUtils.sendPushNotification(donor, "Your recent booking was cancelled the donation center.");
-            } catch (PushTokenUnavailableException ignored) { }
+            } catch (PushTokenUnavailableException ignored) {
+            }
         }
 
         donationCenterService.save(donationCenter);

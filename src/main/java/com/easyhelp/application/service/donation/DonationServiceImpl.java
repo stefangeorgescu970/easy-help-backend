@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -157,7 +159,7 @@ public class DonationServiceImpl implements DonationServiceInterface {
         storedBlood.setDonor(donor);
         storedBlood.setDonationCenter(donationCenter);
         storedBlood.setSeparatedBloodType(separatedBloodType);
-        storedBlood.setStoredDate(new Date());
+        storedBlood.setStoredDate(LocalDate.now());
         storedBlood.setAmount(quantity);
 
         String codeSeparator = ".";
@@ -166,7 +168,7 @@ public class DonationServiceImpl implements DonationServiceInterface {
                 (storedBlood.getSeparatedBloodType().getBloodType().getRh().equals(true) ? "+" : "-") + codeSeparator +
                 storedBlood.getDonor().getId() + codeSeparator +
                 storedBlood.getDonationCenter().getId() + codeSeparator +
-                simpleDateFormat.format(storedBlood.getStoredDate()));
+                storedBlood.getStoredDate().format(DateTimeFormatter.BASIC_ISO_DATE));
 
         donor.getStoredBloodSet().add(storedBlood);
         donationCenter.getStoredBloodSet().add(storedBlood);

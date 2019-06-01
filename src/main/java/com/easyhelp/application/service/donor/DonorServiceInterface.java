@@ -10,7 +10,7 @@ import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DonorServiceInterface {
@@ -20,7 +20,7 @@ public interface DonorServiceInterface {
 
     void updateBloodGroupOnDonor(Long donorId, String groupLetter, Boolean rh) throws EntityNotFoundException;
 
-    DonationBooking bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException;
+    DonationBooking bookDonationHour(Long donorId, LocalDateTime selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException;
 
     List<Donor> getDonorsInCounty(County county);
 

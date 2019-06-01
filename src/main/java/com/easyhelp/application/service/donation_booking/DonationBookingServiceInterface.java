@@ -5,7 +5,7 @@ import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DonationBookingServiceInterface {
@@ -20,7 +20,7 @@ public interface DonationBookingServiceInterface {
 
     DonationBooking getDonorBooking(Long donorId) throws EntityNotFoundException;
 
-    Long getDonorsNumberForSlot(Long donationCenterId, Date slotSelected);
+    Long getDonorsNumberForSlot(Long donationCenterId, LocalDateTime slotSelected);
 
     void cancelBooking(Long bookingId, Boolean shouldNotifyDonor) throws EntityNotFoundException;
 

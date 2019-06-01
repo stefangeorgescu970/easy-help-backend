@@ -89,8 +89,7 @@ public class DonorController {
     @PostMapping("/bookDonation")
     public ResponseEntity<Response> bookDonation(@RequestBody BookingRequestDTO bookingRequestDTO) {
         try {
-            Date calendar = bookingRequestDTO.getSelectedDate();
-            DonationBooking donationBooking = donorService.bookDonationHour(bookingRequestDTO.getUserId(), calendar, bookingRequestDTO.getDonationCenterId(), bookingRequestDTO.getPatientSSN());
+            DonationBooking donationBooking = donorService.bookDonationHour(bookingRequestDTO.getUserId(), bookingRequestDTO.getSelectedDate(), bookingRequestDTO.getDonationCenterId(), bookingRequestDTO.getPatientSSN());
             return ResponseBuilder.encode(HttpStatus.OK, new OutgoingIdentifierDTO(donationBooking));
         } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             return ResponseBuilder.encode(HttpStatus.OK, e.getMessage());

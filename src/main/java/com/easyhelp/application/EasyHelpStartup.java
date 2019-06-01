@@ -15,6 +15,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.TimeZone;
+
 @Component
 public class EasyHelpStartup implements ApplicationListener<ApplicationReadyEvent> {
 
@@ -32,6 +34,8 @@ public class EasyHelpStartup implements ApplicationListener<ApplicationReadyEven
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+        TimeZone.setDefault(TimeZone.getTimeZone("Etc/UTC"));
+
         try {
             if (applicationUserService.findByEmailInAllUsers("admin") == null) {
                 addSysAdmin();

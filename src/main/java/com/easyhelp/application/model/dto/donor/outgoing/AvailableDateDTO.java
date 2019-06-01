@@ -5,7 +5,9 @@ import com.easyhelp.application.model.dto.BaseOutgoingDTO;
 import lombok.Data;
 
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @Data
@@ -14,10 +16,7 @@ public class AvailableDateDTO extends BaseOutgoingDTO {
     private List<String> availableHours;
 
     public AvailableDateDTO(AvailableDate availableDate) {
-        String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
-
-        this.date = dateFormat.format(availableDate.getDate());
-        this.availableHours = availableDate.getAvailableHours().stream().map(dateFormat::format).collect(Collectors.toList());
+        this.date = availableDate.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        this.availableHours = availableDate.getAvailableHours().stream().map(availableDateInt -> availableDateInt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)).collect(Collectors.toList());
     }
 }

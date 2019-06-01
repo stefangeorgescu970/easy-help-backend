@@ -4,6 +4,11 @@ import com.easyhelp.application.model.donations.AvailableDate;
 import com.easyhelp.application.model.misc.SsnData;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAmount;
 import java.util.*;
 
 public class MiscUtils {
@@ -78,35 +83,27 @@ public class MiscUtils {
         return ssnData;
     }
 
-    public static List<AvailableDate> getAllHoursForWeek(Date date) {
+    public static List<AvailableDate> getAllHoursForWeek() {
         List<AvailableDate> dates = new ArrayList<>();
 
         for (int day = 0; day < SCHEDULE_PERIOD; day++) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            calendar.add(Calendar.DAY_OF_MONTH, day);
+            LocalDateTime localDate = LocalDate.now().atStartOfDay();
+            localDate = localDate.plusDays(day);
 
-            if (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY &&
-                    calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
 
-                List<Date> hours = new ArrayList<>();
-                calendar.set(Calendar.HOUR_OF_DAY, OPEN_HOUR);
-                calendar.set(Calendar.MINUTE, 0);
-                calendar.set(Calendar.SECOND, 0);
-                calendar.set(Calendar.MILLISECOND, 0);
+            if (localDate.getDayOfWeek() != DayOfWeek.SATURDAY && localDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                List<LocalDateTime> hours = new ArrayList<>();
 
-                hours.add(calendar.getTime());
-                for (int hour = OPEN_HOUR; hour < CLOSE_HOUR; hour++) {
-                    for (int j = 0; j < 3; j++) {
-                        calendar.add(Calendar.MINUTE, 20);
-                        hours.add(calendar.getTime());
-                    }
+                LocalDateTime current = LocalTime.of(OPEN_HOUR, 0).atDate(localDate.toLocalDate());
+
+                while (current.getHour() < CLOSE_HOUR) {
+                    hours.add(current);
+                    current = current.plusMinutes(20);
                 }
-                hours.remove(hours.size() - 1);
 
-                dates.add(new AvailableDate(calendar.getTime(), hours));
+                dates.add(new AvailableDate(localDate, hours));
             } else
-                dates.add(new AvailableDate(calendar.getTime(), Collections.emptyList()));
+                dates.add(new AvailableDate(localDate, Collections.emptyList()));
         }
 
         return dates;

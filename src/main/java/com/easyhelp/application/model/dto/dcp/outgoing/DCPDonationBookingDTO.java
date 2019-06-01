@@ -6,6 +6,7 @@ import com.easyhelp.application.model.dto.donor.outgoing.DonationFormDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -13,8 +14,8 @@ public class DCPDonationBookingDTO extends BaseOutgoingDTO {
 
     private Long id;
     private DCPDonorAccountDTO donor;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-    private Date bookingDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime bookingDate;
     private DonationFormDTO donationForm;
 
     public DCPDonationBookingDTO(DonationBooking booking) {
