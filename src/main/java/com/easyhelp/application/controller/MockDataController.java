@@ -46,6 +46,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Random;
 
@@ -124,21 +125,21 @@ public class MockDataController {
         addDonationForm(2L);
         addDonationForm(3L);
 
-        addDonations();
-        addSecondDonations();
+//        addDonations();
+//        addSecondDonations();
 
         return ResponseBuilder.encode(HttpStatus.OK);
     }
 
     @RequestMapping("/populateTables2")
     private ResponseEntity<Response> populatePart2() throws UserAlreadyRegisteredException, EntityNotFoundException, SsnInvalidException {
-
-        addDonationRequests();
-        try {
-            addDonationCommitment();
-        } catch (EasyHelpException e) {
-            e.printStackTrace();
-        }
+//
+//        addDonationRequests();
+//        try {
+//            addDonationCommitment();
+//        } catch (EasyHelpException e) {
+//            e.printStackTrace();
+//        }
 
         return ResponseBuilder.encode(HttpStatus.OK);
     }
@@ -543,7 +544,7 @@ public class MockDataController {
                 donation.setWithPatient(false);
             }
 
-            donation.setDateAndTime(new Date());
+            donation.setDate(LocalDate.now());
             donation.setStatus(DonationStatus.AWAITING_CONTROL_TESTS);
 
             return donation;

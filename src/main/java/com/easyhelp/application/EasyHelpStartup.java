@@ -34,7 +34,7 @@ public class EasyHelpStartup implements ApplicationListener<ApplicationReadyEven
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        TimeZone.setDefault(TimeZone.getTimeZone("Etc/UTC"));
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
         try {
             if (applicationUserService.findByEmailInAllUsers("admin") == null) {

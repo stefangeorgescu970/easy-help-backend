@@ -7,6 +7,7 @@ import com.easyhelp.application.model.users.Donor;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -19,7 +20,7 @@ public class DCPDonorAccountDTO extends BaseOutgoingDTO {
     private BloodTypeDTO bloodType;
     private Boolean isMale;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     public DCPDonorAccountDTO(Donor donor) {
         firstName = donor.getFirstName();

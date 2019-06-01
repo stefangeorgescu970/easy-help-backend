@@ -5,16 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
@@ -24,17 +24,15 @@ import static java.util.stream.Collectors.toList;
 @AllArgsConstructor
 public class ApplicationUser implements UserDetails {
 
-    private String firstName;
-    private String lastName;
-    private Date dateOfBirth;
-    private County county;
-    private String ssn;
-    private UserType userType;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
+    private String firstName;
+    private String lastName;
+    private LocalDate dateOfBirth;
+    private County county;
+    private String ssn;
+    private UserType userType;
     @NotEmpty
     private String email;
 

@@ -6,6 +6,7 @@ import com.easyhelp.application.model.users.Doctor;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -16,7 +17,7 @@ public class AdminDoctorAccountDTO extends BaseOutgoingDTO {
     private String email;
     private County county;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private String locationName;
     private String locationPhone;
 

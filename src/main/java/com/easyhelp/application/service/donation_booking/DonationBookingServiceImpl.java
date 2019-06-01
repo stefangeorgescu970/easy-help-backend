@@ -19,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,12 +61,12 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
 
     @Override
     public List<AvailableDate> getAvailableBookingSlots(Long donationCenterId) throws EntityNotFoundException {
-        LocalDateTime currentDate = LocalDateTime.now();
+        ZonedDateTime currentDate = ZonedDateTime.now();
         List<AvailableDate> allHours = MiscUtils.getAllHoursForWeek();
 
         DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
 
-        List<LocalDateTime> bookedDates = donationBookingRepository
+        List<ZonedDateTime> bookedDates = donationBookingRepository
                 .findAll()
                 .stream()
                 .filter(b -> b.getDonationCenter().getId().equals(donationCenterId))
@@ -72,8 +75,8 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
                 .collect(Collectors.toList());
 
         for (AvailableDate date : allHours) {
-            Map<LocalDateTime, Long> counterMap = bookedDates.stream().collect(Collectors.groupingBy(d -> d, Collectors.counting()));
-            Set<LocalDateTime> unavailableSlots = bookedDates
+            Map<ZonedDateTime, Long> counterMap = bookedDates.stream().collect(Collectors.groupingBy(d -> d, Collectors.counting()));
+            Set<ZonedDateTime> unavailableSlots = bookedDates
                     .stream()
                     .filter(b -> counterMap.get(b) >= donationCenter.getNumberOfConcurrentDonors())
                     .collect(Collectors.toSet());
@@ -159,7 +162,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
         donation.setDonor(donor);
         donation.setDonationCenter(donationBooking.getDonationCenter());
         donation.setStatus(DonationStatus.AWAITING_CONTROL_TESTS);
-        donation.setDateAndTime(new Date());
+        donation.setDate(LocalDate.now());
 
         if (donationBooking.getIsForPatient()) {
             donation.setPatient(donationBooking.getPatient());

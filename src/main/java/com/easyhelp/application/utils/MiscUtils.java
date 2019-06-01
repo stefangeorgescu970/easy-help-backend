@@ -4,17 +4,14 @@ import com.easyhelp.application.model.donations.AvailableDate;
 import com.easyhelp.application.model.misc.SsnData;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.temporal.TemporalAmount;
 import java.util.*;
 
 public class MiscUtils {
 
-    private static int OPEN_HOUR = 7;
-    private static int CLOSE_HOUR = 13;
+    private static int OPEN_HOUR = 4; // UTC TIME for 7 AM
+    private static int CLOSE_HOUR = 10; // UTC TIME for 13 AM
     private static int SCHEDULE_PERIOD = 7;
 
     private static int getDigitFromString(String s, int position) {
@@ -76,9 +73,8 @@ public class MiscUtils {
         else if (firstDigit == 5 || firstDigit == 6)
             year = 2000 + year;
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month - 1, day, 0, 0, 0);
-        ssnData.setDateOfBirth(calendar.getTime());
+        LocalDate bd = LocalDate.of(year, month, day);
+        ssnData.setDateOfBirth(bd);
 
         return ssnData;
     }
@@ -87,14 +83,14 @@ public class MiscUtils {
         List<AvailableDate> dates = new ArrayList<>();
 
         for (int day = 0; day < SCHEDULE_PERIOD; day++) {
-            LocalDateTime localDate = LocalDate.now().atStartOfDay();
+            ZonedDateTime localDate = ZonedDateTime.now();
             localDate = localDate.plusDays(day);
 
 
             if (localDate.getDayOfWeek() != DayOfWeek.SATURDAY && localDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
-                List<LocalDateTime> hours = new ArrayList<>();
+                List<ZonedDateTime> hours = new ArrayList<>();
 
-                LocalDateTime current = LocalTime.of(OPEN_HOUR, 0).atDate(localDate.toLocalDate());
+                ZonedDateTime current = ZonedDateTime.of(localDate.toLocalDate(), LocalTime.of(OPEN_HOUR, 0), ZoneId.of("UTC"));
 
                 while (current.getHour() < CLOSE_HOUR) {
                     hours.add(current);

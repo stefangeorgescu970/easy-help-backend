@@ -5,10 +5,10 @@ import com.easyhelp.application.model.dto.BaseOutgoingDTO;
 import com.easyhelp.application.model.dto.donor.outgoing.DonationFormDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.users.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -30,8 +30,7 @@ public class AccountDTO extends BaseOutgoingDTO {
     private Boolean isMale;
     private DonationFormDTO donationForm;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     public AccountDTO(ApplicationUser user) {
         id = user.getId();

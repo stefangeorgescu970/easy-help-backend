@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Data
@@ -15,7 +16,7 @@ public class DCPDonationBookingDTO extends BaseOutgoingDTO {
     private Long id;
     private DCPDonorAccountDTO donor;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime bookingDate;
+    private ZonedDateTime bookingDate;
     private DonationFormDTO donationForm;
 
     public DCPDonationBookingDTO(DonationBooking booking) {

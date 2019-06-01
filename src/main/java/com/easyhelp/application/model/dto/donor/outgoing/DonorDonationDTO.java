@@ -6,6 +6,7 @@ import com.easyhelp.application.model.dto.misc.outgoing.ExtendedOutgoingLocation
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -14,8 +15,8 @@ public class DonorDonationDTO extends BaseOutgoingDTO {
     private ExtendedOutgoingLocationDTO donationCenter;
     private DonorDonationTestResultsDTO donationTestResultDTO;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private Date date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate date;
 
     public DonorDonationDTO(Donation donation) {
         id = donation.getId();
@@ -23,6 +24,6 @@ public class DonorDonationDTO extends BaseOutgoingDTO {
         if (donation.getTestResults() != null) {
             donationTestResultDTO = new DonorDonationTestResultsDTO(donation.getTestResults());
         }
-        date = donation.getDateAndTime();
+        date = donation.getDate();
     }
 }

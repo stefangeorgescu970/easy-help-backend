@@ -6,6 +6,7 @@ import com.easyhelp.application.model.dto.donor.outgoing.DonorDonationBookingDTO
 import com.easyhelp.application.model.dto.donor.outgoing.DonorDonationDTO;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -13,7 +14,7 @@ public class DonorSummaryDTO extends BaseOutgoingDTO {
     private Integer donationsNumber;
     private DonorDonationDTO lastDonation;
     private DonorDonationBookingDTO nextBooking;
-    private Date streakBegin;
+    private LocalDate streakBegin;
     private Integer numberOfPatientsYouCouldHelp;
 
     public DonorSummaryDTO(DonorSummary donorSummary) {

@@ -23,12 +23,17 @@ import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 public class DonorServiceImpl implements DonorServiceInterface {
@@ -75,7 +80,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
         if (donorOptional.isPresent()) {
             Donor donor = donorOptional.get();
             SsnData ssnData = MiscUtils.getDataFromSsn(newSsn);
-            Date dob = ssnData.getDateOfBirth();
+            LocalDate dob = ssnData.getDateOfBirth();
             donor.setIsMale(ssnData.getIsMale());
             donor.setSsn(newSsn);
             donor.setDateOfBirth(dob);
@@ -112,7 +117,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
 
     @Override
-    public DonationBooking bookDonationHour(Long donorId, LocalDateTime selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException {
+    public DonationBooking bookDonationHour(Long donorId, ZonedDateTime selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException {
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
         if (donorOptional.isPresent()) {
             Donor donor = donorOptional.get();
@@ -120,7 +125,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
                 throw new EntityAlreadyExistsException("The donor has already made a booking");
 
             DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
-            if (donationBookingService.getDonorsNumberForSlot(donationCenterId, selectedHour) >= donationCenter.getNumberOfConcurrentDonors())
+            if (donationBookingService.getDonorsNumberForSlot(donationCenterId, selectedHour.toLocalDateTime()) >= donationCenter.getNumberOfConcurrentDonors())
                 throw new EntityAlreadyExistsException("There are too many booking requests for this slot");
 
             DonationBooking booking = new DonationBooking();
@@ -181,24 +186,24 @@ public class DonorServiceImpl implements DonorServiceInterface {
             donorSummary.setDonationsNumber(donor.getDonations().size());
 
             if (donor.getDonationBooking() != null &&
-                    donor.getDonationBooking().getDateAndTime().isAfter(LocalDateTime.now()))
+                    donor.getDonationBooking().getDateAndTime().isAfter(ZonedDateTime.now()))
                 donorSummary.setNextBooking(donor.getDonationBooking());
 
             if (!donor.getDonations().isEmpty()) {
-                Optional<Donation> lastDonation = donor.getDonations().stream().max(Comparator.comparing(Donation::getDateAndTime));
+                Optional<Donation> lastDonation = donor.getDonations().stream().max(Comparator.comparing(Donation::getDate));
                 lastDonation.ifPresent(donorSummary::setLastDonation);
 
-                Date today = new Date();
+                LocalDate today = LocalDate.now();
                 List<Donation> lastYearDonations = donor.getDonations().stream().filter(donation -> {
-                    int days = (int) ( (today.getTime() - donation.getDateAndTime().getTime()) / (1000 * 60 * 60 * 24));
+                    long days = DAYS.between(donation.getDate(), today);
                     return days < 365;
                 }).collect(Collectors.toList());
 
                 int maxNumber = donor.getIsMale() ? 5 : 4;
 
                 if (lastYearDonations.size() >= maxNumber) {
-                    lastYearDonations = lastYearDonations.stream().sorted(Comparator.comparing(Donation::getDateAndTime)).limit(maxNumber).collect(Collectors.toList());
-                    donorSummary.setDonationStreakBegin(lastYearDonations.get(0).getDateAndTime());
+                    lastYearDonations = lastYearDonations.stream().sorted(Comparator.comparing(Donation::getDate)).limit(maxNumber).collect(Collectors.toList());
+                    donorSummary.setDonationStreakBegin(lastYearDonations.get(0).getDate());
                 }
             }
 
