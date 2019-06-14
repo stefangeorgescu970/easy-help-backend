@@ -47,7 +47,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Random;
 
 @RestController
@@ -495,7 +494,7 @@ public class MockDataController {
 
             long lastDonId = 20L;
 
-            for(int i = 1; i <= 4; i++) {
+            for (int i = 1; i <= 4; i++) {
                 donationService.saveDonation(buildWaitingTestResultDonation(1L, 1L, -1L));
                 DonationTestResultCreateDTO donationTestResultDTOInner = new DonationTestResultCreateDTO();
                 donationTestResultDTOInner.setAlt(false);
