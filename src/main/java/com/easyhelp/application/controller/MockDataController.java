@@ -103,6 +103,17 @@ public class MockDataController {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    @RequestMapping("/populateTablesAdi")
+    private ResponseEntity<Response> populateMockAdi() throws UserAlreadyRegisteredException, EntityNotFoundException, SsnInvalidException {
+        return ResponseBuilder.encode(HttpStatus.OK);
+    }
+
+    @RequestMapping("/populateTablesStefan")
+    private ResponseEntity<Response> populateMockStefan() throws UserAlreadyRegisteredException, EntityNotFoundException, SsnInvalidException {
+
+        return ResponseBuilder.encode(HttpStatus.OK);
+    }
+
     @RequestMapping("/populateTables")
     private ResponseEntity<Response> populateMockDatabase() throws UserAlreadyRegisteredException, EntityNotFoundException, SsnInvalidException {
 
