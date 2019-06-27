@@ -67,10 +67,11 @@ public class Donor extends ApplicationUser {
         setSsn(applicationUser.getSsn());
 
         String ssn = applicationUser.getSsn();
-        SsnData ssnData = MiscUtils.getDataFromSsn(ssn);
-        setDateOfBirth(ssnData.getDateOfBirth());
-        setIsMale(ssnData.getIsMale());
-
+        if (ssn != null) {
+            SsnData ssnData = MiscUtils.getDataFromSsn(ssn);
+            setDateOfBirth(ssnData.getDateOfBirth());
+            setIsMale(ssnData.getIsMale());
+        }
 
         setUserType(applicationUser.getUserType());
     }

@@ -129,7 +129,7 @@ public class DonationServiceImpl implements DonationServiceInterface {
 
     @Override
     public List<Donation> getDonationsForDonor(Long donorId) {
-        return donationRepository.findAll().stream().filter(donation -> donation.getDonor().getId().equals(donorId)).collect(Collectors.toList());
+        return donationRepository.findAll().stream().filter(donation -> donation.getDonor().getId().equals(donorId)).sorted((d1, d2) -> d2.getDate().compareTo(d1.getDate())).collect(Collectors.toList());
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.easyhelp.application.utils.PushNotificationUtils;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.PushTokenUnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -64,6 +65,9 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
         ZonedDateTime currentDate = ZonedDateTime.now();
         List<AvailableDate> allHours = MiscUtils.getAllHoursForWeek();
 
+        AvailableDate today = allHours.get(0);
+        today.setAvailableHours(today.getAvailableHours().stream().filter(zonedDateTime -> zonedDateTime.isAfter(currentDate)).collect(Collectors.toList()));
+
         DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
 
         List<ZonedDateTime> bookedDates = donationBookingRepository
@@ -93,6 +97,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
                 .findAll()
                 .stream()
                 .filter(b -> b.getDonationCenter().getId().equals(donationCenterId))
+                .sorted((b1, b2) -> b2.getDateAndTime().compareTo(b1.getDateAndTime()))
                 .collect(Collectors.toList());
     }
 

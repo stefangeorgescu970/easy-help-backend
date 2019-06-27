@@ -57,4 +57,19 @@ public class StoredBlood extends BaseEntity {
                 return true;
         }
     }
+
+    public Integer daysUntilExpiry() {
+        LocalDate today = LocalDate.now();
+        long days = DAYS.between(storedDate, today);
+        switch (separatedBloodType.getComponent()) {
+            case RED_BLOOD_CELLS:
+                return 42 - (int)days;
+            case PLATELETS:
+                return 5 - (int)days;
+            case PLASMA:
+                return 365 - (int)days;
+            default:
+                return 0;
+        }
+    }
 }

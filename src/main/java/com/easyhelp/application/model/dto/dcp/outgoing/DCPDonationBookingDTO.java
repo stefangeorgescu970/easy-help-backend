@@ -15,7 +15,7 @@ public class DCPDonationBookingDTO extends BaseOutgoingDTO {
 
     private Long id;
     private DCPDonorAccountDTO donor;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime bookingDate;
     private DonationFormDTO donationForm;
 

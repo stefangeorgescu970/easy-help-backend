@@ -185,6 +185,10 @@ public class DonorServiceImpl implements DonorServiceInterface {
             Donor donor = donorOptional.get();
             donorSummary.setDonationsNumber(donor.getDonations().size());
 
+            if (donor.getDonationForm() != null) {
+                donorSummary.setDonationForm(donor.getDonationForm());
+            }
+
             if (donor.getDonationBooking() != null &&
                     donor.getDonationBooking().getDateAndTime().isAfter(ZonedDateTime.now()))
                 donorSummary.setNextBooking(donor.getDonationBooking());

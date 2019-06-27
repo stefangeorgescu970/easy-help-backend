@@ -85,6 +85,7 @@ public class StoredBloodServiceImpl implements StoredBloodServiceInterface {
             Statement stm = connection.createStatement();
             String statement = "SELECT Sum(t.amount), t2.component FROM public.stored_bloods t\n" +
                     "inner join separated_blood_type t2 on t.fk_separated_blood_type = t2.id\n" +
+                    "where t.is_usable=true\n" +
                     "group by t2.component";
             ResultSet rs = stm.executeQuery(statement);
 
@@ -119,6 +120,7 @@ public class StoredBloodServiceImpl implements StoredBloodServiceInterface {
             Statement stm = connection.createStatement();
             String statement = "SELECT Sum(t.amount), t2.component FROM public.stored_bloods t\n" +
                     "inner join separated_blood_type t2 on t.fk_separated_blood_type = t2.id and t.fk_donation_center=" + donationCenterId + "\n" +
+                    "where t.is_usable=true\n" +
                     "group by t2.component";
             ResultSet rs = stm.executeQuery(statement);
 

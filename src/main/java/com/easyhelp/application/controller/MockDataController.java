@@ -3,6 +3,7 @@ package com.easyhelp.application.controller;
 
 import com.easyhelp.application.model.blood.BloodComponent;
 import com.easyhelp.application.model.donations.Donation;
+import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.DonationStatus;
 import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.dto.dcp.incoming.DonationCommitmentCreateDTO;
@@ -47,7 +48,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/mocks")
@@ -111,7 +118,306 @@ public class MockDataController {
     @RequestMapping("/populateTablesStefan")
     private ResponseEntity<Response> populateMockStefan() throws UserAlreadyRegisteredException, EntityNotFoundException, SsnInvalidException {
 
+        deleteDataBase();
+        addSysAdmin();
+
+        // Add Donation Centers
+
+        DonationCenter donationCenter = new DonationCenter("CTS Pitesti", 24.861481, 44.862169, "Str. N. Vodă nr.43", County.ARGES, mockPhone);
+        donationCenter.setNumberOfConcurrentDonors(1);
+        donationCenterService.save(donationCenter); // has ID 1, is demo donation center
+        donationCenterService.save(new DonationCenter("CTS Alba", 23.5606313, 46.0793369, "B-dul Revoluţiei 1989 nr.23", County.ALBA, mockPhone));
+        donationCenterService.save(new DonationCenter("CTS Alexandria", 25.3316741, 43.967557, "Str. Mihăiţă Filipescu nr. 12-14", County.TELEORMAN, mockPhone));
+        donationCenterService.save(new DonationCenter("CTS Arad", 21.308712, 46.182262, "Str.Andrenyi Karoly nr. 2-4", County.ARAD, mockPhone));
+        donationCenterService.save(new DonationCenter("CTS Bacau", 26.9, 46.56667, "Str. Mărăşeşti nr.22", County.BACAU, mockPhone));
+        donationCenterService.save(new DonationCenter("CTS Baia Mare", 23.57949, 47.65331, "Str. G. Coşbuc nr.20A", County.MARAMURES, mockPhone));
+
+        // Add Hospitals
+
+        hospitalService.save(new Hospital("Clinica Chirurgie I", 23.583769, 46.766241, "Str. Clinicilor", County.CLUJ, mockPhone)); // has ID 1, is demo hospital
+        hospitalService.save(new Hospital("Colentina", 26.113344, 44.452959, "Str. Stefan cel Mare", County.BUCURESTI, mockPhone));
+        hospitalService.save(new Hospital("Avram Iancu", 21.937539, 47.062014, "Str. Brasovului", County.BIHOR, mockPhone));
+
+        // Add DCPs
+
+        registerService.registerUser(createDCP("Mariana", "Vitalie", County.ARGES, "mariana@dcp", girlSSN, 1L)); // demo dcp
+        registerService.registerUser(createDCP("Andreea", "Pircalab", County.ALBA, "andreea@dcp", girlSSN, 2L));
+        registerService.registerUser(createDCP("Dragos", "Inedio", County.TELEORMAN, "dragos@dcp", boySSN, 3L));
+        registerService.registerUser(createDCP("Mihai", "Georgescu", County.ARAD, "mihai@dcp", boySSN, 4L));
+        registerService.registerUser(createDCP("Stefan", "Iancu", County.BACAU, "stefan@dcp", boySSN, 5L));
+        registerService.registerUser(createDCP("Alexandra", "Timote", County.MARAMURES, "alex@dcp", girlSSN, 6L));
+        for (long i = 1L; i <= 6L; i++) {
+            donationCenterPersonnelService.reviewAccount(i, true);
+        }
+
+        // Add Doctors
+
+        registerService.registerUser(createDoctor("Andrei", "Cretu", County.CLUJ, "andrei@doc", boySSN, 1L)); // demo doctor
+        registerService.registerUser(createDoctor("Andra", "Moldovan", County.CLUJ, "andra@doc", girlSSN, 1L));
+        registerService.registerUser(createDoctor("Alexandra", "Georgescu", County.BUCURESTI, "alex@doc", girlSSN, 2L));
+        registerService.registerUser(createDoctor("Apopei", "Apostolescu", County.BUCURESTI, "apopei@doc", girlSSN, 2L));
+        registerService.registerUser(createDoctor("Adrian", "Zamfirescu", County.BIHOR, "adrian@doc", boySSN, 3L));
+        registerService.registerUser(createDoctor("Mihai", "Grad", County.BIHOR, "mihai@doc", boySSN, 3L));
+        for (long i = 1L; i <= 2L; i++) {
+            doctorService.reviewAccount(i, true);
+        }
+
+        // Add Donors
+
+        registerService.registerUser(createDonor("Razvan", "Dumitru", County.ARGES, "razvan@don", boySSN)); // demo donor
+        registerService.registerUser(createDonor("Daniel", "Dormutan", County.ARGES, "daniel@don", boySSN));
+        registerService.registerUser(createDonor("Miho", "Nevaman", County.ARGES, "miho@don", boySSN));
+        registerService.registerUser(createDonor("Sebastian", "Badita", County.ARGES, "sebastian@don", boySSN));
+        registerService.registerUser(createDonor("Sebi", "Puscatu", County.ALBA, "drog@don", boySSN));
+        registerService.registerUser(createDonor("Emin", "Eminovici", County.TELEORMAN, "emin@don", boySSN));
+        registerService.registerUser(createDonor("Veronica", "Popescu", County.ARAD, "vera@don", girlSSN));
+        registerService.registerUser(createDonor("Andrei", "Adan", County.BACAU, "andrei@don", boySSN));
+        registerService.registerUser(createDonor("Nichidel", "Rachidel", County.MARAMURES, "nichi@don", boySSN));
+
+        donorService.updateBloodGroupOnDonor(1L, "A", false);
+        donorService.updateBloodGroupOnDonor(2L, "A", true);
+        donorService.updateBloodGroupOnDonor(3L, "B", false);
+        donorService.updateBloodGroupOnDonor(4L, "B", true);
+        donorService.updateBloodGroupOnDonor(5L, "AB", false);
+        donorService.updateBloodGroupOnDonor(6L, "AB", true);
+        donorService.updateBloodGroupOnDonor(7L, "0", false);
+        donorService.updateBloodGroupOnDonor(8L, "0", true);
+        donorService.updateBloodGroupOnDonor(9L, "0", true);
+
+        addDonationForm(1L);
+
+        // Add Patients
+
+        try {
+            patientService.addPatient(1L, "1970701", "A", false);
+            patientService.addPatient(1L, "2970702", "A", false);
+            patientService.addPatient(1L, "1970703", "B", true);
+            patientService.addPatient(2L, "2970704", "0", true);
+        } catch (EntityNotFoundException | EntityAlreadyExistsException | SsnInvalidException e) {
+            e.printStackTrace();
+        }
+
+        // Add Donations
+
+        addFinishedDonation(1L, 1L, -1L, LocalDate.of(2017, 7, 1), 1, 1, 1);
+        addFinishedDonation(1L, 1L, -1L, LocalDate.of(2018, 7, 1), 1, 1, 1);
+
+        addFinishedDonation(2L, 1L, -1L, LocalDate.of(2017, 7, 1), 1, 1, 1);
+        addFinishedDonation(2L, 1L, -1L, LocalDate.of(2018, 7, 1), 1, 1, 1);
+
+        addFinishedDonation(3L, 1L, -1L, LocalDate.of(2017, 7, 1), 1, 1, 1);
+        addFinishedDonation(3L, 1L, -1L, LocalDate.of(2018, 7, 1), 1, 1, 1);
+
+        addFinishedDonation(4L, 1L, -1L, LocalDate.of(2017, 7, 1), 1, 1, 1);
+        addFinishedDonation(4L, 1L, -1L, LocalDate.of(2018, 7, 1), 1, 1, 1);
+
+        addFinishedDonation(5L, 2L, -1L, LocalDate.of(2017, 7, 1), 1, 1, 1);
+        addFinishedDonation(5L, 2L, -1L, LocalDate.of(2018, 7, 1), 1, 1, 1);
+
+        addFinishedDonation(6L, 3L, -1L, LocalDate.of(2017, 7, 1), 1, 1, 1);
+        addFinishedDonation(6L, 3L, -1L, LocalDate.of(2018, 7, 1), 1, 1, 1);
+
+        addFinishedDonation(7L, 4L, -1L, LocalDate.of(2017, 7, 1), 1, 1, 1);
+        addFinishedDonation(7L, 4L, -1L, LocalDate.of(2018, 7, 1), 1, 1, 1);
+
+        addFinishedDonation(8L, 5L, -1L, LocalDate.of(2017, 7, 1), 1, 1, 1);
+        addFinishedDonation(8L, 5L, -1L, LocalDate.of(2018, 7, 1), 1, 1, 1);
+
+        addFinishedDonation(9L, 6L, -1L, LocalDate.of(2017, 7, 1), 1, 1, 1);
+        addFinishedDonation(9L, 6L, -1L, LocalDate.of(2018, 7, 1), 1, 1, 1);
+
+        addWaitingTestDonation(3L, 1L, -1L, LocalDate.of(2019, 7, 1));
+        addWaitingSplitDonation(4L, 1L, -1L, LocalDate.of(2019, 7, 1));
+
+        // Add Donation Booking
+
+        addDonationBooking(2L, 1L, ZonedDateTime.of(LocalDate.of(2019, 7, 7), LocalTime.of(6, 20), ZoneId.of("UTC")));
+
         return ResponseBuilder.encode(HttpStatus.OK);
+    }
+
+    @RequestMapping("/populateTablesStefan2")
+    private ResponseEntity<Response> populateMockStefan2() throws UserAlreadyRegisteredException, EntityNotFoundException, SsnInvalidException {
+
+        // Add Donation Requests
+
+        addDonationRequest(1L, RequestUrgency.HIGH, BloodComponent.PLATELETS, 1L, 1D);
+        addDonationRequest(1L, RequestUrgency.MEDIUM, BloodComponent.RED_BLOOD_CELLS, 2L, 2D);
+        addDonationRequest(1L, RequestUrgency.LOW, BloodComponent.RED_BLOOD_CELLS, 3L, 5D);
+
+        // Add Donation Commitments
+
+        addDonationCommitment(4L, 1L, 39L);
+        addDonationCommitment(4L, 3L, 40L);
+
+        return ResponseBuilder.encode(HttpStatus.OK);
+    }
+
+    private void addDonationBooking(Long donorId, Long donationCenterId, ZonedDateTime time) {
+
+        try {
+            Donor donor = donorService.findById(donorId);
+            DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
+
+            DonationBooking booking = new DonationBooking();
+            booking.setIsForPatient(false);
+
+            booking.setDateAndTime(time);
+            booking.setDonor(donor);
+            booking.setDonationCenter(donationCenter);
+            donor.setDonationBooking(booking);
+            donationCenter.addBooking(booking);
+            donationBookingService.save(booking);
+            donorService.save(donor);
+            donationCenterService.save(donationCenter);
+
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addWaitingTestDonation(Long donorId, Long donationCenterId, Long patientId, LocalDate date) {
+        try {
+            Donor donor = donorService.findById(donorId);
+            DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
+
+            Donation donation = new Donation();
+            donation.setDonor(donor);
+            donation.setDonationCenter(donationCenter);
+
+            try {
+                Patient patient = patientService.findById(patientId);
+                donation.setPatient(patient);
+                patient.getDonations().add(donation);
+                patientService.save(patient);
+
+                donation.setWithPatient(true);
+
+            } catch (EntityNotFoundException e) {
+                donation.setWithPatient(false);
+            }
+
+            donation.setDate(date);
+            donation.setStatus(DonationStatus.AWAITING_CONTROL_TESTS);
+
+            donationService.saveDonation(donation);
+        } catch (EasyHelpException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addWaitingSplitDonation(Long donorId, Long donationCenterId, Long patientId, LocalDate date) {
+        try {
+            Donor donor = donorService.findById(donorId);
+            DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
+
+            Donation donation = new Donation();
+            donation.setDonor(donor);
+            donation.setDonationCenter(donationCenter);
+
+            try {
+                Patient patient = patientService.findById(patientId);
+                donation.setPatient(patient);
+                patient.getDonations().add(donation);
+                patientService.save(patient);
+
+                donation.setWithPatient(true);
+
+            } catch (EntityNotFoundException e) {
+                donation.setWithPatient(false);
+            }
+
+            donation.setDate(date);
+            donation.setStatus(DonationStatus.AWAITING_CONTROL_TESTS);
+
+            Donation addedDonation = donationService.saveDonation(donation);
+
+            DonationTestResultCreateDTO donationTestResultDTO = new DonationTestResultCreateDTO();
+            donationTestResultDTO.setAlt(false);
+            donationTestResultDTO.setHepatitisB(false);
+            donationTestResultDTO.setHepatitisC(false);
+            donationTestResultDTO.setHiv(false);
+            donationTestResultDTO.setHtlv(false);
+            donationTestResultDTO.setVdrl(false);
+            donationTestResultDTO.setDonationId(addedDonation.getId());
+            donationService.addTestResults(donationTestResultDTO);
+        } catch (EasyHelpException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addFinishedDonation(Long donorId, Long donationCenterId, Long patientId, LocalDate date, double plateletsUnits, double plasmaUnits, double rbcUnits) {
+        try {
+            Donor donor = donorService.findById(donorId);
+            DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
+
+            Donation donation = new Donation();
+            donation.setDonor(donor);
+            donation.setDonationCenter(donationCenter);
+
+            try {
+                Patient patient = patientService.findById(patientId);
+                donation.setPatient(patient);
+                patient.getDonations().add(donation);
+                patientService.save(patient);
+
+                donation.setWithPatient(true);
+
+            } catch (EntityNotFoundException e) {
+                donation.setWithPatient(false);
+            }
+
+            donation.setDate(date);
+            donation.setStatus(DonationStatus.AWAITING_CONTROL_TESTS);
+
+            Donation addedDonation = donationService.saveDonation(donation);
+
+            DonationTestResultCreateDTO donationTestResultDTO = new DonationTestResultCreateDTO();
+            donationTestResultDTO.setAlt(false);
+            donationTestResultDTO.setHepatitisB(false);
+            donationTestResultDTO.setHepatitisC(false);
+            donationTestResultDTO.setHiv(false);
+            donationTestResultDTO.setHtlv(false);
+            donationTestResultDTO.setVdrl(false);
+            donationTestResultDTO.setDonationId(addedDonation.getId());
+            donationService.addTestResults(donationTestResultDTO);
+
+            DonationSplitResultCreateDTO donationSplitResultCreateDTO = new DonationSplitResultCreateDTO();
+            donationSplitResultCreateDTO.setPlasmaUnits(plasmaUnits);
+            donationSplitResultCreateDTO.setPlateletsUnits(plateletsUnits);
+            donationSplitResultCreateDTO.setRedBloodCellsUnits(rbcUnits);
+            donationSplitResultCreateDTO.setDonationId(addedDonation.getId());
+            donationService.separateBlood(donationSplitResultCreateDTO);
+        } catch (EasyHelpException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addDonationRequest(Long doctorId, RequestUrgency urgency, BloodComponent bloodComponent, Long patientId, Double quantity) {
+        DonationRequestCreateDTO donationRequestDTO = new DonationRequestCreateDTO();
+        donationRequestDTO.setDoctorId(doctorId);
+        donationRequestDTO.setUrgency(urgency);
+        donationRequestDTO.setBloodComponent(bloodComponent);
+        try {
+            donationRequestDTO.setPatientId(patientId);
+            donationRequestDTO.setQuantity(quantity);
+            donationRequestService.requestDonation(donationRequestDTO.getDoctorId(), donationRequestDTO.getPatientId(), donationRequestDTO.getQuantity(), donationRequestDTO.getUrgency(), donationRequestDTO.getBloodComponent());
+
+        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addDonationCommitment(Long dcId, Long requestId, Long storedBloodId) {
+        DonationCommitmentCreateDTO donationCommitmentCreateDTO = new DonationCommitmentCreateDTO();
+        donationCommitmentCreateDTO.setDonationCenterId(dcId);
+        donationCommitmentCreateDTO.setDonationRequestId(requestId);
+        donationCommitmentCreateDTO.setStoredBloodId(storedBloodId);
+        try {
+            donationRequestService.commitToDonation(donationCommitmentCreateDTO);
+        } catch (EasyHelpException e) {
+            e.printStackTrace();
+        }
     }
 
     @RequestMapping("/populateTables")
@@ -412,15 +718,15 @@ public class MockDataController {
         donationForm.setBeenRefused(false);
         donationForm.setRequireAttentionPostDonation(false);
 
-        donationForm.setNumberOfPartnersLast6Months(0);
+        donationForm.setNumberOfPartnersLast6Months(1);
 
-        donationForm.setBirthDate("01 May 2019");
-        donationForm.setLastMenstruation("01 May 2019");
-        donationForm.setLastAlcoholUse("01 May 2019");
+        donationForm.setBirthDate("");
+        donationForm.setLastMenstruation("");
+        donationForm.setLastAlcoholUse("");
 
         donationForm.setTravelWhere("Capalna");
-        donationForm.setTravelWhen("tommorow");
-        donationForm.setAlcoholDrank("Jec");
+        donationForm.setTravelWhen("a year ago");
+        donationForm.setAlcoholDrank("Whisky");
         donationForm.setAlcoholQuantity("200");
 
         donorService.addDonationForm(donationForm);

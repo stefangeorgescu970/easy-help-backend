@@ -12,6 +12,7 @@ import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,9 @@ public class EasyHelpStartup implements ApplicationListener<ApplicationReadyEven
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
         try {
-            if (applicationUserService.findByEmailInAllUsers("admin") == null) {
+            try {
+                applicationUserService.findByEmailInAllUsers("admin");
+            } catch (UsernameNotFoundException e) {
                 addSysAdmin();
             }
         } catch (UserAlreadyRegisteredException | SsnInvalidException | EntityNotFoundException e) {

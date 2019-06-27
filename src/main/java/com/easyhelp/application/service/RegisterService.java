@@ -3,10 +3,7 @@ package com.easyhelp.application.service;
 import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
-import com.easyhelp.application.model.users.Doctor;
-import com.easyhelp.application.model.users.DonationCenterPersonnel;
-import com.easyhelp.application.model.users.Donor;
-import com.easyhelp.application.model.users.SystemAdmin;
+import com.easyhelp.application.model.users.*;
 import com.easyhelp.application.repository.DoctorRepository;
 import com.easyhelp.application.repository.DonationCenterPersonnelRepository;
 import com.easyhelp.application.repository.DonorRepository;
@@ -64,7 +61,7 @@ public class RegisterService {
             if (user.getSsn() != null) {
                 String ssn = user.getSsn();
                 MiscUtils.validateSsn(ssn);
-            } else {
+            } else if (user.getUserType() != UserType.DONOR){
                 throw new SsnInvalidException("No ssn was provided");
             }
 
