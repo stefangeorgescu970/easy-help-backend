@@ -186,11 +186,14 @@ public class MockDataController {
 
         // Add Patients
 
+        String boySSN2 = "1931216164413";
+        String girlSSN2 = "2920212304883";
+
         try {
-            patientService.addPatient(1L, "1970701", "A", false);
-            patientService.addPatient(1L, "2970702", "A", false);
-            patientService.addPatient(1L, "1970703", "B", true);
-            patientService.addPatient(2L, "2970704", "0", true);
+            patientService.addPatient(1L, boySSN, "A", false);
+            patientService.addPatient(1L, girlSSN, "A", false);
+            patientService.addPatient(1L, boySSN2, "B", true);
+            patientService.addPatient(2L, girlSSN2, "0", true);
         } catch (EntityNotFoundException | EntityAlreadyExistsException | SsnInvalidException e) {
             e.printStackTrace();
         }
@@ -239,13 +242,15 @@ public class MockDataController {
 
         // Add Donation Requests
 
-        Patient patient = patientService.findBySSN("1970701");
+        String boySSN2 = "1931216164413";
+
+        Patient patient = patientService.findBySSN(boySSN);
         addDonationRequest(1L, RequestUrgency.HIGH, BloodComponent.PLATELETS, patient.getId(), 1D);
 
-        patient = patientService.findBySSN("2970702");
+        patient = patientService.findBySSN(girlSSN);
         addDonationRequest(1L, RequestUrgency.MEDIUM, BloodComponent.RED_BLOOD_CELLS, patient.getId(), 2D);
 
-        patient = patientService.findBySSN("1970703");
+        patient = patientService.findBySSN(boySSN2);
         addDonationRequest(1L, RequestUrgency.LOW, BloodComponent.RED_BLOOD_CELLS, patient.getId(), 5D);
 
         // Add Donation Commitments
