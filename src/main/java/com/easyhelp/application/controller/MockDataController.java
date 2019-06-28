@@ -15,6 +15,7 @@ import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.model.misc.SsnData;
+import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.model.requests.RequestUrgency;
 import com.easyhelp.application.model.users.Donor;
@@ -51,10 +52,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/mocks")
@@ -241,14 +239,21 @@ public class MockDataController {
 
         // Add Donation Requests
 
-        addDonationRequest(1L, RequestUrgency.HIGH, BloodComponent.PLATELETS, 1L, 1D);
-        addDonationRequest(1L, RequestUrgency.MEDIUM, BloodComponent.RED_BLOOD_CELLS, 2L, 2D);
-        addDonationRequest(1L, RequestUrgency.LOW, BloodComponent.RED_BLOOD_CELLS, 3L, 5D);
+        Patient patient = patientService.findBySSN("1970701");
+        addDonationRequest(1L, RequestUrgency.HIGH, BloodComponent.PLATELETS, patient.getId(), 1D);
+
+        patient = patientService.findBySSN("2970702");
+        addDonationRequest(1L, RequestUrgency.MEDIUM, BloodComponent.RED_BLOOD_CELLS, patient.getId(), 2D);
+
+        patient = patientService.findBySSN("1970703");
+        addDonationRequest(1L, RequestUrgency.LOW, BloodComponent.RED_BLOOD_CELLS, patient.getId(), 5D);
 
         // Add Donation Commitments
 
-        addDonationCommitment(4L, 1L, 39L);
-        addDonationCommitment(4L, 3L, 40L);
+        List<DonationRequest> donationRequests = donationRequestService.getAll();
+
+        addDonationCommitment(4L, donationRequests.get(0).getId(), 39L);
+        addDonationCommitment(4L, donationRequests.get(2).getId(), 40L);
 
         return ResponseBuilder.encode(HttpStatus.OK);
     }
