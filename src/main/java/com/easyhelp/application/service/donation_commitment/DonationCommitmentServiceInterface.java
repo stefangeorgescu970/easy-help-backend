@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface DonationCommitmentServiceInterface {
 
-    void save(DonationCommitment donationCommitment);
+    DonationCommitment save(DonationCommitment donationCommitment);
 
     List<DonationCommitment> getDonationCommitments(Long donationRequestId) throws EntityNotFoundException;
 
@@ -25,4 +25,6 @@ public interface DonationCommitmentServiceInterface {
     void markCommitmentAsArrived(Long donationCommitmentId) throws EasyHelpException;
 
     List<DonationCommitment> getCommitmentsForDonationCenter(DonationCenter donationCenter);
+
+    DonationCommitment findById(Long donationCommitmentId) throws EntityNotFoundException;
 }

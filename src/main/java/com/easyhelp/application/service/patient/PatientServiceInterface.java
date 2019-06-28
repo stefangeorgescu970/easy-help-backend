@@ -4,6 +4,7 @@ import com.easyhelp.application.model.requests.Patient;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
+import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public interface PatientServiceInterface {
 
     Patient findById(Long patientId) throws EntityNotFoundException;
 
-    void addPatient(Long doctorId, String ssn, String groupLetter, Boolean rh) throws EntityNotFoundException, EntityAlreadyExistsException;
+    Patient addPatient(Long doctorId, String ssn, String groupLetter, Boolean rh) throws EntityNotFoundException, EntityAlreadyExistsException, SsnInvalidException;
 
     List<Patient> getPatientsForDoctor(Long doctorId);
 
@@ -20,5 +21,5 @@ public interface PatientServiceInterface {
 
     Patient findBySSN(String ssn) throws EntityNotFoundException;
 
-    void save(Patient patient);
+    Patient save(Patient patient);
 }

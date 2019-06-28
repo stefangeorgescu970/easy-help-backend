@@ -16,9 +16,14 @@ import com.easyhelp.application.utils.PushNotificationUtils;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.PushTokenUnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,28 +46,41 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
     private PatientServiceInterface patientService;
 
     @Override
-    public void save(DonationBooking donationBooking) {
-        donationBookingRepository.save(donationBooking);
+    public DonationBooking save(DonationBooking donationBooking) {
+        return donationBookingRepository.save(donationBooking);
+    }
+
+    @Override
+    public DonationBooking findById(Long donationBookingId) throws EntityNotFoundException {
+        Optional<DonationBooking> donationBookingOptional = donationBookingRepository.findById(donationBookingId);
+        if (!donationBookingOptional.isPresent()) {
+            throw new EntityNotFoundException("Donation Booking with that id does not exist");
+        }
+
+        return donationBookingOptional.get();
     }
 
     @Override
     public List<AvailableDate> getAvailableBookingSlots(Long donationCenterId) throws EntityNotFoundException {
-        Date currentDate = new Date();
-        List<AvailableDate> allHours = MiscUtils.getAllHoursForWeek(currentDate);
+        ZonedDateTime currentDate = ZonedDateTime.now();
+        List<AvailableDate> allHours = MiscUtils.getAllHoursForWeek();
+
+        AvailableDate today = allHours.get(0);
+        today.setAvailableHours(today.getAvailableHours().stream().filter(zonedDateTime -> zonedDateTime.isAfter(currentDate)).collect(Collectors.toList()));
 
         DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
 
-        List<Date> bookedDates = donationBookingRepository
+        List<ZonedDateTime> bookedDates = donationBookingRepository
                 .findAll()
                 .stream()
                 .filter(b -> b.getDonationCenter().getId().equals(donationCenterId))
-                .filter(b -> b.getDateAndTime().after(currentDate))
+                .filter(b -> b.getDateAndTime().isAfter(currentDate))
                 .map(DonationBooking::getDateAndTime)
                 .collect(Collectors.toList());
 
         for (AvailableDate date : allHours) {
-            Map<Date, Long> counterMap = bookedDates.stream().collect(Collectors.groupingBy(d -> d, Collectors.counting()));
-            Set<Date> unavailableSlots = bookedDates
+            Map<ZonedDateTime, Long> counterMap = bookedDates.stream().collect(Collectors.groupingBy(d -> d, Collectors.counting()));
+            Set<ZonedDateTime> unavailableSlots = bookedDates
                     .stream()
                     .filter(b -> counterMap.get(b) >= donationCenter.getNumberOfConcurrentDonors())
                     .collect(Collectors.toSet());
@@ -79,6 +97,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
                 .findAll()
                 .stream()
                 .filter(b -> b.getDonationCenter().getId().equals(donationCenterId))
+                .sorted((b1, b2) -> b2.getDateAndTime().compareTo(b1.getDateAndTime()))
                 .collect(Collectors.toList());
     }
 
@@ -95,21 +114,18 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
     }
 
     @Override
-    public Long getDonorsNumberForSlot(Long donationCenterId, Date slotSelected) {
-        String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+    public Long getDonorsNumberForSlot(Long donationCenterId, LocalDateTime slotSelected) {
 
-        String s = dateFormat.format(slotSelected);
         return donationBookingRepository
                 .findAll()
                 .stream()
                 .filter(b -> b.getDonationCenter().getId().equals(donationCenterId))
-                .filter(b -> dateFormat.format(b.getDateAndTime()).equals(s))
+                .filter(b -> b.getDateAndTime().equals(slotSelected))
                 .count();
     }
 
     @Override
-    public void cancelBooking(Long bookingId) throws EntityNotFoundException {
+    public void cancelBooking(Long bookingId, Boolean shouldNotifyDonor) throws EntityNotFoundException {
         Optional<DonationBooking> donationBookingOptional = donationBookingRepository.findById(bookingId);
 
         if (!donationBookingOptional.isPresent())
@@ -122,10 +138,11 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
         donor.setDonationBooking(null);
         donationCenter.getDonationBookings().remove(donationBooking);
 
-        try {
-            PushNotificationUtils.sendPushNotification(donor, "Your donation booking has been cancelled.");
-        } catch (PushTokenUnavailableException e) {
-            e.printStackTrace();
+        if (shouldNotifyDonor) {
+            try {
+                PushNotificationUtils.sendPushNotification(donor, "Your recent booking was cancelled by the donation center.");
+            } catch (PushTokenUnavailableException ignored) {
+            }
         }
 
         donationCenterService.save(donationCenter);
@@ -134,7 +151,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
     }
 
     @Override
-    public void createDonationFromBooking(Long bookingId, String bloodGroup, Boolean rh) throws EntityNotFoundException {
+    public Donation createDonationFromBooking(Long bookingId, String bloodGroup, Boolean rh) throws EntityNotFoundException {
         Optional<DonationBooking> donationBookingOptional = donationBookingRepository.findById(bookingId);
 
         if (!donationBookingOptional.isPresent())
@@ -150,7 +167,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
         donation.setDonor(donor);
         donation.setDonationCenter(donationBooking.getDonationCenter());
         donation.setStatus(DonationStatus.AWAITING_CONTROL_TESTS);
-        donation.setDateAndTime(new Date());
+        donation.setDate(LocalDate.now());
 
         if (donationBooking.getIsForPatient()) {
             donation.setPatient(donationBooking.getPatient());
@@ -159,7 +176,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
             patientService.save(donation.getPatient());
         }
 
-        donationService.saveDonation(donation);
         donationBookingRepository.delete(donationBooking);
+        return donationService.saveDonation(donation);
     }
 }

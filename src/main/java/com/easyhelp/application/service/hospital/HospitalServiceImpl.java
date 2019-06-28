@@ -1,6 +1,5 @@
 package com.easyhelp.application.service.hospital;
 
-import com.easyhelp.application.model.dto.location.LocationDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.Hospital;
 import com.easyhelp.application.repository.HospitalRepository;
@@ -26,8 +25,8 @@ public class HospitalServiceImpl implements HospitalServiceInterface {
     }
 
     @Override
-    public void save(Hospital hospital) {
-        hospitalRepository.save(hospital);
+    public Hospital save(Hospital hospital) {
+        return hospitalRepository.save(hospital);
     }
 
     @Override

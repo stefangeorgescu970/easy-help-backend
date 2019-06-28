@@ -7,10 +7,9 @@ import com.easyhelp.application.model.blood.StoredBlood;
 import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationStatus;
 import com.easyhelp.application.model.donations.DonationTestResult;
-import com.easyhelp.application.model.dto.donation.DonationSplitResultsDTO;
-import com.easyhelp.application.model.dto.donation.DonationTestResultDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationTestResultCreateDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationSplitResultCreateDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
-import com.easyhelp.application.model.requests.DonationRequest;
 import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.DonationRepository;
 import com.easyhelp.application.repository.DonationTestResultRepository;
@@ -19,11 +18,16 @@ import com.easyhelp.application.service.donationcenter.DonationCenterServiceInte
 import com.easyhelp.application.service.donor.DonorServiceInterface;
 import com.easyhelp.application.service.separated_bloodtype.SeparatedBloodTypeServiceInterface;
 import com.easyhelp.application.service.stored_blood.StoredBloodServiceInterface;
+import com.easyhelp.application.utils.PushNotificationUtils;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
+import com.easyhelp.application.utils.exceptions.PushTokenUnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,12 +56,22 @@ public class DonationServiceImpl implements DonationServiceInterface {
     private DonationCenterServiceInterface donationCenterService;
 
     @Override
-    public void saveDonation(Donation donation) {
-        donationRepository.save(donation);
+    public Donation saveDonation(Donation donation) {
+        return donationRepository.save(donation);
     }
 
     @Override
-    public void addTestResults(DonationTestResultDTO donationTestResultDTO) throws EntityNotFoundException {
+    public Donation findById(Long donationId) throws EntityNotFoundException {
+        Optional<Donation> donation = donationRepository.findById(donationId);
+
+        if (!donation.isPresent())
+            throw new EntityNotFoundException("Donation with that id does not exist");
+
+        return donation.get();
+    }
+
+    @Override
+    public void addTestResults(DonationTestResultCreateDTO donationTestResultDTO) throws EntityNotFoundException {
         Optional<Donation> donation = donationRepository.findById(donationTestResultDTO.getDonationId());
 
         if (!donation.isPresent())
@@ -80,13 +94,17 @@ public class DonationServiceImpl implements DonationServiceInterface {
             donationUnwrapped.setStatus(DonationStatus.AWAITING_SPLIT_RESULTS);
         }
 
+        try {
+            PushNotificationUtils.sendPushNotification(donationUnwrapped.getDonor(), "Test Results available for your last donation.");
+        } catch (PushTokenUnavailableException ignored) {}
+
         donationTestResultRepository.save(donationTestResult);
         donationRepository.save(donationUnwrapped);
     }
 
     @Override
-    public void separateBlood(DonationSplitResultsDTO donationSplitResultsDTO) throws EasyHelpException {
-        Optional<Donation> donation = donationRepository.findById(donationSplitResultsDTO.getDonationId());
+    public void separateBlood(DonationSplitResultCreateDTO donationSplitResultCreateDTO) throws EasyHelpException {
+        Optional<Donation> donation = donationRepository.findById(donationSplitResultCreateDTO.getDonationId());
 
         if (!donation.isPresent())
             throw new EntityNotFoundException("Donation with that id does not exist");
@@ -101,9 +119,9 @@ public class DonationServiceImpl implements DonationServiceInterface {
         DonationCenter donationCenter = donationUnwrapped.getDonationCenter();
 
 
-        storeBlood(BloodComponent.RED_BLOOD_CELLS, donationSplitResultsDTO.getRedBloodCellsUnits(), donor, donationCenter);
-        storeBlood(BloodComponent.PLASMA, donationSplitResultsDTO.getPlasmaUnits(), donor, donationCenter);
-        storeBlood(BloodComponent.PLATELETS, donationSplitResultsDTO.getPlateletsUnits(), donor, donationCenter);
+        storeBlood(BloodComponent.RED_BLOOD_CELLS, donationSplitResultCreateDTO.getRedBloodCellsUnits(), donor, donationCenter);
+        storeBlood(BloodComponent.PLASMA, donationSplitResultCreateDTO.getPlasmaUnits(), donor, donationCenter);
+        storeBlood(BloodComponent.PLATELETS, donationSplitResultCreateDTO.getPlateletsUnits(), donor, donationCenter);
 
         donationUnwrapped.setStatus(DonationStatus.COMPLETED);
         donationRepository.save(donationUnwrapped);
@@ -111,7 +129,7 @@ public class DonationServiceImpl implements DonationServiceInterface {
 
     @Override
     public List<Donation> getDonationsForDonor(Long donorId) {
-        return donationRepository.findAll().stream().filter(donation -> donation.getDonor().getId().equals(donorId)).collect(Collectors.toList());
+        return donationRepository.findAll().stream().filter(donation -> donation.getDonor().getId().equals(donorId)).sorted((d1, d2) -> d2.getDate().compareTo(d1.getDate())).collect(Collectors.toList());
     }
 
     @Override
@@ -125,6 +143,9 @@ public class DonationServiceImpl implements DonationServiceInterface {
     }
 
     private void storeBlood(BloodComponent bloodComponent, Double quantity, Donor donor, DonationCenter donationCenter) {
+        String pattern = "yyyy-MM-dd";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
         SeparatedBloodType separatedBloodType = separatedBloodTypeService.findSeparatedBloodTypeInDB(donor.getBloodType().getGroupLetter(), donor.getBloodType().getRh(), bloodComponent);
         if (separatedBloodType == null) {
             separatedBloodType = new SeparatedBloodType();
@@ -138,8 +159,16 @@ public class DonationServiceImpl implements DonationServiceInterface {
         storedBlood.setDonor(donor);
         storedBlood.setDonationCenter(donationCenter);
         storedBlood.setSeparatedBloodType(separatedBloodType);
-        storedBlood.setStoredDate(new Date());
+        storedBlood.setStoredDate(LocalDate.now());
         storedBlood.setAmount(quantity);
+
+        String codeSeparator = ".";
+        storedBlood.setBagIdentifier(storedBlood.getSeparatedBloodType().getComponent().codeString() + codeSeparator +
+                storedBlood.getSeparatedBloodType().getBloodType().getGroupLetter() + codeSeparator +
+                (storedBlood.getSeparatedBloodType().getBloodType().getRh().equals(true) ? "+" : "-") + codeSeparator +
+                storedBlood.getDonor().getId() + codeSeparator +
+                storedBlood.getDonationCenter().getId() + codeSeparator +
+                storedBlood.getStoredDate().format(DateTimeFormatter.BASIC_ISO_DATE));
 
         donor.getStoredBloodSet().add(storedBlood);
         donationCenter.getStoredBloodSet().add(storedBlood);

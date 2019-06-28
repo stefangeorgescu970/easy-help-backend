@@ -1,9 +1,10 @@
 package com.easyhelp.application;
 
-import com.easyhelp.application.model.dto.account.RegisterDTO;
+import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.users.UserType;
 import com.easyhelp.application.service.RegisterService;
+import com.easyhelp.application.service.applicationuser.ApplicationUserService;
 import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
@@ -11,8 +12,11 @@ import com.easyhelp.application.utils.exceptions.UserAlreadyRegisteredException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.TimeZone;
 
 @Component
 public class EasyHelpStartup implements ApplicationListener<ApplicationReadyEvent> {
@@ -23,6 +27,8 @@ public class EasyHelpStartup implements ApplicationListener<ApplicationReadyEven
     @Autowired
     private RegisterService registerService;
 
+    @Autowired
+    private ApplicationUserService applicationUserService;
 
     public EasyHelpStartup(BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -30,8 +36,15 @@ public class EasyHelpStartup implements ApplicationListener<ApplicationReadyEven
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
         try {
-            addSysAdmin();
+            try {
+                applicationUserService.findByEmailInAllUsers("admin");
+            } catch (UsernameNotFoundException e) {
+                addSysAdmin();
+            }
         } catch (UserAlreadyRegisteredException | SsnInvalidException | EntityNotFoundException e) {
             e.printStackTrace();
         }

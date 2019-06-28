@@ -11,7 +11,7 @@ import java.util.List;
 public interface HospitalServiceInterface {
     List<Hospital> getAll();
 
-    void save(Hospital hospital);
+    Hospital save(Hospital hospital);
 
     void removeHospital(Long hospitalId) throws EntityCannotBeRemovedException, EntityNotFoundException;
 

@@ -12,8 +12,8 @@ public class DonationFormServiceImpl implements DonationFormServiceInterface {
     private DonationFormRepository donationFormRepository;
 
     @Override
-    public void addDonationForm(DonationForm donationForm) {
-        donationFormRepository.save(donationForm);
+    public DonationForm addDonationForm(DonationForm donationForm) {
+        return donationFormRepository.save(donationForm);
     }
 
     @Override

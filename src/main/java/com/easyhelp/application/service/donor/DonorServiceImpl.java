@@ -5,7 +5,7 @@ import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.DonationForm;
 import com.easyhelp.application.model.donations.DonorSummary;
-import com.easyhelp.application.model.dto.donation.DonationFormDTO;
+import com.easyhelp.application.model.dto.donor.incoming.DonationFormCreateDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.misc.SsnData;
@@ -16,17 +16,24 @@ import com.easyhelp.application.repository.DonorRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.donation_booking.DonationBookingServiceInterface;
 import com.easyhelp.application.service.donation_form.DonationFormServiceInterface;
+import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
 import com.easyhelp.application.service.donationcenter.DonationCenterServiceInterface;
 import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import com.easyhelp.application.utils.exceptions.SsnInvalidException;
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 public class DonorServiceImpl implements DonorServiceInterface {
@@ -49,6 +56,9 @@ public class DonorServiceImpl implements DonorServiceInterface {
     @Autowired
     private PatientServiceInterface patientService;
 
+    @Autowired
+    private DonationRequestServiceInterface donationRequestService;
+
     @Override
     public void updateCountyOnDonor(Long donorId, County newCounty) throws EntityNotFoundException {
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
@@ -63,19 +73,14 @@ public class DonorServiceImpl implements DonorServiceInterface {
     }
 
     @Override
-    public void updateSsnOnDonor(Long donorId, String newSsn, Boolean skipCheck) throws EntityNotFoundException, SsnInvalidException {
+    public void updateSsnOnDonor(Long donorId, String newSsn) throws EntityNotFoundException, SsnInvalidException {
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
-        if (!skipCheck) {
-            // Possibility to skip check for ssn. Make sure at least the first 7 digits are ok, since these
-            // tell the parser the dob and sex of a donor.
-
-            MiscUtils.validateSsn(newSsn);
-        }
+        MiscUtils.validateSsn(newSsn);
 
         if (donorOptional.isPresent()) {
             Donor donor = donorOptional.get();
             SsnData ssnData = MiscUtils.getDataFromSsn(newSsn);
-            Date dob = ssnData.getDateOfBirth();
+            LocalDate dob = ssnData.getDateOfBirth();
             donor.setIsMale(ssnData.getIsMale());
             donor.setSsn(newSsn);
             donor.setDateOfBirth(dob);
@@ -112,9 +117,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
 
 
     @Override
-    public void bookDonationHour(Long donorId, Date selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException {
-        Date date = selectedHour;
-        date.setHours(date.getHours() + date.getTimezoneOffset() / 60);
+    public DonationBooking bookDonationHour(Long donorId, ZonedDateTime selectedHour, Long donationCenterId, String patientSSN) throws EntityNotFoundException, EntityAlreadyExistsException {
         Optional<Donor> donorOptional = donorRepository.findById(donorId);
         if (donorOptional.isPresent()) {
             Donor donor = donorOptional.get();
@@ -122,7 +125,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
                 throw new EntityAlreadyExistsException("The donor has already made a booking");
 
             DonationCenter donationCenter = donationCenterService.findById(donationCenterId);
-            if (donationBookingService.getDonorsNumberForSlot(donationCenterId, date) >= donationCenter.getNumberOfConcurrentDonors())
+            if (donationBookingService.getDonorsNumberForSlot(donationCenterId, selectedHour.toLocalDateTime()) >= donationCenter.getNumberOfConcurrentDonors())
                 throw new EntityAlreadyExistsException("There are too many booking requests for this slot");
 
             DonationBooking booking = new DonationBooking();
@@ -144,9 +147,11 @@ public class DonorServiceImpl implements DonorServiceInterface {
                 } else {
                     patient.getDonationBookings().add(booking);
                 }
+            } else {
+                booking.setIsForPatient(false);
             }
 
-            booking.setDateAndTime(date);
+            booking.setDateAndTime(selectedHour);
             booking.setDonor(donor);
             booking.setDonationCenter(donationCenter);
             donor.setDonationBooking(booking);
@@ -159,6 +164,7 @@ public class DonorServiceImpl implements DonorServiceInterface {
                 patientService.save(patient);
             }
 
+            return booking;
         } else {
             throw new EntityNotFoundException("No donor was found with provided id.");
         }
@@ -179,28 +185,35 @@ public class DonorServiceImpl implements DonorServiceInterface {
             Donor donor = donorOptional.get();
             donorSummary.setDonationsNumber(donor.getDonations().size());
 
+            if (donor.getDonationForm() != null) {
+                donorSummary.setDonationForm(donor.getDonationForm());
+            }
+
             if (donor.getDonationBooking() != null &&
-                    donor.getDonationBooking().getDateAndTime().after(new Date()))
+                    donor.getDonationBooking().getDateAndTime().isAfter(ZonedDateTime.now()))
                 donorSummary.setNextBooking(donor.getDonationBooking());
 
             if (!donor.getDonations().isEmpty()) {
-                Optional<Donation> lastDonation = donor.getDonations().stream().max(Comparator.comparing(Donation::getDateAndTime));
+                Optional<Donation> lastDonation = donor.getDonations().stream().max(Comparator.comparing(Donation::getDate));
                 lastDonation.ifPresent(donorSummary::setLastDonation);
 
-                Date today = new Date();
+                LocalDate today = LocalDate.now();
                 List<Donation> lastYearDonations = donor.getDonations().stream().filter(donation -> {
-                    int days = (int) ( (donation.getDateAndTime().getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    long days = DAYS.between(donation.getDate(), today);
                     return days < 365;
                 }).collect(Collectors.toList());
 
                 int maxNumber = donor.getIsMale() ? 5 : 4;
 
                 if (lastYearDonations.size() >= maxNumber) {
-                    lastYearDonations = lastYearDonations.stream().sorted(Comparator.comparing(Donation::getDateAndTime)).limit(maxNumber).collect(Collectors.toList());
-                    donorSummary.setDonationStreakBegin(lastYearDonations.get(0).getDateAndTime());
+                    lastYearDonations = lastYearDonations.stream().sorted(Comparator.comparing(Donation::getDate)).limit(maxNumber).collect(Collectors.toList());
+                    donorSummary.setDonationStreakBegin(lastYearDonations.get(0).getDate());
                 }
             }
 
+            if (donor.getBloodType() != null) {
+                donorSummary.setNumberOfPatientsYouCouldHelp(donationRequestService.getDonationRequestsDonorCouldDonateFor(donor).size());
+            }
         } else {
             throw new EntityNotFoundException("No donor was found with provided id.");
         }
@@ -209,47 +222,48 @@ public class DonorServiceImpl implements DonorServiceInterface {
     }
 
     @Override
-    public void addDonationForm(DonationFormDTO donationFormDTO) throws EntityNotFoundException {
-        Optional<Donor> donorOptional = donorRepository.findById(donationFormDTO.getDonorId());
+    public void addDonationForm(DonationFormCreateDTO donationFormCreateDTO) throws EntityNotFoundException {
+        Optional<Donor> donorOptional = donorRepository.findById(donationFormCreateDTO.getDonorId());
         if (donorOptional.isPresent()) {
             Donor donor = donorOptional.get();
             DonationForm donationForm = new DonationForm();
-            donationForm.setGeneralGoodHealth(donationFormDTO.getGeneralGoodHealth());
-            donationForm.setRecentLossOfWeight(donationFormDTO.getRecentLossOfWeight());
-            donationForm.setRecentInexplicableFever(donationFormDTO.getRecentInexplicableFever());
-            donationForm.setRecentStomatoTreatmentOrVaccine(donationFormDTO.getRecentStomatoTreatmentOrVaccine());
-            donationForm.setCurrentDrugTreatment(donationFormDTO.getCurrentDrugTreatment());
-            donationForm.setSexWithHIVOrHepatitisLast12Months(donationFormDTO.getSexWithHIVOrHepatitisLast12Months());
-            donationForm.setSexWithPersonWhoInjectsDrugsLast12Months(donationFormDTO.getSexWithPersonWhoInjectsDrugsLast12Months());
-            donationForm.setSexWithProstituteLast12Months(donationFormDTO.getSexWithProstituteLast12Months());
-            donationForm.setSexWithMultiplePartnersLast12Months(donationFormDTO.getSexWithMultiplePartnersLast12Months());
-            donationForm.setInjectedDrugs(donationFormDTO.getInjectedDrugs());
-            donationForm.setAcceptedMoneyOrDrugsForSex(donationFormDTO.getAcceptedMoneyOrDrugsForSex());
-            donationForm.setChangedSexPartnerLast6Months(donationFormDTO.getChangedSexPartnerLast6Months());
-            donationForm.setNumberOfPartnersLast6Months(donationFormDTO.getNumberOfPartnersLast6Months());
-            donationForm.setSurgeryOrInvestigationsLast12Months(donationFormDTO.getSurgeryOrInvestigationsLast12Months());
-            donationForm.setTattoosOrPiercingsLast12Months(donationFormDTO.getTattoosOrPiercingsLast12Months());
-            donationForm.setTransfusionLast12Months(donationFormDTO.getTransfusionLast12Months());
-            donationForm.setBeenPregnant(donationFormDTO.getBeenPregnant());
-            donationForm.setBirthDate(donationFormDTO.getBirthDate());
-            donationForm.setLastMenstruation(donationFormDTO.getLastMenstruation());
-            donationForm.setBornLivedTraveledAbroad(donationFormDTO.getBornLivedTraveledAbroad());
-            donationForm.setTravelWhere(donationFormDTO.getTravelWhere());
-            donationForm.setTravelWhen(donationFormDTO.getTravelWhen());
-            donationForm.setPrisonLastYear(donationFormDTO.getPrisonLastYear());
-            donationForm.setSufferFromSet1(donationFormDTO.getSufferFromSet1());
-            donationForm.setSufferFromSet2(donationFormDTO.getSufferFromSet2());
-            donationForm.setSufferFromSet3(donationFormDTO.getSufferFromSet3());
-            donationForm.setSufferFromSet4(donationFormDTO.getSufferFromSet4());
-            donationForm.setSufferFromSet5(donationFormDTO.getSufferFromSet5());
-            donationForm.setSufferFromSet6(donationFormDTO.getSufferFromSet6());
-            donationForm.setSufferFromSet7(donationFormDTO.getSufferFromSet7());
-            donationForm.setSmoker(donationFormDTO.getSmoker());
-            donationForm.setLastAlcoholUse(donationFormDTO.getLastAlcoholUse());
-            donationForm.setAlcoholDrank(donationFormDTO.getAlcoholDrank());
-            donationForm.setAlcoholQuantity(donationFormDTO.getAlcoholQuantity());
-            donationForm.setBeenRefused(donationFormDTO.getBeenRefused());
-            donationForm.setRequireAttentionPostDonation(donationFormDTO.getRequireAttentionPostDonation());
+            donationForm.setGeneralGoodHealth(donationFormCreateDTO.getGeneralGoodHealth());
+            donationForm.setRecentLossOfWeight(donationFormCreateDTO.getRecentLossOfWeight());
+            donationForm.setRecentInexplicableFever(donationFormCreateDTO.getRecentInexplicableFever());
+            donationForm.setRecentStomatoTreatmentOrVaccine(donationFormCreateDTO.getRecentStomatoTreatmentOrVaccine());
+            donationForm.setCurrentDrugTreatment(donationFormCreateDTO.getCurrentDrugTreatment());
+            donationForm.setSexWithHIVOrHepatitisLast12Months(donationFormCreateDTO.getSexWithHIVOrHepatitisLast12Months());
+            donationForm.setSexWithPersonWhoInjectsDrugsLast12Months(donationFormCreateDTO.getSexWithPersonWhoInjectsDrugsLast12Months());
+            donationForm.setSexWithProstituteLast12Months(donationFormCreateDTO.getSexWithProstituteLast12Months());
+            donationForm.setSexWithMultiplePartnersLast12Months(donationFormCreateDTO.getSexWithMultiplePartnersLast12Months());
+            donationForm.setInjectedDrugs(donationFormCreateDTO.getInjectedDrugs());
+            donationForm.setAcceptedMoneyOrDrugsForSex(donationFormCreateDTO.getAcceptedMoneyOrDrugsForSex());
+            donationForm.setChangedSexPartnerLast6Months(donationFormCreateDTO.getChangedSexPartnerLast6Months());
+            donationForm.setNumberOfPartnersLast6Months(donationFormCreateDTO.getNumberOfPartnersLast6Months());
+            donationForm.setSurgeryOrInvestigationsLast12Months(donationFormCreateDTO.getSurgeryOrInvestigationsLast12Months());
+            donationForm.setTattoosOrPiercingsLast12Months(donationFormCreateDTO.getTattoosOrPiercingsLast12Months());
+            donationForm.setTransfusionLast12Months(donationFormCreateDTO.getTransfusionLast12Months());
+            donationForm.setBeenPregnant(donationFormCreateDTO.getBeenPregnant());
+            donationForm.setBirthDate(donationFormCreateDTO.getBirthDate());
+            donationForm.setLastMenstruation(donationFormCreateDTO.getLastMenstruation());
+            donationForm.setBornLivedTraveledAbroad(donationFormCreateDTO.getBornLivedTraveledAbroad());
+            donationForm.setTravelWhere(donationFormCreateDTO.getTravelWhere());
+            donationForm.setTravelWhen(donationFormCreateDTO.getTravelWhen());
+            donationForm.setPrisonLastYear(donationFormCreateDTO.getPrisonLastYear());
+            donationForm.setExposedHepatitis(donationFormCreateDTO.getExposedHepatitis());
+            donationForm.setSufferFromSet1(donationFormCreateDTO.getSufferFromSet1());
+            donationForm.setSufferFromSet2(donationFormCreateDTO.getSufferFromSet2());
+            donationForm.setSufferFromSet3(donationFormCreateDTO.getSufferFromSet3());
+            donationForm.setSufferFromSet4(donationFormCreateDTO.getSufferFromSet4());
+            donationForm.setSufferFromSet5(donationFormCreateDTO.getSufferFromSet5());
+            donationForm.setSufferFromSet6(donationFormCreateDTO.getSufferFromSet6());
+            donationForm.setSufferFromSet7(donationFormCreateDTO.getSufferFromSet7());
+            donationForm.setSmoker(donationFormCreateDTO.getSmoker());
+            donationForm.setLastAlcoholUse(donationFormCreateDTO.getLastAlcoholUse());
+            donationForm.setAlcoholDrank(donationFormCreateDTO.getAlcoholDrank());
+            donationForm.setAlcoholQuantity(donationFormCreateDTO.getAlcoholQuantity());
+            donationForm.setBeenRefused(donationFormCreateDTO.getBeenRefused());
+            donationForm.setRequireAttentionPostDonation(donationFormCreateDTO.getRequireAttentionPostDonation());
 
             DonationForm oldForm = donationFormService.getDonationFormForDonor(donor.getId());
             if (oldForm != null)
@@ -265,8 +279,8 @@ public class DonorServiceImpl implements DonorServiceInterface {
     }
 
     @Override
-    public void save(Donor donor) {
-        donorRepository.save(donor);
+    public Donor save(Donor donor) {
+        return donorRepository.save(donor);
     }
 
     @Override

@@ -8,9 +8,11 @@ import com.easyhelp.application.repository.PatientRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
 import com.easyhelp.application.service.donation_request.DonationRequestServiceInterface;
+import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
+import com.easyhelp.application.utils.exceptions.SsnInvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,10 +53,12 @@ public class PatientServiceImpl implements PatientServiceInterface {
     }
 
     @Override
-    public void addPatient(Long doctorId, String ssn, String groupLetter, Boolean rh) throws EntityNotFoundException, EntityAlreadyExistsException {
+    public Patient addPatient(Long doctorId, String ssn, String groupLetter, Boolean rh) throws EntityNotFoundException, EntityAlreadyExistsException, SsnInvalidException {
 
         if (patientRepository.findBySsn(ssn) != null)
             throw new EntityAlreadyExistsException("Patient with this ssn was already added.");
+
+        MiscUtils.validateSsn(ssn);
 
         Doctor doctor = doctorService.findById(doctorId);
         Patient patient = new Patient();
@@ -77,7 +81,7 @@ public class PatientServiceImpl implements PatientServiceInterface {
             bloodTypeService.saveBloodType(bloodTypeInDB);
         }
 
-        patientRepository.save(patient);
+        return patientRepository.save(patient);
     }
 
     @Override
@@ -115,7 +119,7 @@ public class PatientServiceImpl implements PatientServiceInterface {
     }
 
     @Override
-    public void save(Patient patient) {
-        patientRepository.save(patient);
+    public Patient save(Patient patient) {
+        return patientRepository.save(patient);
     }
 }

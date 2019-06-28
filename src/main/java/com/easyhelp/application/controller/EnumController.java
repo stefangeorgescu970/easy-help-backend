@@ -1,6 +1,6 @@
 package com.easyhelp.application.controller;
 
-import com.easyhelp.application.model.dto.location.EnumsDTO;
+import com.easyhelp.application.model.dto.misc.outgoing.EnumsDTO;
 import com.easyhelp.application.utils.response.Response;
 import com.easyhelp.application.utils.response.ResponseBuilder;
 import org.springframework.http.HttpStatus;

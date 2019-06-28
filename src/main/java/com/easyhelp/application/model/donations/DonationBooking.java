@@ -9,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Entity
@@ -27,7 +29,7 @@ public class DonationBooking extends BaseEntity {
     @JoinColumn(name = "fk_donation_center")
     private DonationCenter donationCenter;
 
-    private Date dateAndTime;
+    private ZonedDateTime dateAndTime;
 
     @ManyToOne
     @JoinColumn(name = "fk_patient")

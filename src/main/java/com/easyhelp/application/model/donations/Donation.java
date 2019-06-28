@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -35,6 +36,6 @@ public class Donation extends BaseEntity {
     private DonationTestResult testResults;
 
     private DonationStatus status;
-    private Date dateAndTime;
+    private LocalDate date;
     private Boolean withPatient;
 }

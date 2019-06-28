@@ -9,7 +9,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Entity
 @Data
@@ -34,8 +37,39 @@ public class StoredBlood extends BaseEntity {
     private DonationCommitment donationCommitment;
 
     private Double amount;
-    private Date storedDate;
+    private LocalDate storedDate;
+    private String bagIdentifier;
 
-    private Date usedDate;
+    private LocalDate usedDate;
     private Boolean isUsable = true;
+
+    public Boolean isExpired() {
+        LocalDate today = LocalDate.now();
+        long days = DAYS.between(storedDate, today);
+        switch (separatedBloodType.getComponent()) {
+            case RED_BLOOD_CELLS:
+                return days > 42;
+            case PLATELETS:
+                return days > 5;
+            case PLASMA:
+                return days > 365;
+            default:
+                return true;
+        }
+    }
+
+    public Integer daysUntilExpiry() {
+        LocalDate today = LocalDate.now();
+        long days = DAYS.between(storedDate, today);
+        switch (separatedBloodType.getComponent()) {
+            case RED_BLOOD_CELLS:
+                return 42 - (int)days;
+            case PLATELETS:
+                return 5 - (int)days;
+            case PLASMA:
+                return 365 - (int)days;
+            default:
+                return 0;
+        }
+    }
 }

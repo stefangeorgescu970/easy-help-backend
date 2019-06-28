@@ -1,15 +1,18 @@
 package com.easyhelp.application.service.donation_booking;
 
 import com.easyhelp.application.model.donations.AvailableDate;
+import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DonationBookingServiceInterface {
 
-    void save(DonationBooking donationBooking);
+    DonationBooking save(DonationBooking donationBooking);
+
+    DonationBooking findById(Long donationBookingId) throws EntityNotFoundException;
 
     List<AvailableDate> getAvailableBookingSlots(Long donationCenterId) throws EntityNotFoundException;
 
@@ -17,9 +20,9 @@ public interface DonationBookingServiceInterface {
 
     DonationBooking getDonorBooking(Long donorId) throws EntityNotFoundException;
 
-    Long getDonorsNumberForSlot(Long donationCenterId, Date slotSelected);
+    Long getDonorsNumberForSlot(Long donationCenterId, LocalDateTime slotSelected);
 
-    void cancelBooking(Long bookingId) throws EntityNotFoundException;
+    void cancelBooking(Long bookingId, Boolean shouldNotifyDonor) throws EntityNotFoundException;
 
-    void createDonationFromBooking(Long bookingId, String bloodGroup, Boolean rh) throws EntityNotFoundException;
+    Donation createDonationFromBooking(Long bookingId, String bloodGroup, Boolean rh) throws EntityNotFoundException;
 }

@@ -1,15 +1,17 @@
 package com.easyhelp.application.service.donationcenter;
 
-import com.easyhelp.application.model.dto.location.LocationDTO;
+import com.easyhelp.application.model.dto.donor.outgoing.DonorDonationCenterDTO;
 import com.easyhelp.application.model.locations.County;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.repository.DonationCenterRepository;
+import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EntityCannotBeRemovedException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,8 +28,8 @@ public class DonationCenterServiceImpl implements DonationCenterServiceInterface
     }
 
     @Override
-    public void save(DonationCenter donationCenter) {
-        donationCenterRepository.save(donationCenter);
+    public DonationCenter save(DonationCenter donationCenter) {
+        return donationCenterRepository.save(donationCenter);
     }
 
     @Override
@@ -64,6 +66,19 @@ public class DonationCenterServiceImpl implements DonationCenterServiceInterface
                 .findAll()
                 .stream()
                 .filter(donationCenter -> donationCenter.getCounty() == county)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DonorDonationCenterDTO> getOrderedDonationCenters(Double longitude, Double latitude) {
+        if (longitude == null || latitude == null) {
+            return donationCenterRepository.findAll().stream().map(dc -> new DonorDonationCenterDTO(dc, -1D)).collect(Collectors.toList());
+        }
+        return donationCenterRepository
+                .findAll()
+                .stream()
+                .map(dc -> new DonorDonationCenterDTO(dc, MiscUtils.computeDistance(latitude, longitude, dc.getLatitude(), dc.getLongitude())))
+                .sorted(Comparator.comparingDouble(DonorDonationCenterDTO::getDistance))
                 .collect(Collectors.toList());
     }
 }

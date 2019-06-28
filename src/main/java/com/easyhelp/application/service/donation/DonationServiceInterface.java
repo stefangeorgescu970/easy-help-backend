@@ -1,8 +1,8 @@
 package com.easyhelp.application.service.donation;
 
 import com.easyhelp.application.model.donations.Donation;
-import com.easyhelp.application.model.dto.donation.DonationSplitResultsDTO;
-import com.easyhelp.application.model.dto.donation.DonationTestResultDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationTestResultCreateDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationSplitResultCreateDTO;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 
@@ -10,11 +10,13 @@ import java.util.List;
 
 public interface DonationServiceInterface {
 
-    void saveDonation(Donation donation);
+    Donation saveDonation(Donation donation);
 
-    void addTestResults(DonationTestResultDTO donationTestResultDTO) throws EntityNotFoundException;
+    Donation findById(Long donationId) throws EntityNotFoundException;
 
-    void separateBlood(DonationSplitResultsDTO donationSplitResultsDTO) throws EasyHelpException;
+    void addTestResults(DonationTestResultCreateDTO donationTestResultDTO) throws EntityNotFoundException;
+
+    void separateBlood(DonationSplitResultCreateDTO donationSplitResultCreateDTO) throws EasyHelpException;
 
     List<Donation> getDonationsForDonor(Long donorId);
 

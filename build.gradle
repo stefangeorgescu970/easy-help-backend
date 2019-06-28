@@ -55,4 +55,6 @@ dependencies {
     compile group: 'com.notnoop.apns', name: 'apns', version: '0.1.6'
 
     compile 'org.json:json:20171018'
+
+    compile group: 'javax.mail', name: 'mail', version: '1.4.1'
 }

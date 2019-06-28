@@ -14,6 +14,7 @@ import com.easyhelp.application.utils.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +33,8 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
     private DonationRequestServiceInterface donationRequestService;
 
     @Override
-    public void save(DonationCommitment donationCommitment) {
-        donationCommitmentRepository.save(donationCommitment);
+    public DonationCommitment save(DonationCommitment donationCommitment) {
+        return donationCommitmentRepository.save(donationCommitment);
     }
 
     @Override
@@ -152,7 +153,7 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
 
         // Mark Stored Blood as Arrived
         StoredBlood storedBlood = donationCommitment.getStoredBlood();
-        storedBlood.setUsedDate(new Date());
+        storedBlood.setUsedDate(LocalDate.now());
         storedBloodService.storeBlood(storedBlood);
     }
 
@@ -162,5 +163,16 @@ public class DonationCommitmentServiceImpl implements DonationCommitmentServiceI
                 .stream()
                 .filter(donationCommitment -> donationCommitment.getDonationCenter().getId().equals(donationCenter.getId()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public DonationCommitment findById(Long donationCommitmentId) throws EntityNotFoundException {
+        Optional<DonationCommitment> donationCommitment = donationCommitmentRepository.findById(donationCommitmentId);
+
+        if (!donationCommitment.isPresent()) {
+            throw new EntityNotFoundException("Donation commitment request with that id does not exist");
+        }
+
+        return donationCommitment.get();
     }
 }

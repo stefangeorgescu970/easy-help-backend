@@ -1,12 +1,9 @@
 package com.easyhelp.application.service;
 
-import com.easyhelp.application.model.dto.account.RegisterDTO;
+import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.locations.Hospital;
-import com.easyhelp.application.model.users.Doctor;
-import com.easyhelp.application.model.users.DonationCenterPersonnel;
-import com.easyhelp.application.model.users.Donor;
-import com.easyhelp.application.model.users.SystemAdmin;
+import com.easyhelp.application.model.users.*;
 import com.easyhelp.application.repository.DoctorRepository;
 import com.easyhelp.application.repository.DonationCenterPersonnelRepository;
 import com.easyhelp.application.repository.DonorRepository;
@@ -61,9 +58,11 @@ public class RegisterService {
             applicationUserService.findByEmailInAllUsers(user.getEmail());
             throw new UserAlreadyRegisteredException("A user with the email " + user.getEmail() + " already exists!");
         } catch (UsernameNotFoundException exception) {
-            if (user.getSsn() != null && !user.getSkipSsnValidation()) {
+            if (user.getSsn() != null) {
                 String ssn = user.getSsn();
                 MiscUtils.validateSsn(ssn);
+            } else if (user.getUserType() != UserType.DONOR){
+                throw new SsnInvalidException("No ssn was provided");
             }
 
             switch (user.getUserType()) {

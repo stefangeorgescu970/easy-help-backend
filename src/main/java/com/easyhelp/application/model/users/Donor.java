@@ -5,7 +5,7 @@ import com.easyhelp.application.model.blood.StoredBlood;
 import com.easyhelp.application.model.donations.Donation;
 import com.easyhelp.application.model.donations.DonationBooking;
 import com.easyhelp.application.model.donations.DonationForm;
-import com.easyhelp.application.model.dto.account.RegisterDTO;
+import com.easyhelp.application.model.dto.auth.RegisterDTO;
 import com.easyhelp.application.model.misc.SsnData;
 import com.easyhelp.application.utils.MiscUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -60,7 +60,6 @@ public class Donor extends ApplicationUser {
 
     public Donor(RegisterDTO applicationUser) {
         setCounty(applicationUser.getCounty());
-        setDateOfBirth(applicationUser.getDateOfBirth());
         setEmail(applicationUser.getEmail());
         setFirstName(applicationUser.getFirstName());
         setLastName(applicationUser.getLastName());

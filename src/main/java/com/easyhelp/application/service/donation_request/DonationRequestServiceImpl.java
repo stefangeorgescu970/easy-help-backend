@@ -1,14 +1,14 @@
 package com.easyhelp.application.service.donation_request;
 
+import com.easyhelp.application.model.blood.BloodComponent;
 import com.easyhelp.application.model.blood.BloodType;
 import com.easyhelp.application.model.blood.SeparatedBloodType;
 import com.easyhelp.application.model.blood.StoredBlood;
-import com.easyhelp.application.model.donations.DonationStatus;
-import com.easyhelp.application.model.dto.donation.DonationCommitmentCreateDTO;
-import com.easyhelp.application.model.dto.requests.DonationRequestDTO;
+import com.easyhelp.application.model.dto.dcp.incoming.DonationCommitmentCreateDTO;
 import com.easyhelp.application.model.locations.DonationCenter;
 import com.easyhelp.application.model.requests.*;
 import com.easyhelp.application.model.users.Doctor;
+import com.easyhelp.application.model.users.Donor;
 import com.easyhelp.application.repository.DonationRequestRepository;
 import com.easyhelp.application.service.bloodtype.BloodTypeServiceInterface;
 import com.easyhelp.application.service.doctor.DoctorServiceInterface;
@@ -17,6 +17,7 @@ import com.easyhelp.application.service.donationcenter.DonationCenterServiceInte
 import com.easyhelp.application.service.patient.PatientServiceInterface;
 import com.easyhelp.application.service.separated_bloodtype.SeparatedBloodTypeServiceInterface;
 import com.easyhelp.application.service.stored_blood.StoredBloodServiceInterface;
+import com.easyhelp.application.utils.BloodUtils;
 import com.easyhelp.application.utils.MiscUtils;
 import com.easyhelp.application.utils.exceptions.EasyHelpException;
 import com.easyhelp.application.utils.exceptions.EntityAlreadyExistsException;
@@ -60,10 +61,10 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
     }
 
     @Override
-    public void requestDonation(DonationRequestDTO donationRequest) throws EntityNotFoundException, EntityAlreadyExistsException {
+    public DonationRequest requestDonation(Long doctorId, Long patientId, Double quantity, RequestUrgency urgency, BloodComponent bloodComponent) throws EntityNotFoundException, EntityAlreadyExistsException {
         DonationRequest request = new DonationRequest();
-        Doctor doctor = doctorService.findById(donationRequest.getDoctorId());
-        Patient patient = patientService.findById(donationRequest.getPatientId());
+        Doctor doctor = doctorService.findById(doctorId);
+        Patient patient = patientService.findById(patientId);
 
         if (getAllRequestsForDoctor(doctor.getId()).stream().anyMatch(r -> r.getPatient() == patient))
             throw new EntityAlreadyExistsException("You have already made a request for this patient");
@@ -72,10 +73,10 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
             throw new EntityAlreadyExistsException("There is already a request made for this patient");
 
 
-        SeparatedBloodType separatedBloodType = separatedBloodTypeService.findSeparatedBloodTypeInDB(patient.getBloodType().getGroupLetter(), patient.getBloodType().getRh(), donationRequest.getBloodComponent());
+        SeparatedBloodType separatedBloodType = separatedBloodTypeService.findSeparatedBloodTypeInDB(patient.getBloodType().getGroupLetter(), patient.getBloodType().getRh(), bloodComponent);
         if (separatedBloodType == null) {
             separatedBloodType = new SeparatedBloodType();
-            separatedBloodType.setComponent(donationRequest.getBloodComponent());
+            separatedBloodType.setComponent(bloodComponent);
             BloodType bloodTypeInDb = bloodTypeService.findBloodTypeInDB(patient.getBloodType().getGroupLetter(), patient.getBloodType().getRh());
             separatedBloodType.setBloodType(bloodTypeInDb);
             Set<DonationRequest> donationRequests = new HashSet<>();
@@ -90,13 +91,13 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
 
         request.setDoctor(doctor);
         request.setPatient(patient);
-        request.setUrgency(donationRequest.getUrgency());
+        request.setUrgency(urgency);
         request.setStatus(RequestStatus.PROCESSING);
-        request.setQuantity(donationRequest.getQuantity());
+        request.setQuantity(quantity);
         request.setSeparatedBloodType(separatedBloodType);
 
-        donationRequestRepository.save(request);
         separatedBloodTypeService.save(separatedBloodType);
+        return donationRequestRepository.save(request);
     }
 
     @Override
@@ -114,8 +115,8 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
     }
 
     @Override
-    public void saveRequest(DonationRequest donationRequest) {
-        donationRequestRepository.save(donationRequest);
+    public DonationRequest saveRequest(DonationRequest donationRequest) {
+        return donationRequestRepository.save(donationRequest);
     }
 
     @Override
@@ -135,7 +136,7 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
     }
 
     @Override
-    public void commitToDonation(DonationCommitmentCreateDTO donationCommitmentCreateDTO) throws EasyHelpException {
+    public DonationCommitment commitToDonation(DonationCommitmentCreateDTO donationCommitmentCreateDTO) throws EasyHelpException {
         DonationCenter donationCenter = donationCenterService.findById(donationCommitmentCreateDTO.getDonationCenterId());
         Optional<DonationRequest> donationRequestOpt = donationRequestRepository.findById(donationCommitmentCreateDTO.getDonationRequestId());
         StoredBlood storedBlood = storedBloodService.findById(donationCommitmentCreateDTO.getStoredBloodId());
@@ -161,10 +162,11 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
         storedBlood.setDonationCommitment(donationCommitment);
         storedBlood.setIsUsable(false);
 
-        donationCommitmentService.save(donationCommitment);
+        DonationCommitment donationCommitment1 = donationCommitmentService.save(donationCommitment);
         donationCenterService.save(donationCenter);
         donationRequestRepository.save(donationRequest);
         storedBloodService.storeBlood(storedBlood);
+        return donationCommitment1;
     }
 
     @Override
@@ -181,7 +183,31 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
             throw new EasyHelpException("This donation has pending commitments. Please handle these first");
         }
 
+        donationRequest.getDoctor().getDonationRequests().remove(donationRequest);
+        donationRequest.getSeparatedBloodType().getDonationRequests().remove(donationRequest);
+        donationRequest.getPatient().getDonationRequests().remove(donationRequest);
+
         donationRequestRepository.delete(donationRequest);
+    }
+
+    @Override
+    public List<DonationRequest> getDonationRequestsDonorCouldDonateFor(Donor donor) {
+        return donationRequestRepository
+                .findAll()
+                .stream()
+                .filter(donationRequest -> BloodUtils.checkBloodCompatibility(donor, donationRequest.getPatient(), donationRequest.getSeparatedBloodType().getComponent()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public DonationRequest findById(Long donationRequestId) throws EntityNotFoundException {
+        Optional<DonationRequest> donationRequest = donationRequestRepository.findById(donationRequestId);
+
+        if (!donationRequest.isPresent()) {
+            throw new EntityNotFoundException("Donation request with that id does not exist");
+        }
+
+        return donationRequest.get();
     }
 
     @Override
@@ -192,7 +218,7 @@ public class DonationRequestServiceImpl implements DonationRequestServiceInterfa
         return donationRequestRepository.findAll()
                 .stream()
                 .filter(donationRequest -> !(donationRequest.getStatus().equals(RequestStatus.FULLY_COMMITTED_TO) || donationRequest.getStatus().equals(RequestStatus.COMPLETED) || donationRequest.getStatus().equals(RequestStatus.FAILED)))
-                .sorted(Comparator.comparingInt(e -> MiscUtils.computeDistance(donationCenter.getLatitude(), donationCenter.getLongitude(),
+                .sorted(Comparator.comparingDouble(e -> MiscUtils.computeDistance(donationCenter.getLatitude(), donationCenter.getLongitude(),
                         e.getDoctor().getHospital().getLatitude(), e.getDoctor().getHospital().getLongitude())))
                 .collect(Collectors.toList());
 

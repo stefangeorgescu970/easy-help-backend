@@ -22,4 +22,5 @@ public class RealLocation extends BaseEntity {
     private Double latitude;
     private String address;
     private County county;
+    private String phone;
 }

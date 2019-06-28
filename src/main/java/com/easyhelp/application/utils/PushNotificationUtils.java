@@ -29,7 +29,6 @@ public class PushNotificationUtils {
                     .withCert(System.getenv("ENV").equals("PROD") ? "src/main/resources/easyHelpDevPush.p12" : "src/main/resources/easyHelpLocalPush.p12", "pass")
                     .withSandboxDestination()
                     .build();
-            // TODO - here check env and set correct certificate
 
             String payload = APNS.newPayload()
                     .alertBody(message)
