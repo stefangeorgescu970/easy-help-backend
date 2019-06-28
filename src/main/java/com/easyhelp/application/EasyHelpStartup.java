@@ -23,6 +23,7 @@ public class EasyHelpStartup implements ApplicationListener<ApplicationReadyEven
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+
     @Autowired
     private RegisterService registerService;
 
@@ -35,6 +36,7 @@ public class EasyHelpStartup implements ApplicationListener<ApplicationReadyEven
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
         try {

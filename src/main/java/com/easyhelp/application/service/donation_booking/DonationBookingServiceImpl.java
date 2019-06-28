@@ -140,7 +140,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
 
         if (shouldNotifyDonor) {
             try {
-                PushNotificationUtils.sendPushNotification(donor, "Your recent booking was cancelled the donation center.");
+                PushNotificationUtils.sendPushNotification(donor, "Your recent booking was cancelled by the donation center.");
             } catch (PushTokenUnavailableException ignored) {
             }
         }
