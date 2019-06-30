@@ -97,7 +97,7 @@ public class DonationBookingServiceImpl implements DonationBookingServiceInterfa
                 .findAll()
                 .stream()
                 .filter(b -> b.getDonationCenter().getId().equals(donationCenterId))
-                .sorted((b1, b2) -> b2.getDateAndTime().compareTo(b1.getDateAndTime()))
+                .sorted(Comparator.comparing(DonationBooking::getDateAndTime))
                 .collect(Collectors.toList());
     }
 
